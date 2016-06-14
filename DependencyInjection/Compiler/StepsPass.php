@@ -32,9 +32,6 @@ class StepsPass implements CompilerPassInterface
                     'Step action must be a valid class extending %s. "%s" given.',
                     StepAction::class, class_exists($class) ? $class : gettype($class)
                 ));
-            } else {
-                dump('step ok', $step);
-                exit;
             }
         }
     }
