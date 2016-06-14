@@ -2,7 +2,7 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler;
 
-use Pierstoval\Bundle\CharacterManagerBundle\Action\StepAction;
+use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -20,17 +20,16 @@ class StepsPass implements CompilerPassInterface
             if ($container->has($action)) {
                 // Action defined as a service.
                 $definition = $container->getDefinition($action);
-
                 $class = $definition->getClass();
             } else {
                 // Else, action defined as a simple class.
                 $class = $action;
             }
 
-            if (!class_exists($class) || !is_a($class, StepAction::class, true)) {
+            if (!class_exists($class) || !is_a($class, StepActionInterface::class, true)) {
                 throw new InvalidArgumentException(sprintf(
-                    'Step action must be a valid class extending %s. "%s" given.',
-                    StepAction::class, class_exists($class) ? $class : gettype($class)
+                    'Step action must be a valid class implementing %s. "%s" given.',
+                    StepActionInterface::class, class_exists($class) ? $class : gettype($class)
                 ));
             }
         }

@@ -2,9 +2,16 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Action;
 
-use Symfony\Component\HttpFoundation\Request;
-
-abstract class StepAction
+abstract class StepAction implements StepActionInterface
 {
-    abstract public function execute(Request $request);
+    private $class;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setClass($class)
+    {
+        $this->class = $class;
+    }
+
 }
