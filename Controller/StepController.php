@@ -5,7 +5,6 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -43,14 +42,13 @@ class StepController extends Controller
     }
 
     /**
-     * @Route("/characters/generate/{step}-{slug}", requirements={"step" = "\d+"}, name="corahnrin_generator_generator_step")
+     * @Route("/characters/generate/{step}", requirements={"step" = "\d+"}, name="corahnrin_generator_generator_step")
      *
      * @param Request $request
-     * @param Steps   $step
      *
      * @return array|RedirectResponse|Response
      */
-    public function stepAction(Request $request, Steps $step)
+    public function stepAction($step, Request $request)
     {
         $em = $this->getDoctrine()->getManager();
 
