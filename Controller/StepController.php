@@ -22,9 +22,9 @@ class StepController extends Controller
         reset($steps);
         $firstStep = current($steps);
 
-        return $this->redirect($this->generateUrl('pierstoval_character_generator_step', [
+        return $this->redirectToRoute('pierstoval_character_generator_step', [
             'step' => $firstStep['name'],
-        ]));
+        ]);
     }
 
     /**
@@ -41,7 +41,7 @@ class StepController extends Controller
     }
 
     /**
-     * @Route("/generate/{step}", requirements={"step" = "\w+"}, name="pierstoval_character_generator_step")
+     * @Route("/generate/{step}", requirements={"step" = "[\w-]+"}, name="pierstoval_character_generator_step")
      *
      * @param Request $request
      *
