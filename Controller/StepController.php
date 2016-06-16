@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 class StepController extends Controller
 {
     /**
-     * @Route("/characters/generate/", name="corahnrin_generator_generator_index")
+     * @Route("/generate", name="pierstoval_character_generator_index")
      *
      * @return RedirectResponse
      */
@@ -19,17 +19,16 @@ class StepController extends Controller
     {
         $steps = $this->getParameter('pierstoval_character_manager.steps');
 
-        dump($steps);
-        exit;
+        reset($steps);
+        $firstStep = current($steps);
 
-        return $this->redirect($this->generateUrl('corahnrin_generator_generator_step', [
-            'step' => $step->getStep(),
-            'slug' => $step->getSlug(),
+        return $this->redirect($this->generateUrl('pierstoval_character_generator_step', [
+            'step' => $firstStep['name'],
         ]));
     }
 
     /**
-     * @Route("/characters/reset/", name="corahnrin_generator_generator_reset")
+     * @Route("/reset/", name="pierstoval_character_generator_reset")
      */
     public function resetAction()
     {
@@ -38,11 +37,11 @@ class StepController extends Controller
         $session->set('step', 1);
         $session->getFlashBag()->add('success', 'Le personnage en cours de création a été réinitialisé !');
 
-        return $this->redirect($this->generateUrl('corahnrin_generator_generator_index'));
+        return $this->redirect($this->generateUrl('pierstoval_character_generator_index'));
     }
 
     /**
-     * @Route("/characters/generate/{step}", requirements={"step" = "\d+"}, name="corahnrin_generator_generator_step")
+     * @Route("/generate/{step}", requirements={"step" = "\w+"}, name="pierstoval_character_generator_step")
      *
      * @param Request $request
      *
@@ -50,8 +49,6 @@ class StepController extends Controller
      */
     public function stepAction($step, Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
         $session = $this->get('session');
 
         //Si le personnage n'existe pas dans la session, on le crée
@@ -59,9 +56,13 @@ class StepController extends Controller
             $session->set('character', []);
         }
 
+        return new Response('Todo');
+
+        // TODO
+
         $character = $session->get('character');
 
-        $this->steps = $this->steps ?: $em->getRepository('CorahnRinBundle:Steps')->findAll('step');
+        $this->steps = $this->getParameter('pierstoval_character_manager.steps');
 
         for ($i = 1; $i <= $step->getStep(); ++$i) {
             $stepName = $this->steps[$i]->getStep().'.'.$this->steps[$i]->getSlug();
@@ -155,7 +156,7 @@ class StepController extends Controller
         ;
 
         if ($step) {
-            $url = $this->generateUrl('corahnrin_generator_generator_step', [
+            $url = $this->generateUrl('pierstoval_character_generator_step', [
                 'step' => $step->getStep(),
                 'slug' => $step->getSlug(),
             ]);
