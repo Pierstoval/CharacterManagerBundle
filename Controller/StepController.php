@@ -2,6 +2,8 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Controller;
 
+use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
+use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -15,15 +17,31 @@ class StepController extends Controller
      *
      * @return RedirectResponse
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $steps = $this->getParameter('pierstoval_character_manager.steps');
 
-        reset($steps);
-        $firstStep = current($steps);
+        $stepName = null;
+
+        $stepNumber = $request->getSession()->get('step');
+        if (null !== $stepNumber) {
+            foreach ($steps as $step) {
+                if ($step['step'] === $stepNumber) {
+                    $stepName = $step['name'];
+                }
+            }
+        } else {
+            reset($steps);
+            $firstStep = current($steps);
+            $stepName = $firstStep['name'];
+        }
+
+        if (!$stepName) {
+            throw $this->createNotFoundException('No step found to start the generator.');
+        }
 
         return $this->redirectToRoute('pierstoval_character_generator_step', [
-            'step' => $firstStep['name'],
+            'requestStep' => $stepName,
         ]);
     }
 
@@ -41,40 +59,63 @@ class StepController extends Controller
     }
 
     /**
-     * @Route("/generate/{step}", requirements={"step" = "[\w-]+"}, name="pierstoval_character_generator_step")
+     * @Route("/generate/{requestStep}", requirements={"step" = "[\w-]+"}, name="pierstoval_character_generator_step")
      *
      * @param Request $request
      *
-     * @return array|RedirectResponse|Response
+     * @return Response
      */
-    public function stepAction($step, Request $request)
+    public function stepAction($requestStep, Request $request)
     {
-        $session = $this->get('session');
+        $stepsArray = $this->getParameter('pierstoval_character_manager.steps');
 
-        //Si le personnage n'existe pas dans la session, on le crée
+        if (!array_key_exists($requestStep, $stepsArray)) {
+            throw $this->createNotFoundException('Step not found.');
+        }
+
+        /** @var Step[] $steps */
+        $steps = [];
+
+        // Transform array of array in array of value objects.
+        foreach ($stepsArray as $key => $stepArray) {
+            $steps[$key] = new Step(
+                $stepArray['step'],
+                $key,
+                $stepArray['action'],
+                $stepArray['label'],
+                $stepArray['steps_to_disable_on_change']
+            );
+        }
+
+        /** @var Step $step */
+        $step = $steps[$requestStep];
+
+        // If the character does not exist in session yet, create an empty one.
+        // This character is only a stub, an array of data.
+        // At the final step, it can be sent to the Character entity,
+        //   via the Character::createFromGenerator() method.
+        $session = $request->getSession();
         if (!$session->get('character')) {
             $session->set('character', []);
         }
 
-        return new Response('Todo');
+        $actionId = $step->getAction();
 
-        // TODO
+        /** @var StepActionInterface $action */
+        $action = $this->has($actionId) ? $this->get($actionId) : new $actionId();
 
-        $character = $session->get('character');
+        $action->setClass($this->getParameter('pierstoval_character_manager.character_class'));
+        $action->setRequest($request);
+        $action->setStep($step);
+        $action->setSteps($steps);
 
-        $this->steps = $this->getParameter('pierstoval_character_manager.steps');
-
-        for ($i = 1; $i <= $step->getStep(); ++$i) {
-            $stepName = $this->steps[$i]->getStep().'.'.$this->steps[$i]->getSlug();
-            if (!array_key_exists($stepName, $character) && $step->getStep() > $this->steps[$i]->getStep()) {
-                return $this->_goToStep($this->steps[$i]->getStep());
-            }
-        }
+        // Execute the action and expect a response. Symfony will do the rest.
+        return $action->execute();
 
         /**
          * @var StepLoader
          */
-        $stepLoader = $this->get('corahn_rin_generator.steps_loader');
+        $stepLoader = $this->get('corahnrin_generator.steps_loader');
 
         $stepLoader->initialize($this, $session, $request, $step, $this->steps);
 
