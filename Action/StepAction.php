@@ -59,14 +59,6 @@ abstract class StepAction implements StepActionInterface
     /**
      * {@inheritdoc}
      */
-    public function setStepName($stepName)
-    {
-        $this->stepName = $stepName;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function setRequest(Request $request)
     {
         $this->request = $request;
