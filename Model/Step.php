@@ -46,6 +46,22 @@ class Step
     }
 
     /**
+     * @param array $data
+     *
+     * @return Step
+     */
+    public static function createFromData(array $data)
+    {
+        return new static(
+            $data['step'],
+            $data['name'],
+            $data['action'],
+            $data['label'],
+            $data['steps_to_disable_on_change']
+        );
+    }
+
+    /**
      * @return int
      */
     public function getStep()
