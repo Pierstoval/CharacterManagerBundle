@@ -75,8 +75,12 @@ abstract class StepAction implements StepActionInterface
     /**
      * {@inheritdoc}
      */
-    public function getCharacterProperty($key)
+    public function getCharacterProperty($key = null)
     {
+        if (null === $key) {
+            $key = $this->step->getName();
+        }
+
         $character = $this->request->getSession()->get('character', []);
 
         return array_key_exists($key, $character) ? $character[$key] : null;

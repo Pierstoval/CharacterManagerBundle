@@ -54,10 +54,11 @@ interface StepActionInterface
 
     /**
      * Get a property from the current character.
+     * Default null can be managed to retrieve current step's name.
      *
-     * @param string $key
+     * @param string|null $key
      *
      * @return mixed
      */
-    public function getCharacterProperty($key);
+    public function getCharacterProperty($key = null);
 }
