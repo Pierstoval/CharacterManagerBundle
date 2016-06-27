@@ -4,9 +4,9 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Controller;
 
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -33,7 +33,7 @@ class StepController extends Controller
         } else {
             reset($steps);
             $firstStep = current($steps);
-            $stepName = $firstStep['name'];
+            $stepName  = $firstStep['name'];
         }
 
         if (!$stepName) {

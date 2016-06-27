@@ -28,7 +28,7 @@ class Configuration implements ConfigurationInterface
                     ->isRequired()
                     ->validate()
                         ->always()
-                        ->then(function($value){
+                        ->then(function ($value) {
                             if (!class_exists($value) || !is_a($value, Character::class, true)) {
                                 throw new InvalidConfigurationException(sprintf(
                                     'Character class must be a valid class extending %s. "%s" given.',

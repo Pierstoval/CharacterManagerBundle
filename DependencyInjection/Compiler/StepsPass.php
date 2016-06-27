@@ -3,9 +3,9 @@
 namespace Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler;
 
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
-use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 
 class StepsPass implements CompilerPassInterface
 {
@@ -20,7 +20,7 @@ class StepsPass implements CompilerPassInterface
             if ($container->has($action)) {
                 // Action defined as a service.
                 $definition = $container->getDefinition($action);
-                $class = $definition->getClass();
+                $class      = $definition->getClass();
             } else {
                 // Else, action defined as a simple class.
                 $class = $action;
