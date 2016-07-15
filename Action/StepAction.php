@@ -2,8 +2,14 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Action;
 
+use Doctrine\ORM\EntityManager;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
+use Symfony\Bundle\TwigBundle\TwigEngine;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 abstract class StepAction implements StepActionInterface
 {
@@ -31,13 +37,54 @@ abstract class StepAction implements StepActionInterface
      * @var string
      */
     protected $stepName;
+    /**
+     * @var RouterInterface
+     */
+    protected $router;
+
+    /**
+     * @var EntityManager
+     */
+    protected $em;
+
+    /**
+     * @var TwigEngine
+     */
+    protected $templating;
+
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
+
+    /**
+     * @param EntityManager       $em
+     * @param TwigEngine          $templating
+     * @param RouterInterface     $router
+     * @param TranslatorInterface $translator
+     */
+    public function setDefaultServices(EntityManager $em, TwigEngine $templating, RouterInterface $router, TranslatorInterface $translator)
+    {
+        $this->em         = $em;
+        $this->templating = $templating;
+        $this->router     = $router;
+        $this->translator = $translator;
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function setClass($class)
+    public function setCharacterClass($class)
     {
         $this->class = $class;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCharacterClass()
+    {
+        return $this->class;
     }
 
     /**
@@ -69,6 +116,10 @@ abstract class StepAction implements StepActionInterface
      */
     public function getCurrentCharacter()
     {
+        if (!$this->request) {
+            throw new \InvalidArgumentException('Request is not set in step action.');
+        }
+
         return $this->request->getSession()->get('character');
     }
 
@@ -84,5 +135,86 @@ abstract class StepAction implements StepActionInterface
         $character = $this->request->getSession()->get('character', []);
 
         return array_key_exists($key, $character) ? $character[$key] : null;
+    }
+
+    /**
+     * @return RedirectResponse
+     */
+    protected function nextStep()
+    {
+        return $this->goToStep($this->step->getStep() + 1);
+    }
+
+    /**
+     * Redirects to a specific step and updates the session.
+     *
+     * @param int $stepNumber
+     *
+     * @return RedirectResponse
+     */
+    protected function goToStep($stepNumber)
+    {
+        if (!$this->request) {
+            throw new \InvalidArgumentException('Request is not set in step action.');
+        }
+
+        foreach ($this->steps as $step) {
+            if ($step->getStep() === $stepNumber) {
+                $this->request->getSession()->set('step', $stepNumber);
+
+                return new RedirectResponse($this->router->generate('pierstoval_character_generator_step', ['requestStep' => $step->getName()]));
+            }
+        }
+
+        throw new \InvalidArgumentException('Invalid step: '.$stepNumber);
+    }
+
+    /**
+     * @param mixed $value
+     */
+    protected function updateCharacterStep($value)
+    {
+        if (!$this->request) {
+            throw new \InvalidArgumentException('Request is not set in step action.');
+        }
+
+        $character = $this->request->getSession()->get('character', []);
+
+        $character[$this->step->getName()] = $value;
+
+        foreach ($this->step->getStepsToDisableOnChange() as $stepToDisable) {
+            unset($character[$stepToDisable]);
+        }
+
+        $this->request->getSession()->set('character', $character);
+    }
+
+    /**
+     * Adds a new flash message.
+     *
+     * @param string $msg
+     * @param string $type
+     * @param array  $msgParams
+     *
+     * @return $this
+     */
+    public function flashMessage($msg, $type = 'error', array $msgParams = [])
+    {
+        if (!$this->request) {
+            throw new \InvalidArgumentException('Request is not set in step action.');
+        }
+
+        if (!$this->translator) {
+            throw new \InvalidArgumentException('Translator is not set in step action.');
+        }
+
+        $msg = $this->translator->trans($msg, $msgParams, 'error.steps');
+
+        /** @var Session $session */
+        $session = $this->request->getSession();
+
+        $session->getFlashBag()->add($type, $msg);
+
+        return $this;
     }
 }

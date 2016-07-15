@@ -57,7 +57,7 @@ class Step
             $data['name'],
             $data['action'],
             $data['label'],
-            $data['steps_to_disable_on_change']
+            $data['onchange_clear']
         );
     }
 

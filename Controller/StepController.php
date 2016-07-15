@@ -90,7 +90,11 @@ class StepController extends Controller
         /** @var StepActionInterface $action */
         $action = $this->has($actionId) ? $this->get($actionId) : new $actionId();
 
-        $action->setClass($this->getParameter('pierstoval_character_manager.character_class'));
+        // In case of, update action class.
+        if (!$action->getCharacterClass()) {
+            $action->setCharacterClass($this->getParameter('pierstoval_character_manager.character_class'));
+        }
+
         $action->setRequest($request);
         $action->setStep($step);
         $action->setSteps($steps);

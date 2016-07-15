@@ -39,13 +39,6 @@ interface StepActionInterface
     public function setRequest(Request $request);
 
     /**
-     * Any action must be injected the character class, because are not always defined as services.
-     *
-     * @param string $class
-     */
-    public function setClass($class);
-
-    /**
      * Return the current character that is built in the steps process.
      *
      * @return mixed
@@ -61,4 +54,19 @@ interface StepActionInterface
      * @return mixed
      */
     public function getCharacterProperty($key = null);
+
+    /**
+     * Any action must be injected the character class, because are not always defined as services.
+     * Called automatically by compiler pass if service is tagged.
+     *
+     * @param string $class
+     */
+    public function setCharacterClass($class);
+
+    /**
+     * Get configured character class.
+     *
+     * @return string
+     */
+    public function getCharacterClass();
 }

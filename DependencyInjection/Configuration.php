@@ -23,6 +23,7 @@ class Configuration implements ConfigurationInterface
         $rootNode    = $treeBuilder->root('pierstoval_character_manager');
 
         $rootNode
+            ->addDefaultsIfNotSet()
             ->children()
                 ->scalarNode('character_class')
                     ->isRequired()
@@ -35,6 +36,7 @@ class Configuration implements ConfigurationInterface
                                     Character::class, $value
                                 ));
                             }
+                            return $value;
                         })
                     ->end()
                 ->end()
@@ -43,10 +45,20 @@ class Configuration implements ConfigurationInterface
                     ->useAttributeAsKey('name')
                     ->prototype('array')
                         ->children()
-                            ->scalarNode('action')->isRequired()->end()
+                            ->scalarNode('action')
+                                ->info('Can be a class or a service. Must implement interface or extend abstract classes from this bundle.')
+                                ->isRequired()
+                            ->end()
                             ->scalarNode('name')->defaultValue('')->end()
                             ->scalarNode('label')->defaultValue('')->end()
-                            ->arrayNode('steps_to_disable_on_change')
+                            ->arrayNode('depends_on')
+                                ->info('Steps that the current step may depend on. If step is not set in session, will throw an exception.')
+                                ->defaultValue([])
+                                ->prototype('scalar')->end()
+                            ->end()
+                            ->arrayNode('onchange_clear')
+                                ->info('When this step will be updated, it will clear values for specified steps.')
+                                ->defaultValue([])
                                 ->prototype('scalar')->end()
                             ->end()
                         ->end()

@@ -2,8 +2,6 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection;
 
-use Doctrine\Common\Inflector\Inflector;
-use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
@@ -27,47 +25,8 @@ class PierstovalCharacterManagerExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
-        $stepNumber = 1;
-
-        $finalSteps = [];
-
-        // Validate steps that can't be validated in Configuration
-        foreach ($config['steps'] as $name => $step) {
-            if (is_numeric($name)) {
-                $name = $step['name'];
-            } else {
-                $step['name'] = $name;
-            }
-
-            if (!$step['label']) {
-                $step['label'] = Inflector::ucwords(str_replace('_', ' ', $name));
-            }
-
-            $step['step'] = $stepNumber++;
-
-            // Cannot use "defaultValue" for arrayNode in prototypes, so using this...
-            if (!array_key_exists('steps_to_disable_on_change', $step)) {
-                $step['steps_to_disable_on_change'] = [];
-            }
-
-            $finalSteps[$name] = $step;
-        }
-
-        // Validate steps to disable after normalization, to be sure each step is defined.
-        foreach ($finalSteps as $name => $step) {
-            foreach ($step['steps_to_disable_on_change'] as $stepToDisable) {
-                if (!array_key_exists($stepToDisable, $finalSteps)) {
-                    throw new InvalidConfigurationException(sprintf(
-                        'Step to disable must be a valid step name, "%s" given.'."\n".
-                        'Available steps: %s',
-                        $stepToDisable, implode(', ', array_keys($finalSteps))
-                    ));
-                }
-            }
-        }
-
-        $config['steps'] = $finalSteps;
-
+        // Set all config in container.
+        // Steps will be validated in compiler pass.
         foreach ($config as $key => $value) {
             $container->setParameter('pierstoval_character_manager.'.$key, $value);
         }
