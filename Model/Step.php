@@ -27,22 +27,29 @@ class Step
     /**
      * @var array
      */
-    protected $stepsToDisableOnChange;
+    protected $onchangeClear;
+
+    /**
+     * @var array
+     */
+    protected $dependsOn;
 
     /**
      * @param int    $step
      * @param string $name
      * @param string $action
      * @param string $label
-     * @param array  $stepsToDisableOnChange
+     * @param array  $onchangeClear
+     * @param array  $dependsOn
      */
-    public function __construct($step, $name, $action, $label, array $stepsToDisableOnChange)
+    public function __construct($step, $name, $action, $label, array $onchangeClear, array $dependsOn)
     {
-        $this->step                   = $step;
-        $this->name                   = $name;
-        $this->action                 = $action;
-        $this->label                  = $label;
-        $this->stepsToDisableOnChange = $stepsToDisableOnChange;
+        $this->step          = $step;
+        $this->name          = $name;
+        $this->action        = $action;
+        $this->label         = $label;
+        $this->onchangeClear = $onchangeClear;
+        $this->dependsOn     = $dependsOn;
     }
 
     /**
@@ -57,7 +64,8 @@ class Step
             $data['name'],
             $data['action'],
             $data['label'],
-            $data['onchange_clear']
+            $data['onchange_clear'],
+            $data['depends_on']
         );
     }
 
@@ -96,8 +104,16 @@ class Step
     /**
      * @return array
      */
-    public function getStepsToDisableOnChange()
+    public function getOnchangeClear()
     {
-        return $this->stepsToDisableOnChange;
+        return $this->onchangeClear;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDependencies()
+    {
+        return $this->dependsOn;
     }
 }

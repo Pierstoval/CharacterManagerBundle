@@ -182,7 +182,7 @@ abstract class StepAction implements StepActionInterface
 
         $character[$this->step->getName()] = $value;
 
-        foreach ($this->step->getStepsToDisableOnChange() as $stepToDisable) {
+        foreach ($this->step->getOnchangeClear() as $stepToDisable) {
             unset($character[$stepToDisable]);
         }
 

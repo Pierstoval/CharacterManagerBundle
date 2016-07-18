@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class StepController extends Controller
 {
@@ -84,6 +85,22 @@ class StepController extends Controller
 
         /** @var Step $step */
         $step = $steps[$requestStep];
+
+        /** @var Session $session */
+        $session = $request->getSession();
+        $character = $session->get('character');
+
+        // Make sure that dependencies exist, else redirect to first step with a message.
+        foreach ($step->getDependencies() as $id) {
+            if (!isset($character[$id])) {
+                $msg = $this->get('translator')->trans('pierstoval_character_manager.steps.dependency_not_set', [
+                    '%current_step%' => $step->getName(),
+                    '%dependency%' => $id,
+                ], 'PierstovalCharacterManager');
+                $session->getFlashBag()->add('error', $msg);
+                $this->redirectToRoute('pierstoval_character_generator_index');
+            }
+        }
 
         $actionId = $step->getAction();
 
