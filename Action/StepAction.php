@@ -186,6 +186,7 @@ abstract class StepAction implements StepActionInterface
             unset($character[$stepToDisable]);
         }
 
+        $this->request->getSession()->set('step', $this->step->getStep());
         $this->request->getSession()->set('character', $character);
     }
 
