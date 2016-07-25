@@ -214,7 +214,14 @@ abstract class StepAction implements StepActionInterface
         /** @var Session $session */
         $session = $this->request->getSession();
 
-        $session->getFlashBag()->add($type, $msg);
+        $flashbag = $session->getFlashBag();
+
+        // Add the message manually.
+        $existingMessages = $flashbag->peek($type);
+        $existingMessages[] = $msg;
+
+        // And avoid having the same message multiple times.
+        $flashbag->set($type, array_unique($existingMessages));
 
         return $this;
     }
