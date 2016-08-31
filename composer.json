@@ -1,0 +1,31 @@
+{
+    "name": "pierstoval/character_manager",
+    "description": "Skeleton of a character manager",
+    "license": "MPL-2.0",
+    "type": "symfony-bundle",
+    "keywords": ["symfony", "character", "game", "bundle"],
+    "homepage": "https://github.com/Pierstoval/CharacterManagerBundle",
+    "autoload": {
+        "psr-4": {
+            "Pierstoval\\Bundle\\CharacterManagerBundle\\": ""
+        }
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "sensio/framework-extra-bundle": "^3.0",
+        "symfony/symfony": "^3.0",
+        "twig/twig": "^1.23|^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.5",
+        "pierstoval/web-test-case": "dev-master",
+        "doctrine/orm": "^2.5",
+        "doctrine/doctrine-bundle": "^1.6"
+    },
+    "authors": [
+        {
+            "name": "Alex Rock Ancelet",
+            "email": "alex.ancelet@gmail.com"
+        }
+    ]
+}
