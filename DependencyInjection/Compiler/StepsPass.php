@@ -44,7 +44,7 @@ class StepsPass implements CompilerPassInterface
         // First loop mandatory because we re-validate each step dependency in another loop after normalization.
         foreach ($steps as $id => $step) {
             if (is_numeric($id)) {
-                $name = $step['name'];
+                throw new InvalidConfigurationException('Step key should not be numeric but contain the step name. Maybe the extension was not processed properly?');
             } else {
                 $name = $step['name'] = $id;
             }

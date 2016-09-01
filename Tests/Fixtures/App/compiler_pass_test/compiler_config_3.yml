@@ -1,0 +1,12 @@
+# Test invalid class name
+config:
+    step_1:
+        action:         'steps.default'
+        name:           'step_1'
+        label:          'Step 1'
+        depends_on:     []
+        onchange_clear: []
+        step:           1
+step_class: stdClass
+expected_exception: Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
+expected_exception_message: Step action must be a valid class implementing Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface. "stdClass" given.

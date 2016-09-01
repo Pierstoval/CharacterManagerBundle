@@ -1,0 +1,11 @@
+# Step that depends on an existing one
+pierstoval_character_manager:
+    character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\Character
+    steps:
+        step_1:
+            action: steps.default
+            onchange_clear:
+                - step_2
+
+        step_2:
+            action: steps.default

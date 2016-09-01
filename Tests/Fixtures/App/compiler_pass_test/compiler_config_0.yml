@@ -1,0 +1,13 @@
+# Only "numeric" keys can prove that extension could not be processed,
+# because configuration converts numeric keys into step names.
+config:
+    0:
+        action:         'steps.default'
+        name:           'step_1'
+        label:          'Step 1'
+        depends_on:     []
+        onchange_clear: []
+        step:           1
+step_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\DefaultStep
+expected_exception: Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+expected_exception_message: Step key should not be numeric but contain the step name. Maybe the extension was not processed properly?

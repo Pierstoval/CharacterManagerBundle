@@ -1,0 +1,11 @@
+
+pierstoval_character_manager:
+    character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\Character
+    steps:
+        named_step:
+            action: steps.default
+            name: 'named_step'
+            label: 'Named Step'
+            depends_on: []
+            onchange_clear: []
+            step: 1

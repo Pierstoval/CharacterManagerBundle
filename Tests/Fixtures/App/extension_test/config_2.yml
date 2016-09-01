@@ -1,3 +1,6 @@
-# Base class test
+# Change the step name manually
 pierstoval_character_manager:
     character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\Character
+    steps:
+        - action: steps.default
+          name: named_step

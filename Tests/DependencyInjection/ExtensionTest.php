@@ -9,11 +9,16 @@
  * file that was distributed with this source code.
 */
 
+use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler\StepsPass;
 use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\PierstovalCharacterManagerExtension;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\AbstractTestCase;
+use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\DefaultStep;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * Test the extension and the compiler pass.
+ */
 class ExtensionTest extends AbstractTestCase
 {
 
@@ -42,36 +47,29 @@ class ExtensionTest extends AbstractTestCase
      */
     public function testYamlConfiguration($config, $expected)
     {
-        $builder = new ContainerBuilder();
+        $container = new ContainerBuilder();
+        $ext       = new PierstovalCharacterManagerExtension();
+        $stepsPass = new StepsPass();
 
-        $ext = new PierstovalCharacterManagerExtension(true);
+        // Add the default step service
+        $container
+            ->register('steps.default')
+            ->setClass(DefaultStep::class)
+        ;
 
-        $ext->load($config, $builder);
+        $ext->load($config, $container);
+        $stepsPass->process($container);
 
         foreach ($expected['pierstoval_character_manager'] as $key => $expectedValue) {
-            static::assertEquals($expectedValue, $builder->getParameter('pierstoval_character_manager.'.$key));
+            static::assertEquals($expectedValue, $container->getParameter('pierstoval_character_manager.'.$key));
         }
     }
 
     /**
-     * @dataProvider provideYamlConfiguration
+     * Provide all "extension_test" directory configs and test them through the extension.
      *
-     * @param $config
-     * @param $expected
+     * @return array
      */
-    public function testYamlConfigurationSymfony2($config, $expected)
-    {
-        $builder = new ContainerBuilder();
-
-        $ext = new PierstovalCharacterManagerExtension(false);
-
-        $ext->load($config, $builder);
-
-        foreach ($expected['pierstoval_character_manager'] as $key => $expectedValue) {
-            static::assertSame($expectedValue, $builder->getParameter('pierstoval_character_manager.'.$key));
-        }
-    }
-
     public function provideYamlConfiguration()
     {
         $dir = __DIR__.'/../Fixtures/App/extension_test/';

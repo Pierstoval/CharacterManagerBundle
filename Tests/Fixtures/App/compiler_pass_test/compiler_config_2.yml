@@ -1,0 +1,12 @@
+# Test an invalid step in "depends_on"
+config:
+    step_1:
+        action:         'steps.default'
+        name:           'step_1'
+        label:          'Step 1'
+        depends_on:     ['invalid_step']
+        onchange_clear: []
+        step:           1
+step_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\DefaultStep
+expected_exception: Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+expected_exception_message: "Step dependency must be a valid step name, \"invalid_step\" given.\nAvailable steps: step_1"
