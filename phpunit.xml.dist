@@ -42,7 +42,6 @@
             <directory suffix=".php">./Action</directory>
             <directory suffix=".php">./Controller</directory>
             <directory suffix=".php">./DependencyInjection</directory>
-            <directory suffix=".php">./Model</directory>
             <directory suffix=".php">./Resources</directory>
             <directory suffix=".php">./Sheets</directory>
             <exclude>
