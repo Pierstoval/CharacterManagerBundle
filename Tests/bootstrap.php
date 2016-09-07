@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Filesystem\Filesystem;
+use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\App\AppKernel;
 
 $file = __DIR__.'/../vendor/autoload.php';
 if (!file_exists($file)) {

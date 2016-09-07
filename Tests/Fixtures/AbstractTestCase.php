@@ -18,4 +18,7 @@ use Tests\WebTestCase;
  */
 class AbstractTestCase extends WebTestCase
 {
+    protected static function getKernelClass() {
+        return 'Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\App\AppKernel';
+    }
 }

@@ -9,6 +9,8 @@
  * file that was distributed with this source code.
  */
 
+namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\App;
+
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
@@ -18,14 +20,14 @@ class AppKernel extends Kernel
     public function registerBundles()
     {
         return [
-            new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new Symfony\Bundle\SecurityBundle\SecurityBundle(),
-            new Symfony\Bundle\TwigBundle\TwigBundle(),
-            new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-            new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
+            new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+            new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
+            new \Symfony\Bundle\TwigBundle\TwigBundle(),
+            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
+            new \Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
 
-            new Pierstoval\Bundle\CharacterManagerBundle\PierstovalCharacterManagerBundle(),
-            new Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\TestBundle(),
+            new \Pierstoval\Bundle\CharacterManagerBundle\PierstovalCharacterManagerBundle(),
+            new \Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\TestBundle(),
         ];
     }
 
