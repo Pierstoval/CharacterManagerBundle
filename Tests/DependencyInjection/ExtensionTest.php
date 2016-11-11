@@ -18,6 +18,8 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Test the extension and the compiler pass.
+ *
+ * @runTestsInSeparateProcesses
  */
 class ExtensionTest extends AbstractTestCase
 {

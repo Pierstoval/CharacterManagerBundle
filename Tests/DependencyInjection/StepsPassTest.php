@@ -19,6 +19,8 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Test the extension and the compiler pass.
+ *
+ * @runTestsInSeparateProcesses
  */
 class StepsPassTest extends AbstractTestCase
 {
