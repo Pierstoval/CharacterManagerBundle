@@ -1,6 +1,5 @@
 parameters:
     locale: en
-    database_path: '%kernel.root_dir%/../../../build/test.db'
 
 framework:
     secret:          secret
@@ -17,7 +16,7 @@ doctrine:
         dbname:   pierstoval_character_manager_test
         user:     root
         charset:  UTF8
-        path:     %database_path%
+        path:     '%kernel.root_dir%/../../../build/test.db'
     orm:
         auto_generate_proxy_classes: true
         auto_mapping: false
