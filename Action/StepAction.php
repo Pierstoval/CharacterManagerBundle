@@ -208,8 +208,13 @@ abstract class StepAction implements StepActionInterface
      *
      * @return $this
      */
-    public function flashMessage($msg, $type = 'error', array $msgParams = [])
+    public function flashMessage($msg, $type = null, array $msgParams = [])
     {
+        // Allows not knowing about the default type in the method signature.
+        if (null === $type) {
+            $type = 'error';
+        }
+
         if (!$this->request) {
             throw new \InvalidArgumentException('Request is not set in step action.');
         }
@@ -218,7 +223,7 @@ abstract class StepAction implements StepActionInterface
             throw new \InvalidArgumentException('Translator is not set in step action.');
         }
 
-        $msg = $this->translator->trans($msg, $msgParams, 'error.steps');
+        $msg = $this->translator->trans($msg, $msgParams, 'CorahnRinBundle');
 
         /** @var Session $session */
         $session = $this->request->getSession();
