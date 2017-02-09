@@ -96,7 +96,7 @@ class StepsPassTest extends AbstractTestCase
         static::assertCount(2, $calls);
 
         // Test index 1 (faster)
-        static::assertEquals(['setCharacterClass', ['test_abstract']], $calls[1]);
+        static::assertSame(['setCharacterClass', ['test_abstract']], $calls[1]);
 
         $validCallsReferences = [
             'doctrine.orm.entity_manager',
@@ -105,7 +105,7 @@ class StepsPassTest extends AbstractTestCase
             'translator',
         ];
 
-        static::assertEquals('setDefaultServices', $calls[0][0]);
+        static::assertSame('setDefaultServices', $calls[0][0]);
         static::assertCount(4, $calls[0][1]);
 
         /** @var Reference $callArgument */
@@ -147,6 +147,6 @@ class StepsPassTest extends AbstractTestCase
         $calls = $definition->getMethodCalls();
 
         static::assertCount(1, $calls);
-        static::assertEquals(['setCharacterClass', ['test_stub']], $calls[0]);
+        static::assertSame(['setCharacterClass', ['test_stub']], $calls[0]);
     }
 }

@@ -63,7 +63,7 @@ class ExtensionTest extends AbstractTestCase
         $stepsPass->process($container);
 
         foreach ($expected['pierstoval_character_manager'] as $key => $expectedValue) {
-            static::assertEquals($expectedValue, $container->getParameter('pierstoval_character_manager.'.$key));
+            static::assertSame($expectedValue, $container->getParameter('pierstoval_character_manager.'.$key));
         }
     }
 
