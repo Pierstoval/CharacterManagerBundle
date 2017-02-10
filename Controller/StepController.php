@@ -57,15 +57,55 @@ class StepController extends Controller
 
     /**
      * @Route("/reset/", name="pierstoval_character_generator_reset")
+     *
+     * @param Request $request
+     *
+     * @return RedirectResponse
      */
-    public function resetAction()
+    public function resetAction(Request $request)
     {
-        $session = $this->get('session');
+        /** @var Session $session */
+        $session = $request->getSession();
         $session->set('character', []);
         $session->set('step', 1);
         $session->getFlashBag()->add('success', 'Le personnage en cours de création a été réinitialisé !');
 
-        return $this->redirect($this->generateUrl('pierstoval_character_generator_index'));
+        return $this->redirectToRoute('pierstoval_character_generator_index');
+    }
+
+    /**
+     * @Route("/reset/{requestStep}", name="pierstoval_character_generator_reset_step")
+     *
+     * @param string $requestStep
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     */
+    public function resetStepAction($requestStep, Request $request)
+    {
+        $stepsArray = $this->getParameter('pierstoval_character_manager.steps');
+
+        if (!array_key_exists($requestStep, $stepsArray)) {
+            throw $this->createNotFoundException('Step not found.');
+        }
+
+        $step = Step::createFromData($stepsArray[$requestStep]);
+
+        /** @var Session $session */
+        $session = $request->getSession();
+
+        $character = $session->get('character');
+        unset($character[$step->getName()]);
+
+        foreach ($step->getOnchangeClear() as $step) {
+            unset($character[$step]);
+        }
+
+        $session->set('character', $character);
+
+        $session->getFlashBag()->add('success', 'L\'étape a été correctement réinitialisée !');
+
+        return $this->redirectToRoute('pierstoval_character_generator_step', ['requestStep' => $requestStep]);
     }
 
     /**
