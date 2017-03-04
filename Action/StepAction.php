@@ -22,6 +22,8 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 abstract class StepAction implements StepActionInterface
 {
+    protected static $translationDomain = 'PierstovalCharacterBundle';
+
     /**
      * @var string
      */
@@ -223,7 +225,7 @@ abstract class StepAction implements StepActionInterface
             throw new \InvalidArgumentException('Translator is not set in step action.');
         }
 
-        $msg = $this->translator->trans($msg, $msgParams, 'CorahnRinBundle');
+        $msg = $this->translator->trans($msg, $msgParams, static::$translationDomain);
 
         /** @var Session $session */
         $session = $this->request->getSession();
