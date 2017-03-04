@@ -10,6 +10,7 @@ You can configure your steps both from configuration and services.
 
 * Install the bundle
 * Add it to your Kernel:
+
    ```php
    <?php
    class AppKernel extends Kernel
@@ -23,8 +24,10 @@ You can configure your steps both from configuration and services.
        }
    }
    ```
+
 * Create a `Character` class (for now, only one is allowed per app. FOSUserBundle's style, sorry about that guys, but
   it's not very relevant for now to have more than one character class)
+
    ```php
    <?php
    namespace AppBundle\Entity;
@@ -35,16 +38,19 @@ You can configure your steps both from configuration and services.
        // Implement interface methods
    }
    ```
+
 * **Pro tip:** You can also extend the abstract class `Pierstoval\Bundle\CharacterManagerBundle\Entity\Character`,
   which already implements the different methods AND is already a Doctrine ORM entity for which you just have to add your
   own `id` property.
 * Load the routing file:
+
    ```yaml
     generator_steps:
         resource: "@PierstovalCharacterManagerBundle/Controller/StepController.php"
         type:     annotation
         prefix:   /character_generator/    # Or any prefix you like, actually
    ```
+
   This routing file is important because it is the place where character generation will be handled.
 * You're set for the base setup!<br>Now you have to create your Step actions, for you to be able to generate a character
 
