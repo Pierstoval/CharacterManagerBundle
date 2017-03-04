@@ -12,7 +12,7 @@
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Pierstoval\Bundle\CharacterManagerBundle\Model\Character as BaseCharacter;
+use Pierstoval\Bundle\CharacterManagerBundle\Entity\Character as BaseCharacter;
 
 /**
  * @ORM\Entity()
@@ -34,15 +34,5 @@ class Character extends BaseCharacter
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return BaseCharacter
-     */
-    public function createFromGenerator(array $data)
-    {
-        // TODO: Implement createFromGenerator() method.
     }
 }

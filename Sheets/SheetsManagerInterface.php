@@ -11,13 +11,13 @@
 
 namespace CorahnRin\CorahnRinBundle\SheetsManagers;
 
-use Pierstoval\Bundle\CharacterManagerBundle\Model\Character;
+use Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface;
 
 interface SheetsManagerInterface
 {
     /**
-     * @param Character $character
-     * @param bool      $printer_friendly
+     * @param CharacterInterface $character
+     * @param bool               $printer_friendly
      */
-    public function generateSheet(Character $character, $printer_friendly = false);
+    public function generateSheet(CharacterInterface $character, $printer_friendly = false);
 }

@@ -9,11 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Pierstoval\Bundle\CharacterManagerBundle\Model;
+namespace Pierstoval\Bundle\CharacterManagerBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface;
 
-abstract class Character
+abstract class Character implements CharacterInterface
 {
     /**
      * @var string
@@ -28,13 +29,6 @@ abstract class Character
      * @ORM\Column(name="name_slug", type="string", length=255, nullable=false)
      */
     protected $nameSlug;
-
-    /**
-     * @param array $data
-     *
-     * @return Character
-     */
-    abstract public function createFromGenerator(array $data);
 
     /**
      * @return string

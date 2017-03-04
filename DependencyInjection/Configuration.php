@@ -11,7 +11,7 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection;
 
-use Pierstoval\Bundle\CharacterManagerBundle\Model\Character;
+use Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -39,10 +39,10 @@ class Configuration implements ConfigurationInterface
                     ->validate()
                         ->always()
                         ->then(function ($value) {
-                            if (!class_exists($value) || !is_a($value, Character::class, true)) {
+                            if (!class_exists($value) || !is_a($value, CharacterInterface::class, true)) {
                                 throw new InvalidConfigurationException(sprintf(
                                     'Character class must be a valid class extending %s. "%s" given.',
-                                    Character::class, $value
+                                    CharacterInterface::class, $value
                                 ));
                             }
                             return $value;
