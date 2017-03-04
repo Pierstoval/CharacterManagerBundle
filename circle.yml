@@ -5,6 +5,7 @@ machine:
 dependencies:
     override:
         - mkdir -p $CIRCLE_TEST_REPORTS/phpunit
+        - composer install --no-interaction
         - 'echo "date.timezone = Europe/Paris" >> /opt/circleci/php/$(phpenv global)/etc/php.ini'
 
 test:
