@@ -1,0 +1,12 @@
+machine:
+    php:
+        version: 5.6.22
+
+dependencies:
+    override:
+        - mkdir -p $CIRCLE_TEST_REPORTS/phpunit
+        - 'echo "date.timezone = Europe/Paris" >> /opt/circleci/php/$(phpenv global)/etc/php.ini'
+
+test:
+    override:
+        - './vendor/bin/phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml'

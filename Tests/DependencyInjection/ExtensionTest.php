@@ -18,15 +18,13 @@ use Symfony\Component\Yaml\Yaml;
 
 /**
  * Test the extension and the compiler pass.
- *
- * @runTestsInSeparateProcesses
  */
 class ExtensionTest extends AbstractTestCase
 {
 
     /**
      * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     * @expectedExceptionMessage Character class must be a valid class extending Pierstoval\Bundle\CharacterManagerBundle\Model\Character. "Inexistent\Class" given.
+     * @expectedExceptionMessage Character class must be a valid class extending Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface. "Inexistent\Class" given.
      */
     public function testInexistentClass()
     {
@@ -62,8 +60,23 @@ class ExtensionTest extends AbstractTestCase
         $ext->load($config, $container);
         $stepsPass->process($container);
 
+        // Sorting the arrays by key name avoid issues with PHP7 and Yaml parsing that sometimes store the keys in the wrong order
+
         foreach ($expected['pierstoval_character_manager'] as $key => $expectedValue) {
-            static::assertSame($expectedValue, $container->getParameter('pierstoval_character_manager.'.$key));
+            if (is_array($expectedValue)) {
+                ksort($expectedValue);
+                if (is_array(current($expectedValue))) {
+                    $expectedValue = array_map('ksort', $expectedValue);
+                }
+            }
+            $parameterValue = $container->getParameter('pierstoval_character_manager.'.$key);
+            if (is_array($parameterValue)) {
+                ksort($parameterValue);
+                if (is_array(current($parameterValue))) {
+                    $parameterValue = array_map('ksort', $parameterValue);
+                }
+            }
+            static::assertSame($expectedValue, $parameterValue);
         }
     }
 

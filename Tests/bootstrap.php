@@ -28,7 +28,7 @@ $fs = new Filesystem();
 
 // Remove build dir files
 if (is_dir(__DIR__.'/../build')) {
-    echo "Removing files in the build directory.\n".__DIR__."\n";
+    echo "Removing files in the build directory.\n";
     try {
         $fs->remove(__DIR__.'/../build');
     } catch (Exception $e) {
@@ -58,13 +58,13 @@ if ($fs->exists($databaseFile)) {
 // Create database
 $command = new CreateDatabaseDoctrineCommand();
 $application->add($command);
-$input = new ArrayInput(['command' => 'doctrine:database:create']);
-$command->run($input, new ConsoleOutput());
+$command->run(new ArrayInput(['command' => 'doctrine:database:create']), new ConsoleOutput());
 
 // Create database schema
 $command = new CreateSchemaDoctrineCommand();
 $application->add($command);
-$input = new ArrayInput(['command' => 'doctrine:schema:create']);
-$command->run($input, new ConsoleOutput());
+$command->run(new ArrayInput(['command' => 'doctrine:schema:create']), new ConsoleOutput());
 
 $kernel->shutdown();
+
+unset($kernel, $application, $command, $fs);
