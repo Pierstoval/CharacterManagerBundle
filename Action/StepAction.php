@@ -141,7 +141,7 @@ abstract class StepAction implements StepActionInterface
             $key = $this->step->getName();
         }
 
-        $character = $this->request->getSession()->get('character', []);
+        $character = $this->request->getSession()->get('character') ?: [];
 
         return array_key_exists($key, $character) ? $character[$key] : null;
     }
