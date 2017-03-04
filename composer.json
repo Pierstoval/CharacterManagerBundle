@@ -1,7 +1,7 @@
 {
     "name": "pierstoval/character_manager",
-    "description": "Skeleton of a character manager",
-    "license": "MPL-2.0",
+    "description": "Skeleton of a character manager for games",
+    "license": "GPL-3.0",
     "type": "symfony-bundle",
     "keywords": ["symfony", "character", "game", "bundle"],
     "homepage": "https://github.com/Pierstoval/CharacterManagerBundle",
@@ -24,7 +24,7 @@
     },
     "authors": [
         {
-            "name": "Alex Rock Ancelet",
+            "name": "Alex \"Pierstoval\" Rock Ancelet",
             "email": "alex.ancelet@gmail.com"
         }
     ]
