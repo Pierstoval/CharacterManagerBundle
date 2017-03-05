@@ -18,7 +18,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^4.0|^5.0,<5.7",
-        "pierstoval/web-test-case": "dev-master",
+        "pierstoval/web-test-case": "^0.1",
         "doctrine/orm": "^2.5",
         "doctrine/doctrine-bundle": "^1.6"
     },
