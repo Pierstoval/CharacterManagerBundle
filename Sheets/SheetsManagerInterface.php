@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace CorahnRin\CorahnRinBundle\SheetsManagers;
+namespace Pierstoval\Bundle\CharacterManagerBundle\SheetsManagers;
 
 use Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface;
 
