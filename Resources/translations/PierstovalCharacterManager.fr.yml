@@ -1,3 +1,5 @@
 pierstoval_character_manager:
     steps:
-        dependency_not_set: 'L''étape "%current_step%" dépend de "%dependency%", mais celle-ci n''a pas été définie...'
+        dependency_not_set: |
+            L'étape "%current_step%" dépend de "%dependency%", mais celle-ci n'est pas présente
+            dans le personnage en cours de création...
