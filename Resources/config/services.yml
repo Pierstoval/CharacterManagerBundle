@@ -1,0 +1,5 @@
+services:
+    pierstoval.character_manager.step_action_resolver:
+        class: Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepActionResolver
+        arguments:
+            - '%pierstoval_character_manager.steps%'

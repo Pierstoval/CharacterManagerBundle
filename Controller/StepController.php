@@ -13,6 +13,7 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Controller;
 
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
+use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepActionResolver;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -118,21 +119,16 @@ class StepController extends Controller
      */
     public function stepAction($requestStep, Request $request)
     {
-        $stepsArray = $this->getParameter('pierstoval_character_manager.steps');
+        /** @var StepActionResolver $resolver */
+        $resolver = $this->get('pierstoval.character_manager.step_action_resolver');
 
-        if (!array_key_exists($requestStep, $stepsArray)) {
+        $steps = $resolver->getSteps();
+        $step = $resolver->resolve($requestStep);
+
+        if (null === $step) {
             throw $this->createNotFoundException('Step not found.');
         }
 
-        /** @var Step[] $steps */
-        $steps = [];
-
-        // Transform array of array in array of value objects.
-        foreach ($stepsArray as $key => $stepArray) {
-            $steps[$key] = Step::createFromData($stepArray);
-        }
-
-        /** @var Step $step */
         $step = $steps[$requestStep];
 
         /** @var Session $session */
