@@ -11,6 +11,7 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Controller;
 
+use Pierstoval\Bundle\CharacterManagerBundle\Action\StepAction;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepActionResolver;
@@ -150,7 +151,14 @@ class StepController extends Controller
         $actionId = $step->getAction();
 
         /** @var StepActionInterface $action */
-        $action = $this->has($actionId) ? $this->get($actionId) : new $actionId();
+        if ($this->has($actionId)) {
+            $action = $this->get($actionId);
+        } else {
+            $action = new $actionId();
+            if ($action instanceof StepAction) {
+                $action->setDefaultServices($this->get('doctrine.orm.entity_manager'), $this->get('templating'), $this->get('router'), $this->get('translator'));
+            }
+        }
 
         // In case of, update action class.
         if (!$action->getCharacterClass()) {

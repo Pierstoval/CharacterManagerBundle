@@ -120,9 +120,6 @@ pierstoval_character_manager:
   more informative than just "Step 1", "Step 2", etc.
 * **Steps order matter**! The step number starts at 1 (not zero) and if you change the order of a step, the whole order
   will change. Keep this in mind when using the `StepAction::goToStep($stepNumber)` method (see below).
-* If you define your steps as services and use the `pierstoval_character_step` tag, your actions **must** extend the
-  abstract `StepAction` class (it has already been said before, but hey, this is important, else your Action class
-  will not be injected the needed services).
 * The `onchange_clear` parameter is only handled in the abstract `StepAction` class, but you can implement it manually
   in your `StepAction::execute()` methods for example.
 
