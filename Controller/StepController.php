@@ -143,7 +143,7 @@ class StepController extends Controller
                     '%dependency%' => $id,
                 ], 'PierstovalCharacterManager');
                 $session->getFlashBag()->add('error', $msg);
-                $this->redirectToRoute('pierstoval_character_generator_index');
+                return $this->redirectToRoute('pierstoval_character_generator_index');
             }
         }
 
