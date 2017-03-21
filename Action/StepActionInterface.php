@@ -41,6 +41,11 @@ interface StepActionInterface
     public function setSteps(array $steps);
 
     /**
+     * @return Step[]
+     */
+    public function getSteps();
+
+    /**
      * Current Request object that will be used in the Step action.
      *
      * @param Request $request
