@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <alex.ancelet@gmail.com>
