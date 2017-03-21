@@ -30,6 +30,10 @@ class StubStep implements StepActionInterface
     {
     }
 
+    public function getSteps()
+    {
+    }
+
     public function setRequest(Request $request)
     {
     }
