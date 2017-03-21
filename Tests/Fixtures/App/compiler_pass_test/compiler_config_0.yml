@@ -8,6 +8,6 @@ config:
         depends_on:     []
         onchange_clear: []
         step:           1
-step_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\DefaultStep
+step_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\DefaultTestStep
 expected_exception: Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
 expected_exception_message: Step key should not be numeric but contain the step name. Maybe the extension was not processed properly?

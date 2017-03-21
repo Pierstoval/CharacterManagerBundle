@@ -1,3 +1,7 @@
-# Base class test
-pierstoval_character_manager:
-    character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\Character
+input:
+    pierstoval_character_manager:
+        character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\Character
+
+output:
+    pierstoval_character_manager:
+        character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\Character

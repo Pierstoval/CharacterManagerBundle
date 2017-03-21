@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <alex.ancelet@gmail.com>
@@ -14,7 +14,7 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Act
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepAction;
 use Symfony\Component\HttpFoundation\Response;
 
-class DefaultStep extends StepAction
+class DefaultTestStep extends StepAction
 {
     /**
      * {@inheritdoc}

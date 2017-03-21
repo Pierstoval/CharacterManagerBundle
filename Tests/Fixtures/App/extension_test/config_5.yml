@@ -1,11 +1,32 @@
+input:
+    pierstoval_character_manager:
+        character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\Character
+        steps:
+            step_1:
+                action: steps.default
 
-pierstoval_character_manager:
-    character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\Character
-    steps:
-        step_1:
-            action: steps.default
+            step_2:
+                action: steps.default
+                depends_on:
+                    - step_1
 
-        step_2:
-            action: steps.default
-            depends_on:
-                - step_1
+output:
+    pierstoval_character_manager:
+        character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\Character
+        steps:
+            step_1:
+                action: steps.default
+                name: 'step_1'
+                label: 'Step 1'
+                depends_on: []
+                onchange_clear: []
+                step: 1
+
+            step_2:
+                action: steps.default
+                name: 'step_2'
+                label: 'Step 2'
+                depends_on:
+                    - step_1
+                onchange_clear: []
+                step: 2

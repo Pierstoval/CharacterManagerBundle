@@ -11,7 +11,7 @@
 
 use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler\StepsPass;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\AbstractTestCase;
-use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\DefaultStep;
+use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\DefaultTestStep;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\StubStep;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -25,7 +25,7 @@ class StepsPassTest extends AbstractTestCase
     /**
      * @dataProvider provideNonWorkingConfigurations
      */
-    public function testCompilerPassShouldNotWorkIfExtensionNotProcessed(array $config, $expectedException, $expectedExceptionMessage, $stepClass)
+    public function test compiler pass should not work if extension not processed(array $config, $expectedException, $expectedExceptionMessage, $stepClass)
     {
         $stepsPass = new StepsPass();
 
@@ -43,37 +43,14 @@ class StepsPassTest extends AbstractTestCase
         $stepsPass->process($container);
     }
 
-    public function provideNonWorkingConfigurations()
-    {
-        $dir = __DIR__.'/../Fixtures/App/compiler_pass_test/';
-
-        $configFiles = glob($dir.'compiler_config_*.yml');
-
-        sort($configFiles);
-
-        $tests = [];
-
-        foreach ($configFiles as $k => $file) {
-            $config = Yaml::parse(file_get_contents($file));
-            $tests[] = [
-                $config['config'],
-                $config['expected_exception'],
-                $config['expected_exception_message'],
-                $config['step_class'],
-            ];
-        }
-
-        return $tests;
-    }
-
-    public function testAbstractClassServiceDefinitions()
+    public function test abstract class service definitions()
     {
         $stepsPass = new StepsPass();
 
         $container = new ContainerBuilder();
         $container
             ->register('steps.default')
-            ->setClass(DefaultStep::class)
+            ->setClass(DefaultTestStep::class)
             ->addTag('pierstoval_character_step')
         ;
 
@@ -123,7 +100,30 @@ class StepsPassTest extends AbstractTestCase
         static::assertCount(0, $validCallsReferences);
     }
 
-    public function testStubClassServiceDefinitions()
+    public function provideNonWorkingConfigurations()
+    {
+        $dir = __DIR__.'/../Fixtures/App/compiler_pass_test/';
+
+        $configFiles = glob($dir.'compiler_config_*.yml');
+
+        sort($configFiles);
+
+        $tests = [];
+
+        foreach ($configFiles as $k => $file) {
+            $config = Yaml::parse(file_get_contents($file));
+            $tests[basename($file)] = [
+                $config['config'],
+                $config['expected_exception'],
+                $config['expected_exception_message'],
+                $config['step_class'],
+            ];
+        }
+
+        return $tests;
+    }
+
+    public function test stub class service definitions()
     {
         $stepsPass = new StepsPass();
 

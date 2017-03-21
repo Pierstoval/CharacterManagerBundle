@@ -12,7 +12,7 @@
 use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler\StepsPass;
 use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\PierstovalCharacterManagerExtension;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\AbstractTestCase;
-use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\DefaultStep;
+use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\DefaultTestStep;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Yaml\Yaml;
 
@@ -26,7 +26,7 @@ class ExtensionTest extends AbstractTestCase
      * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
      * @expectedExceptionMessage Character class must be a valid class extending Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface. "Inexistent\Class" given.
      */
-    public function testInexistentClass()
+    public function test inexistent class()
     {
         $builder = new ContainerBuilder();
 
@@ -45,7 +45,7 @@ class ExtensionTest extends AbstractTestCase
      * @param $config
      * @param $expected
      */
-    public function testYamlConfiguration($config, $expected)
+    public function test yaml configurations($config, $expected)
     {
         $container = new ContainerBuilder();
         $ext       = new PierstovalCharacterManagerExtension();
@@ -54,7 +54,7 @@ class ExtensionTest extends AbstractTestCase
         // Add the default step service
         $container
             ->register('steps.default')
-            ->setClass(DefaultStep::class)
+            ->setClass(DefaultTestStep::class)
         ;
 
         $ext->load($config, $container);
@@ -90,17 +90,16 @@ class ExtensionTest extends AbstractTestCase
         $dir = __DIR__.'/../Fixtures/App/extension_test/';
 
         $configFiles = glob($dir.'config_*.yml');
-        $resultFiles = glob($dir.'result_*.yml');
 
         sort($configFiles);
-        sort($resultFiles);
 
         $tests = [];
 
         foreach ($configFiles as $k => $file) {
-            $tests[] = [
-                Yaml::parse(file_get_contents($file)),
-                Yaml::parse(file_get_contents($resultFiles[$k])),
+            $content = Yaml::parse(file_get_contents($file));
+            $tests[basename($file)] = [
+                $content['input'],
+                $content['output'],
             ];
         }
 
