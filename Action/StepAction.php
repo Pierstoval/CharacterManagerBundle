@@ -111,7 +111,24 @@ abstract class StepAction implements StepActionInterface
      */
     public function setSteps(array $steps)
     {
+        foreach ($steps as $step) {
+            if (!$step instanceof Step) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Expected Step, got %s',
+                    is_object($step) ? get_class($step) : gettype($step)
+                ));
+            }
+        }
+
         $this->steps = $steps;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSteps()
+    {
+        return $this->steps;
     }
 
     /**
