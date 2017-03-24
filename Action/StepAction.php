@@ -12,11 +12,13 @@
 namespace Pierstoval\Bundle\CharacterManagerBundle\Action;
 
 use Doctrine\ORM\EntityManager;
+use Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -42,7 +44,7 @@ abstract class StepAction implements StepActionInterface
     /**
      * @var Step[]
      */
-    protected $steps;
+    protected $steps = [];
 
     /**
      * @var string
@@ -69,16 +71,34 @@ abstract class StepAction implements StepActionInterface
     protected $translator;
 
     /**
-     * @param EntityManager       $em
-     * @param TwigEngine          $templating
-     * @param RouterInterface     $router
+     * @param RouterInterface $router
+     */
+    public function setRouter(RouterInterface $router)
+    {
+        $this->router = $router;
+    }
+
+    /**
+     * @param EntityManager $em
+     */
+    public function setEntityManager(EntityManager $em)
+    {
+        $this->em = $em;
+    }
+
+    /**
+     * @param TwigEngine $templating
+     */
+    public function setTemplating(TwigEngine $templating)
+    {
+        $this->templating = $templating;
+    }
+
+    /**
      * @param TranslatorInterface $translator
      */
-    public function setDefaultServices(EntityManager $em, TwigEngine $templating, RouterInterface $router, TranslatorInterface $translator)
+    public function setTranslator(TranslatorInterface $translator)
     {
-        $this->em         = $em;
-        $this->templating = $templating;
-        $this->router     = $router;
         $this->translator = $translator;
     }
 
@@ -87,6 +107,13 @@ abstract class StepAction implements StepActionInterface
      */
     public function setCharacterClass($class)
     {
+        if (!class_exists($class) || !is_a($class, CharacterInterface::class, true)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Step action must be a valid class implementing %s. "%s" given.',
+                CharacterInterface::class, class_exists($class) ? $class : gettype($class)
+            ));
+        }
+
         $this->class = $class;
     }
 
@@ -114,8 +141,8 @@ abstract class StepAction implements StepActionInterface
         foreach ($steps as $step) {
             if (!$step instanceof Step) {
                 throw new \InvalidArgumentException(sprintf(
-                    'Expected Step, got %s',
-                    is_object($step) ? get_class($step) : gettype($step)
+                    'Expected %s instance, "%s" given.',
+                    StepActionInterface::class, is_object($step) ? get_class($step) : gettype($step)
                 ));
             }
         }
@@ -144,11 +171,7 @@ abstract class StepAction implements StepActionInterface
      */
     public function getCurrentCharacter()
     {
-        if (!$this->request) {
-            throw new \InvalidArgumentException('Request is not set in step action.');
-        }
-
-        return $this->request->getSession()->get('character');
+        return $this->getSession()->get('character', []);
     }
 
     /**
@@ -157,10 +180,16 @@ abstract class StepAction implements StepActionInterface
     public function getCharacterProperty($key = null)
     {
         if (null === $key) {
+            if (!$this->step) {
+                throw new \InvalidArgumentException(sprintf(
+                    'To get current step you need to use %s:%s method and inject a Step instance.',
+                    __CLASS__, 'setStep'
+                ));
+            }
             $key = $this->step->getName();
         }
 
-        $character = $this->request->getSession()->get('character') ?: [];
+        $character = $this->getCurrentCharacter();
 
         return array_key_exists($key, $character) ? $character[$key] : null;
     }
@@ -182,13 +211,13 @@ abstract class StepAction implements StepActionInterface
      */
     protected function goToStep($stepNumber)
     {
-        if (!$this->request) {
-            throw new \InvalidArgumentException('Request is not set in step action.');
+        if (!$this->router) {
+            throw new \InvalidArgumentException('Cannot use '.__METHOD__.' if no router is injected in StepAction.');
         }
 
         foreach ($this->steps as $step) {
             if ($step->getStep() === $stepNumber) {
-                $this->request->getSession()->set('step', $stepNumber);
+                $this->getSession()->set('step', $stepNumber);
 
                 return new RedirectResponse($this->router->generate('pierstoval_character_generator_step', ['requestStep' => $step->getName()]));
             }
@@ -202,11 +231,7 @@ abstract class StepAction implements StepActionInterface
      */
     protected function updateCharacterStep($value)
     {
-        if (!$this->request) {
-            throw new \InvalidArgumentException('Request is not set in step action.');
-        }
-
-        $character = $this->request->getSession()->get('character', []);
+        $character = $this->getCurrentCharacter();
 
         $character[$this->step->getName()] = $value;
 
@@ -214,8 +239,8 @@ abstract class StepAction implements StepActionInterface
             unset($character[$stepToDisable]);
         }
 
-        $this->request->getSession()->set('step', $this->step->getStep());
-        $this->request->getSession()->set('character', $character);
+        $this->getSession()->set('step', $this->step->getStep());
+        $this->getSession()->set('character', $character);
     }
 
     /**
@@ -227,25 +252,21 @@ abstract class StepAction implements StepActionInterface
      *
      * @return $this
      */
-    public function flashMessage($msg, $type = null, array $msgParams = [])
+    protected function flashMessage($msg, $type = null, array $msgParams = [])
     {
         // Allows not knowing about the default type in the method signature.
         if (null === $type) {
             $type = 'error';
         }
 
-        if (!$this->request) {
-            throw new \InvalidArgumentException('Request is not set in step action.');
+        if ($this->translator) {
+            $msg = $this->translator->trans($msg, $msgParams, static::$translationDomain);
+        } elseif (count($msgParams)) {
+            $msg = strtr($msg, $msgParams);
         }
-
-        if (!$this->translator) {
-            throw new \InvalidArgumentException('Translator is not set in step action.');
-        }
-
-        $msg = $this->translator->trans($msg, $msgParams, static::$translationDomain);
 
         /** @var Session $session */
-        $session = $this->request->getSession();
+        $session = $this->getSession();
 
         $flashbag = $session->getFlashBag();
 
@@ -257,5 +278,29 @@ abstract class StepAction implements StepActionInterface
         $flashbag->set($type, array_unique($existingMessages));
 
         return $this;
+    }
+
+    /**
+     * @return Request
+     */
+    protected function getRequest()
+    {
+        if (!$this->request) {
+            throw new \InvalidArgumentException('Request is not set in step action.');
+        }
+
+        return $this->request;
+    }
+
+    /**
+     * @return Session|SessionInterface
+     */
+    protected function getSession()
+    {
+        if (!$session = $this->getRequest()->getSession()) {
+            throw new \InvalidArgumentException('No session available in current request.');
+        }
+
+        return $session;
     }
 }

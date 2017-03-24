@@ -126,12 +126,18 @@ class StepsPass implements CompilerPassInterface
 
             // If class extends the abstract one, we inject some cool services.
             if (is_a($class, StepAction::class, true)) {
-                $definition->addMethodCall('setDefaultServices', [
-                    new Reference('doctrine.orm.entity_manager'),
-                    new Reference('templating'),
-                    new Reference('router'),
-                    new Reference('translator'),
-                ]);
+                if ($container->has('doctrine.orm.entity_manager')) {
+                    $definition->addMethodCall('doctrine.orm.entity_manager', [new Reference('doctrine.orm.entity_manager')]);
+                }
+                if ($container->has('templating')) {
+                    $definition->addMethodCall('templating', [new Reference('templating')]);
+                }
+                if ($container->has('router')) {
+                    $definition->addMethodCall('router', [new Reference('router')]);
+                }
+                if ($container->has('translator')) {
+                    $definition->addMethodCall('translator', [new Reference('translator')]);
+                }
             }
 
             // Make sure character class is injected into service.

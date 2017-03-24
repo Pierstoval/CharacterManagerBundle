@@ -156,7 +156,18 @@ class StepController extends Controller
         } else {
             $action = new $actionId();
             if ($action instanceof StepAction) {
-                $action->setDefaultServices($this->get('doctrine.orm.entity_manager'), $this->get('templating'), $this->get('router'), $this->get('translator'));
+                if (!$this->has('translator')) {
+                    $action->setTranslator($this->get('translator'));
+                }
+                if (!$this->has('doctrine.orm.entity_manager')) {
+                    $action->setEntityManager($this->get('doctrine.orm.entity_manager'));
+                }
+                if (!$this->has('router')) {
+                    $action->setRouter($this->get('router'));
+                }
+                if (!$this->has('templating')) {
+                    $action->setTemplating($this->get('templating'));
+                }
             }
         }
 
