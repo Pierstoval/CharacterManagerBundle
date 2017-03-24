@@ -1,7 +1,7 @@
 input:
     pierstoval_character_manager:
-        character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\Character
+        character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\CharacterStub
 
 output:
     pierstoval_character_manager:
-        character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\Character
+        character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\CharacterStub

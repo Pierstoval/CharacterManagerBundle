@@ -32,7 +32,23 @@ class StepActionResolverTest extends \PHPUnit_Framework_TestCase
 
         $step = $resolver->resolve('step_1');
 
-        static::assertEquals(StubStep::class, $step->getAction());
+        static::assertSame(StubStep::class, $step->getAction());
+    }
+
+    public function test resolve inexistent step should return null()
+    {
+        $resolver = new StepActionResolver([
+            'step_1' => [
+                'action' => StubStep::class,
+                'name' =>  'step_1',
+                'label' =>  'Step 1',
+                'depends_on' =>  [],
+                'onchange_clear' =>  [],
+                'step' =>  1,
+            ],
+        ]);
+
+        static::assertNull($resolver->resolve('inexistent_step'));
     }
 
     /**

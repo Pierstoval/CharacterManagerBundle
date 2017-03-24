@@ -42,8 +42,9 @@
             <directory suffix=".php">./Action</directory>
             <directory suffix=".php">./Controller</directory>
             <directory suffix=".php">./DependencyInjection</directory>
+            <directory suffix=".php">./Resolver</directory>
             <directory suffix=".php">./Resources</directory>
-            <directory suffix=".php">./Sheets</directory>
+            <directory suffix=".php">./SheetsManagers</directory>
             <exclude>
                 <directory>./build</directory>
                 <directory>./Tests</directory>

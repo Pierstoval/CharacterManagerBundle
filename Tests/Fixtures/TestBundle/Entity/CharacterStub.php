@@ -18,7 +18,7 @@ use Pierstoval\Bundle\CharacterManagerBundle\Entity\Character as BaseCharacter;
  * @ORM\Entity()
  * @ORM\Table(name="pierstoval_character_manager")
  */
-class Character extends BaseCharacter
+class CharacterStub extends BaseCharacter
 {
     /**
      * @var int

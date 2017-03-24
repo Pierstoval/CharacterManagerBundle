@@ -14,7 +14,6 @@ use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\AbstractTestCase;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\DefaultTestStep;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\StubStep;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -54,6 +53,11 @@ class StepsPassTest extends AbstractTestCase
             ->addTag('pierstoval_character_step')
         ;
 
+        $container->register('doctrine.orm.entity_manager');
+        $container->register('templating');
+        $container->register('router');
+        $container->register('translator');
+
         // Empty config here, we just test definition tags
         $container->setParameter('pierstoval_character_manager.steps', []);
         $container->setParameter('pierstoval_character_manager.character_class', 'test_abstract');
@@ -61,43 +65,16 @@ class StepsPassTest extends AbstractTestCase
         $stepsPass->process($container);
 
         // Test references calls are correct.
-        // First (index 0) should be setDefaultServices with 4 services as arguments.
-        // Second (index 1) should be setCharacterClass with one string argument.
-
         $definition = $container->getDefinition('steps.default');
 
         $calls = $definition->getMethodCalls();
 
-        static::assertCount(2, $calls);
-
-        // Test index 1 (faster)
-        static::assertSame(['setCharacterClass', ['test_abstract']], $calls[1]);
-
-        $validCallsReferences = [
-            'doctrine.orm.entity_manager',
-            'templating',
-            'router',
-            'translator',
-        ];
-
-        static::assertSame('setDefaultServices', $calls[0][0]);
-        static::assertCount(4, $calls[0][1]);
-
-        /** @var Reference $callArgument */
-        foreach ($calls[0][1] as $callArgument) {
-            static::assertInstanceOf(Reference::class, $callArgument);
-            $referenceId = (string) $callArgument;
-
-            // The service id should exist in the valid ones set above.
-            $indexOfReference = array_search($referenceId, $validCallsReferences, true);
-            static::assertNotFalse($indexOfReference);
-
-            // Remove any correctly asserted so we can check they were all in the list.
-            unset($validCallsReferences[$indexOfReference]);
-        }
-
-        // There should be no more valid reference as they should've been unset by foreach loop.
-        static::assertCount(0, $validCallsReferences);
+        static::assertCount(5, $calls);
+        static::assertSame('doctrine.orm.entity_manager', $calls[0][0]);
+        static::assertSame('templating', $calls[1][0]);
+        static::assertSame('router', $calls[2][0]);
+        static::assertSame('translator', $calls[3][0]);
+        static::assertSame(['setCharacterClass', ['test_abstract']], $calls[4]);
     }
 
     public function provideNonWorkingConfigurations()
