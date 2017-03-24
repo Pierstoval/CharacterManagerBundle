@@ -70,10 +70,10 @@ class StepsPassTest extends AbstractTestCase
         $calls = $definition->getMethodCalls();
 
         static::assertCount(5, $calls);
-        static::assertSame('doctrine.orm.entity_manager', $calls[0][0]);
-        static::assertSame('templating', $calls[1][0]);
-        static::assertSame('router', $calls[2][0]);
-        static::assertSame('translator', $calls[3][0]);
+        static::assertSame('setEntityManager', $calls[0][0]);
+        static::assertSame('setTemplating', $calls[1][0]);
+        static::assertSame('setRouter', $calls[2][0]);
+        static::assertSame('setTranslator', $calls[3][0]);
         static::assertSame(['setCharacterClass', ['test_abstract']], $calls[4]);
     }
 
