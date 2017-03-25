@@ -15,7 +15,6 @@ use Pierstoval\Bundle\CharacterManagerBundle\Action\StepAction;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepActionResolver;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,8 +24,6 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class StepController extends Controller
 {
     /**
-     * @Route("/generate", name="pierstoval_character_generator_index")
-     *
      * @return RedirectResponse
      */
     public function indexAction(Request $request)
@@ -58,8 +55,6 @@ class StepController extends Controller
     }
 
     /**
-     * @Route("/reset/", name="pierstoval_character_generator_reset")
-     *
      * @param Request $request
      *
      * @return RedirectResponse
@@ -76,8 +71,6 @@ class StepController extends Controller
     }
 
     /**
-     * @Route("/reset/{requestStep}", name="pierstoval_character_generator_reset_step")
-     *
      * @param string $requestStep
      * @param Request $request
      *
@@ -111,8 +104,6 @@ class StepController extends Controller
     }
 
     /**
-     * @Route("/generate/{requestStep}", requirements={"step" = "[\w-]+"}, name="pierstoval_character_generator_step")
-     *
      * @param string  $requestStep
      * @param Request $request
      *

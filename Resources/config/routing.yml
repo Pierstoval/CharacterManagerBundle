@@ -1,0 +1,21 @@
+pierstoval_character_generator_index:
+    path: '/generate'
+    defaults:
+        _controller: 'PierstovalCharacterManagerBundle:Step:index'
+
+pierstoval_character_generator_reset:
+    path: '/reset/'
+    defaults:
+        _controller: 'PierstovalCharacterManagerBundle:Step:reset'
+
+pierstoval_character_generator_reset_step:
+    path: '/reset/{requestStep}'
+    defaults:
+        _controller: 'PierstovalCharacterManagerBundle:Step:resetStep'
+
+pierstoval_character_generator_step:
+    path: '/generate/{requestStep}'
+    defaults:
+        _controller: 'PierstovalCharacterManagerBundle:Step:step'
+    requirements:
+        'step': '[\w-]+'
