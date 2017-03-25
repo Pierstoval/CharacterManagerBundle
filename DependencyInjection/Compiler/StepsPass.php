@@ -152,6 +152,8 @@ class StepsPass implements CompilerPassInterface
     {
         $definitions = $container->findTaggedServiceIds(static::ACTION_TAG_NAME);
 
+        $registryDefinition = $container->getDefinition('pierstoval.character_manager.actions_registry');
+
         /** @var array[] $finalSteps */
         $finalSteps = $container->getParameter('pierstoval_character_manager.steps');
 
@@ -193,6 +195,9 @@ class StepsPass implements CompilerPassInterface
 
             // Make sure all other steps are injected in the service
             $definition->addMethodCall('setSteps', [new Expression("service('pierstoval.character_manager.step_action_resolver').getSteps()")]);
+
+            // Add action to registry
+            $registryDefinition->addMethodCall('addStepAction', [new Reference($serviceId)]);
         }
     }
 
