@@ -136,6 +136,14 @@ abstract class StepAction implements StepActionInterface
     /**
      * {@inheritdoc}
      */
+    public function getStep()
+    {
+        return $this->step;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setSteps(array $steps)
     {
         foreach ($steps as $step) {

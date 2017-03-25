@@ -41,6 +41,11 @@ interface StepActionInterface
     public function setSteps(array $steps);
 
     /**
+     * @return Step
+     */
+    public function getStep();
+
+    /**
      * @return Step[]
      */
     public function getSteps();
