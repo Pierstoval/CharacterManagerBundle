@@ -14,12 +14,13 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler;
 use Doctrine\Common\Inflector\Inflector;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepAction;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
-use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\ExpressionLanguage\Expression;
 
 /**
  * Check that every action class extends the right action interface.
@@ -130,6 +131,13 @@ class StepsPass implements CompilerPassInterface
                         'step' => $step['step'],
                     ]);
                 }
+            } else {
+                $definition = new Definition($action);
+                $definition->addTag(static::ACTION_TAG_NAME, [
+                    'step' => $step['step'],
+                ]);
+                $serviceId = 'pierstoval_character_manager.actions.'.$step['name'];
+                $container->register($serviceId, $definition);
             }
         }
 
@@ -150,7 +158,7 @@ class StepsPass implements CompilerPassInterface
         // Get all steps by their action name
         $reorderedByAction = [];
         foreach ($finalSteps as $step) {
-            $reorderedByAction[$step['action']] = $step;
+            $reorderedByAction[$step['action']]  = $step;
         }
 
         foreach ($definitions as $serviceId => $params) {
@@ -177,10 +185,14 @@ class StepsPass implements CompilerPassInterface
             // Make sure character class is injected into service.
             $definition->addMethodCall('setCharacterClass', [$container->getParameter('pierstoval_character_manager.character_class')]);
 
+            // Make sure corresponding step is injected in service
             if (array_key_exists($serviceId, $reorderedByAction)) {
                 $step = $reorderedByAction[$serviceId];
-                $definition->addMethodCall('setStep', [new Step($step['step'], $step['name'], $step['action'], $step['label'], $step['onchange_clear'], $step['depends_on'])]);
+                $definition->addMethodCall('setStep', [new Expression("service('pierstoval.character_manager.step_action_resolver').resolve('".$step['name']."')")]);
             }
+
+            // Make sure all other steps are injected in the service
+            $definition->addMethodCall('setSteps', [new Expression("service('pierstoval.character_manager.step_action_resolver').getSteps()")]);
         }
     }
 
