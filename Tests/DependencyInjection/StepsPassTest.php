@@ -10,6 +10,7 @@
  */
 
 use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler\StepsPass;
+use Pierstoval\Bundle\CharacterManagerBundle\Tests\Action\Stubs\ActionStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\AbstractTestCase;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\DefaultTestStep;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\StubStep;
@@ -26,18 +27,17 @@ class StepsPassTest extends AbstractTestCase
      */
     public function test compiler pass should not work if extension not processed(array $config, $expectedException, $expectedExceptionMessage, $stepClass)
     {
+        $this->expectException($expectedException);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+
         $stepsPass = new StepsPass();
 
         $container = new ContainerBuilder();
         $container
             ->register('steps.default')
-            ->setClass($stepClass)
-        ;
+            ->setClass($stepClass);
 
         $container->setParameter('pierstoval_character_manager.steps', $config);
-
-        $this->expectException($expectedException);
-        $this->expectExceptionMessage($expectedExceptionMessage);
 
         $stepsPass->process($container);
     }
@@ -50,8 +50,7 @@ class StepsPassTest extends AbstractTestCase
         $container
             ->register('steps.default')
             ->setClass(DefaultTestStep::class)
-            ->addTag('pierstoval_character_step')
-        ;
+            ->addTag('pierstoval_character_step');
 
         $container->register('doctrine.orm.entity_manager');
         $container->register('templating');
@@ -79,9 +78,9 @@ class StepsPassTest extends AbstractTestCase
 
     public function provideNonWorkingConfigurations()
     {
-        $dir = __DIR__.'/../Fixtures/App/compiler_pass_test/';
+        $dir = __DIR__ . '/../Fixtures/App/compiler_pass_test/';
 
-        $configFiles = glob($dir.'compiler_config_*.yml');
+        $configFiles = glob($dir . 'compiler_config_*.yml');
 
         sort($configFiles);
 
@@ -108,8 +107,7 @@ class StepsPassTest extends AbstractTestCase
         $container
             ->register('steps.default')
             ->setClass(StubStep::class)
-            ->addTag('pierstoval_character_step')
-        ;
+            ->addTag('pierstoval_character_step');
 
         // Empty config here, we just test definition tags
         $container->setParameter('pierstoval_character_manager.steps', []);
@@ -123,5 +121,35 @@ class StepsPassTest extends AbstractTestCase
 
         static::assertCount(1, $calls);
         static::assertSame(['setCharacterClass', ['test_stub']], $calls[0]);
+    }
+
+    public function test non tagged services are automatically tagged()
+    {
+        $stepsPass = new StepsPass();
+
+        $container = new ContainerBuilder();
+
+        $container->setParameter('pierstoval_character_manager.character_class', ActionStub::class);
+
+        // Default service without the tag
+        $container->register('steps.default')->setClass(StubStep::class);
+
+        // Need fully operational config here, processed by the extension
+        $container->setParameter('pierstoval_character_manager.steps', [
+            'step_1' => [
+                'action'         => 'steps.default',
+                'name'           => 'step_1',
+                'label'          => 'Step 1',
+                'depends_on'     => [],
+                'onchange_clear' => [],
+                'step'           => 1,
+            ],
+        ]);
+
+        $stepsPass->process($container);
+
+        $definition = $container->getDefinition('steps.default');
+
+        static::assertTrue($definition->hasTag('pierstoval_character_step'));
     }
 }

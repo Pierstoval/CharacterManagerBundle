@@ -14,6 +14,7 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler;
 use Doctrine\Common\Inflector\Inflector;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepAction;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
+use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -27,12 +28,15 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class StepsPass implements CompilerPassInterface
 {
+    const ACTION_TAG_NAME = 'pierstoval_character_step';
+
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {
         $this->validateSteps($container);
+        $this->processConfiguredServices($container);
         $this->processTaggedServices($container);
     }
 
@@ -40,8 +44,6 @@ class StepsPass implements CompilerPassInterface
      * Validate steps defined in configuration.
      *
      * @param ContainerBuilder $container
-     *
-     * @return array
      */
     private function validateSteps(ContainerBuilder $container)
     {
@@ -54,9 +56,9 @@ class StepsPass implements CompilerPassInterface
         foreach ($steps as $id => $step) {
             if (is_numeric($id)) {
                 throw new InvalidConfigurationException('Step key should not be numeric but contain the step name. Maybe the extension was not processed properly?');
-            } else {
-                $name = $step['name'] = $id;
             }
+
+            $name = $step['name'] = $id;
 
             if (!$step['label']) {
                 $step['label'] = $this->generateStepLabel($step['name']);
@@ -106,8 +108,31 @@ class StepsPass implements CompilerPassInterface
 
         // And update all steps.
         $container->setParameter('pierstoval_character_manager.steps', $steps);
+    }
 
-        return $steps;
+    /**
+     * Automatically adds tag for services on which tag is not configured.
+     *
+     * @param ContainerBuilder $container
+     */
+    private function processConfiguredServices(ContainerBuilder $container)
+    {
+        /** @var array[] $finalSteps */
+        $finalSteps = $container->getParameter('pierstoval_character_manager.steps');
+
+        foreach ($finalSteps as $step) {
+            $action = $step['action'];
+            if ($container->has($action)) {
+                /** @var  $definition */
+                $definition = $container->getDefinition($action);
+                if (!$definition->hasTag(static::ACTION_TAG_NAME)) {
+                    $definition->addTag(static::ACTION_TAG_NAME, [
+                        'step' => $step['step'],
+                    ]);
+                }
+            }
+        }
+
     }
 
     /**
@@ -117,7 +142,16 @@ class StepsPass implements CompilerPassInterface
      */
     private function processTaggedServices(ContainerBuilder $container)
     {
-        $definitions = $container->findTaggedServiceIds('pierstoval_character_step');
+        $definitions = $container->findTaggedServiceIds(static::ACTION_TAG_NAME);
+
+        /** @var array[] $finalSteps */
+        $finalSteps = $container->getParameter('pierstoval_character_manager.steps');
+
+        // Get all steps by their action name
+        $reorderedByAction = [];
+        foreach ($finalSteps as $step) {
+            $reorderedByAction[$step['action']] = $step;
+        }
 
         foreach ($definitions as $serviceId => $params) {
             $definition = $container->getDefinition($serviceId);
@@ -142,6 +176,11 @@ class StepsPass implements CompilerPassInterface
 
             // Make sure character class is injected into service.
             $definition->addMethodCall('setCharacterClass', [$container->getParameter('pierstoval_character_manager.character_class')]);
+
+            if (array_key_exists($serviceId, $reorderedByAction)) {
+                $step = $reorderedByAction[$serviceId];
+                $definition->addMethodCall('setStep', [new Step($step['step'], $step['name'], $step['action'], $step['label'], $step['onchange_clear'], $step['depends_on'])]);
+            }
         }
     }
 
