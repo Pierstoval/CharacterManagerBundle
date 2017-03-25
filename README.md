@@ -1,4 +1,3 @@
-[![CircleCI](https://circleci.com/gh/Pierstoval/CharacterManagerBundle.svg?style=svg)](https://circleci.com/gh/Pierstoval/CharacterManagerBundle)
 [![Build Status](https://travis-ci.org/Pierstoval/CharacterManagerBundle.svg?branch=master)](https://travis-ci.org/Pierstoval/CharacterManagerBundle)
 [![Coverage Status](https://coveralls.io/repos/github/Pierstoval/CharacterManagerBundle/badge.svg?branch=master)](https://coveralls.io/github/Pierstoval/CharacterManagerBundle?branch=master)
 
