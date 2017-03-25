@@ -50,8 +50,10 @@ class StepsPassTest extends AbstractTestCase
         $container
             ->register('steps.default')
             ->setClass(DefaultTestStep::class)
-            ->addTag('pierstoval_character_step');
+            ->addTag('pierstoval_character_step')
+        ;
 
+        $container->register('pierstoval.character_manager.actions_registry');
         $container->register('doctrine.orm.entity_manager');
         $container->register('templating');
         $container->register('router');
@@ -68,7 +70,7 @@ class StepsPassTest extends AbstractTestCase
 
         $calls = $definition->getMethodCalls();
 
-        static::assertCount(5, $calls);
+        static::assertCount(6, $calls);
         static::assertSame('setEntityManager', $calls[0][0]);
         static::assertSame('setTemplating', $calls[1][0]);
         static::assertSame('setRouter', $calls[2][0]);
@@ -107,7 +109,10 @@ class StepsPassTest extends AbstractTestCase
         $container
             ->register('steps.default')
             ->setClass(StubStep::class)
-            ->addTag('pierstoval_character_step');
+            ->addTag('pierstoval_character_step')
+        ;
+
+        $container->register('pierstoval.character_manager.actions_registry');
 
         // Empty config here, we just test definition tags
         $container->setParameter('pierstoval_character_manager.steps', []);
@@ -119,7 +124,7 @@ class StepsPassTest extends AbstractTestCase
 
         $calls = $definition->getMethodCalls();
 
-        static::assertCount(1, $calls);
+        static::assertCount(2, $calls);
         static::assertSame(['setCharacterClass', ['test_stub']], $calls[0]);
     }
 
@@ -133,6 +138,7 @@ class StepsPassTest extends AbstractTestCase
 
         // Default service without the tag
         $container->register('steps.default')->setClass(StubStep::class);
+        $container->register('pierstoval.character_manager.actions_registry');
 
         // Need fully operational config here, processed by the extension
         $container->setParameter('pierstoval_character_manager.steps', [

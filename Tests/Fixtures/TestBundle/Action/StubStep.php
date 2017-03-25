@@ -53,4 +53,8 @@ class StubStep implements StepActionInterface
     public function getCharacterClass()
     {
     }
+
+    public function getStep()
+    {
+    }
 }
