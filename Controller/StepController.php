@@ -11,47 +11,80 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Controller;
 
-use Pierstoval\Bundle\CharacterManagerBundle\Action\StepAction;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
+use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepActionResolver;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
-class StepController extends Controller
+class StepController
 {
+    /**
+     * @var Step[]
+     */
+    private $steps;
+
+    /**
+     * @var StepActionResolver
+     */
+    private $actionResolver;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+    /**
+     * @var ActionsRegistry
+     */
+    private $actionsRegistry;
+
+    public function __construct(StepActionResolver $actionResolver, TranslatorInterface $translator, RouterInterface $router, ActionsRegistry $actionsRegistry)
+    {
+        $this->steps = $actionResolver->getSteps();
+        $this->actionResolver = $actionResolver;
+        $this->translator = $translator;
+        $this->router = $router;
+        $this->actionsRegistry = $actionsRegistry;
+    }
+
     /**
      * @return RedirectResponse
      */
     public function indexAction(Request $request)
     {
-        $steps = $this->getParameter('pierstoval_character_manager.steps');
-
         $stepName = null;
 
         $stepNumber = $request->getSession()->get('step');
         if (null !== $stepNumber) {
-            foreach ($steps as $step) {
-                if ($step['step'] === $stepNumber) {
-                    $stepName = $step['name'];
+            foreach ($this->steps as $step) {
+                if ($step->getStep() === $stepNumber) {
+                    $stepName = $step->getName();
                 }
             }
         } else {
             reset($steps);
             $firstStep = current($steps);
-            $stepName  = $firstStep['name'];
+            $stepName  = $firstStep->getName();
         }
 
         if (!$stepName) {
-            throw $this->createNotFoundException('No step found to start the generator.');
+            throw new NotFoundHttpException('No step found to start the generator.');
         }
 
-        return $this->redirectToRoute('pierstoval_character_generator_step', [
+        return new RedirectResponse($this->router->generate('pierstoval_character_generator_step', [
             'requestStep' => $stepName,
-        ]);
+        ]));
     }
 
     /**
@@ -67,7 +100,7 @@ class StepController extends Controller
         $session->set('step', 1);
         $session->getFlashBag()->add('success', 'Le personnage en cours de création a été réinitialisé !');
 
-        return $this->redirectToRoute('pierstoval_character_generator_index');
+        return new RedirectResponse($this->router->generate('pierstoval_character_generator_index'));
     }
 
     /**
@@ -78,13 +111,11 @@ class StepController extends Controller
      */
     public function resetStepAction($requestStep, Request $request)
     {
-        $stepsArray = $this->getParameter('pierstoval_character_manager.steps');
-
-        if (!array_key_exists($requestStep, $stepsArray)) {
-            throw $this->createNotFoundException('Step not found.');
+        if (!array_key_exists($requestStep, $this->steps)) {
+            throw new NotFoundHttpException('Step not found.');
         }
 
-        $step = Step::createFromData($stepsArray[$requestStep]);
+        $step = $this->steps[$requestStep];
 
         /** @var Session $session */
         $session = $request->getSession();
@@ -100,7 +131,7 @@ class StepController extends Controller
 
         $session->getFlashBag()->add('success', 'L\'étape a été correctement réinitialisée !');
 
-        return $this->redirectToRoute('pierstoval_character_generator_step', ['requestStep' => $requestStep]);
+        return new RedirectResponse($this->router->generate('pierstoval_character_generator_step', ['requestStep' => $requestStep]));
     }
 
     /**
@@ -111,14 +142,13 @@ class StepController extends Controller
      */
     public function stepAction($requestStep, Request $request)
     {
-        /** @var StepActionResolver $resolver */
-        $resolver = $this->get('pierstoval.character_manager.step_action_resolver');
+        $resolver = $this->actionResolver;
 
         $steps = $resolver->getSteps();
         $step = $resolver->resolve($requestStep);
 
         if (null === $step) {
-            throw $this->createNotFoundException('Step not found.');
+            throw new NotFoundHttpException('Step not found.');
         }
 
         $step = $steps[$requestStep];
@@ -130,46 +160,20 @@ class StepController extends Controller
         // Make sure that dependencies exist, else redirect to first step with a message.
         foreach ($step->getDependencies() as $id) {
             if (!isset($character[$id])) {
-                $msg = $this->get('translator')->trans('pierstoval_character_manager.steps.dependency_not_set', [
+                $msg = $this->translator->trans('pierstoval_character_manager.steps.dependency_not_set', [
                     '%current_step%' => $step->getName(),
                     '%dependency%' => $id,
                 ], 'PierstovalCharacterManager');
                 $session->getFlashBag()->add('error', $msg);
-                return $this->redirectToRoute('pierstoval_character_generator_index');
+
+                return new RedirectResponse($this->router->generate('pierstoval_character_generator_index'));
             }
         }
-
-        $actionId = $step->getAction();
 
         /** @var StepActionInterface $action */
-        if ($this->has($actionId)) {
-            $action = $this->get($actionId);
-        } else {
-            $action = new $actionId();
-            if ($action instanceof StepAction) {
-                if (!$this->has('translator')) {
-                    $action->setTranslator($this->get('translator'));
-                }
-                if (!$this->has('doctrine.orm.entity_manager')) {
-                    $action->setEntityManager($this->get('doctrine.orm.entity_manager'));
-                }
-                if (!$this->has('router')) {
-                    $action->setRouter($this->get('router'));
-                }
-                if (!$this->has('templating')) {
-                    $action->setTemplating($this->get('templating'));
-                }
-            }
-        }
-
-        // In case of, update action class.
-        if (!$action->getCharacterClass()) {
-            $action->setCharacterClass($this->getParameter('pierstoval_character_manager.character_class'));
-        }
+        $action = $this->actionsRegistry->getAction($step->getName());
 
         $action->setRequest($request);
-        $action->setStep($step);
-        $action->setSteps($steps);
 
         // Execute the action and expect a response. Symfony will do the rest.
         return $action->execute();

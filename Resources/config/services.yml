@@ -10,10 +10,7 @@ services:
     pierstoval.character_manager.controller:
         class: Pierstoval\Bundle\CharacterManagerBundle\Controller\StepController
         arguments:
-            - '%pierstoval_character_manager.character_class%'
             - '@pierstoval.character_manager.step_action_resolver'
-            - '@templating.engine.twig'
             - '@translator'
-            - '@doctrine.orm.entity_manager'
             - '@router.default'
             - '@pierstoval.character_manager.actions_registry'
