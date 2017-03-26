@@ -101,6 +101,41 @@ class StepsPassTest extends AbstractTestCase
         return $tests;
     }
 
+    public function test simple classes are automatically registered as services()
+    {
+        $stepsPass = new StepsPass();
+
+        $container = new ContainerBuilder();
+
+        $container->register('pierstoval.character_manager.actions_registry');
+        $container->register('doctrine.orm.entity_manager');
+        $container->register('templating');
+        $container->register('router');
+        $container->register('translator');
+
+        // Empty config here, we just test definition tags
+        $step1 = [
+            'action'         => StubStep::class,
+            'name'           => 'step_1',
+            'label'          => 'Step 1',
+            'depends_on'     => [],
+            'onchange_clear' => [],
+            'step'           => 1,
+        ];
+        $container->setParameter('pierstoval_character_manager.steps', ['step_1' => $step1]);
+        $container->setParameter('pierstoval_character_manager.character_class', 'test_abstract');
+
+        $stepsPass->process($container);
+
+        // Test references calls are correct.
+        $computedServiceName = StepsPass::AUTOMATIC_SERVICE_PREFIX.'.'.$step1['name'];
+        static::assertTrue($container->hasDefinition($computedServiceName));
+
+        $definition = $container->getDefinition($computedServiceName);
+
+        static::assertTrue($definition->hasTag(StepsPass::ACTION_TAG_NAME));
+    }
+
     public function test stub class service definitions()
     {
         $stepsPass = new StepsPass();

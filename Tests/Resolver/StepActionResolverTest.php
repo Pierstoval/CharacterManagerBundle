@@ -63,7 +63,7 @@ class StepActionResolverTest extends TestCase
         $resolver->resolve('inexistent_step');
     }
 
-    public function testRetrieveAllSteps()
+    public function test retrieve all steps()
     {
         $resolver = new StepActionResolver([
             'step_1' => [

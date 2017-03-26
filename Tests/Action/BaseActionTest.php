@@ -342,6 +342,9 @@ final class BaseActionTest extends AbstractActionTestCase
         $stub->setEntityManager($em);
         $stub->setTemplating($templating);
 
+        $stub->setStep($step = new Step(1, 'step1', '', '', [], []));
+        static::assertSame($step, $stub->getStep());
+
         $stub->setSteps($steps);
         $stub->setCharacterClass(CharacterStub::class);
 
