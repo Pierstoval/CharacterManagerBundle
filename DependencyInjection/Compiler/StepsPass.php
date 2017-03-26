@@ -30,6 +30,7 @@ use Symfony\Component\ExpressionLanguage\Expression;
 class StepsPass implements CompilerPassInterface
 {
     const ACTION_TAG_NAME = 'pierstoval_character_step';
+    const AUTOMATIC_SERVICE_PREFIX = 'pierstoval_character_manager.actions';
 
     /**
      * {@inheritdoc}
@@ -127,17 +128,13 @@ class StepsPass implements CompilerPassInterface
                 /** @var  $definition */
                 $definition = $container->getDefinition($action);
                 if (!$definition->hasTag(static::ACTION_TAG_NAME)) {
-                    $definition->addTag(static::ACTION_TAG_NAME, [
-                        'step' => $step['step'],
-                    ]);
+                    $definition->addTag(static::ACTION_TAG_NAME);
                 }
             } else {
                 $definition = new Definition($action);
-                $definition->addTag(static::ACTION_TAG_NAME, [
-                    'step' => $step['step'],
-                ]);
-                $serviceId = 'pierstoval_character_manager.actions.'.$step['name'];
-                $container->register($serviceId, $definition);
+                $definition->addTag(static::ACTION_TAG_NAME);
+                $serviceId = static::AUTOMATIC_SERVICE_PREFIX.'.'.$step['name'];
+                $container->setDefinition($serviceId, $definition);
             }
         }
 
