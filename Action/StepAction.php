@@ -179,7 +179,7 @@ abstract class StepAction implements StepActionInterface
      */
     public function getCurrentCharacter()
     {
-        return $this->getSession()->get('character', []);
+        return $this->getSession()->get('character', []) ?: [];
     }
 
     /**
