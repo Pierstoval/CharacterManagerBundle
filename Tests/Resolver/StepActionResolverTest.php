@@ -11,11 +11,12 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Resolver;
 
+use PHPUnit\Framework\TestCase;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepActionResolver;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\DefaultTestStep;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\StubStep;
 
-class StepActionResolverTest extends \PHPUnit_Framework_TestCase
+class StepActionResolverTest extends TestCase
 {
     public function test base configuration()
     {
