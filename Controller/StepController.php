@@ -14,7 +14,6 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Controller;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
 use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry;
-use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepActionResolver;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,11 +30,6 @@ class StepController
     private $steps;
 
     /**
-     * @var StepActionResolver
-     */
-    private $actionResolver;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -49,10 +43,9 @@ class StepController
      */
     private $actionsRegistry;
 
-    public function __construct(StepActionResolver $actionResolver, TranslatorInterface $translator, RouterInterface $router, ActionsRegistry $actionsRegistry)
+    public function __construct(array $steps, TranslatorInterface $translator, RouterInterface $router, ActionsRegistry $actionsRegistry)
     {
-        $this->steps = $actionResolver->getSteps();
-        $this->actionResolver = $actionResolver;
+        $this->steps = $steps;
         $this->translator = $translator;
         $this->router = $router;
         $this->actionsRegistry = $actionsRegistry;
@@ -98,7 +91,7 @@ class StepController
         $session = $request->getSession();
         $session->set('character', []);
         $session->set('step', 1);
-        $session->getFlashBag()->add('success', 'Le personnage en cours de création a été réinitialisé !');
+        $session->getFlashBag()->add('success', $this->translator->trans('steps.reset.character', [], 'PierstovalCharacterManager'));
 
         return new RedirectResponse($this->router->generate('pierstoval_character_generator_index'));
     }
@@ -129,7 +122,7 @@ class StepController
 
         $session->set('character', $character);
 
-        $session->getFlashBag()->add('success', 'L\'étape a été correctement réinitialisée !');
+        $session->getFlashBag()->add('success', $this->translator->trans('steps.reset.step', [], 'PierstovalCharacterManager'));
 
         return new RedirectResponse($this->router->generate('pierstoval_character_generator_step', ['requestStep' => $requestStep]));
     }
@@ -155,9 +148,9 @@ class StepController
         // Make sure that dependencies exist, else redirect to first step with a message.
         foreach ($step->getDependencies() as $id) {
             if (!isset($character[$id])) {
-                $msg = $this->translator->trans('pierstoval_character_manager.steps.dependency_not_set', [
-                    '%current_step%' => $step->getName(),
-                    '%dependency%' => $id,
+                $msg = $this->translator->trans('steps.dependency_not_set', [
+                    '%current_step%' => $step->getLabel(),
+                    '%dependency%' => $this->steps[$id]->getLabel(),
                 ], 'PierstovalCharacterManager');
                 $session->getFlashBag()->add('error', $msg);
 

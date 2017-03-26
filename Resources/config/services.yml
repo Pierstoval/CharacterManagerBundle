@@ -10,7 +10,7 @@ services:
     pierstoval.character_manager.controller:
         class: Pierstoval\Bundle\CharacterManagerBundle\Controller\StepController
         arguments:
-            - '@pierstoval.character_manager.step_action_resolver'
+            - '@=service("pierstoval.character_manager.step_action_resolver").getSteps()'
             - '@translator'
             - '@router.default'
             - '@pierstoval.character_manager.actions_registry'
