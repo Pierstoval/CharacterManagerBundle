@@ -24,7 +24,6 @@ class AppKernel extends Kernel
             new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new \Symfony\Bundle\TwigBundle\TwigBundle(),
             new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-            new \Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
 
             new \Pierstoval\Bundle\CharacterManagerBundle\PierstovalCharacterManagerBundle(),
             new \Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\TestBundle(),
