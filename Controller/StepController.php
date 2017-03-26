@@ -73,8 +73,8 @@ class StepController
                 }
             }
         } else {
-            reset($steps);
-            $firstStep = current($steps);
+            reset($this->steps);
+            $firstStep = current($this->steps);
             $stepName  = $firstStep->getName();
         }
 
@@ -142,16 +142,11 @@ class StepController
      */
     public function stepAction($requestStep, Request $request)
     {
-        $resolver = $this->actionResolver;
-
-        $steps = $resolver->getSteps();
-        $step = $resolver->resolve($requestStep);
-
-        if (null === $step) {
+        if (!array_key_exists($requestStep, $this->steps)) {
             throw new NotFoundHttpException('Step not found.');
         }
 
-        $step = $steps[$requestStep];
+        $step = $this->steps[$requestStep];
 
         /** @var Session $session */
         $session = $request->getSession();
