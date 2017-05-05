@@ -11,6 +11,11 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\App;
 
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Pierstoval\Bundle\CharacterManagerBundle\PierstovalCharacterManagerBundle;
+use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\TestBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
@@ -20,13 +25,12 @@ class AppKernel extends Kernel
     public function registerBundles()
     {
         return [
-            new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new \Symfony\Bundle\SecurityBundle\SecurityBundle(),
-            new \Symfony\Bundle\TwigBundle\TwigBundle(),
-            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
+            new FrameworkBundle(),
+            new TwigBundle(),
+            new DoctrineBundle(),
 
-            new \Pierstoval\Bundle\CharacterManagerBundle\PierstovalCharacterManagerBundle(),
-            new \Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\TestBundle(),
+            new PierstovalCharacterManagerBundle(),
+            new TestBundle(),
         ];
     }
 

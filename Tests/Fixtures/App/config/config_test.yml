@@ -27,14 +27,5 @@ doctrine:
                 dir: '%kernel.root_dir%/../TestBundle/Entity'
                 prefix: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity
 
-security:
-    firewalls:
-        secured_area:
-            pattern:    ^/
-            anonymous:  true
-    providers:
-        in_memory:
-             memory: ~
-
 pierstoval_character_manager:
     character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\CharacterStub
