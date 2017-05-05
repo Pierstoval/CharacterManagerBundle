@@ -20,9 +20,10 @@ before_install:
     - composer install --no-interaction
     - if [[ "$SYMFONY_VERSION" != "" ]]; then composer require "symfony/symfony:${SYMFONY_VERSION}" --no-update; fi;
     - if [[ "$TRAVIS_PHP_VERSION" == "7.1" ]]; then wget https://github.com/satooshi/php-coveralls/releases/download/v1.0.1/coveralls.phar; fi
+    - cat phpunit.xml.dist | sed -e 's/\(<!--\)\|\(-->\)//g' > phpunit.xml
 
 script:
-    - vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml
+    - vendor/bin/phpunit
 
 after_success: |
     if [[ "$TRAVIS_PHP_VERSION" == "7.1" && "$SYMFONY_VERSION" == "3.2.*" ]]; then php coveralls.phar -v --config .coveralls.yml; fi;
