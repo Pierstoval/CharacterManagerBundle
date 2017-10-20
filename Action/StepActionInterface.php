@@ -24,26 +24,26 @@ interface StepActionInterface
      *
      * @return Response
      */
-    public function execute();
+    public function execute(): Response;
 
     /**
      * Allows using the Step value object in the action.
      *
      * @param Step $step
      */
-    public function setStep(Step $step);
+    public function setStep(Step $step): void;
 
     /**
      * Allow having all steps in the action, to redirect to next action.
      *
      * @param Step[] $steps
      */
-    public function setSteps(array $steps);
+    public function setSteps(array $steps): void;
 
     /**
      * @return Step
      */
-    public function getStep();
+    public function getStep(): Step;
 
     /**
      * @return Step[]
@@ -55,7 +55,7 @@ interface StepActionInterface
      *
      * @param Request $request
      */
-    public function setRequest(Request $request);
+    public function setRequest(Request $request): void;
 
     /**
      * Return the current character that is built in the steps process.
@@ -72,7 +72,7 @@ interface StepActionInterface
      *
      * @return mixed
      */
-    public function getCharacterProperty($key = null);
+    public function getCharacterProperty(string $key = null);
 
     /**
      * Any action must be injected the character class, because are not always defined as services.
@@ -80,12 +80,12 @@ interface StepActionInterface
      *
      * @param string $class
      */
-    public function setCharacterClass($class);
+    public function setCharacterClass(string $class): void;
 
     /**
      * Get configured character class.
      *
      * @return string
      */
-    public function getCharacterClass();
+    public function getCharacterClass(): string;
 }

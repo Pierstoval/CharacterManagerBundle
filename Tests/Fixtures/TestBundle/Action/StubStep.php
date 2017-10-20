@@ -13,28 +13,36 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Act
 
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
+use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\CharacterStub;
+use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Model\StepStub;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class StubStep implements StepActionInterface
 {
+    public function execute(): Response
+    {
+        return new Response();
+    }
 
-    public function execute()
+    public function setStep(Step $step): void
     {
     }
 
-    public function setStep(Step $step)
+    public function setSteps(array $steps): void
     {
     }
 
-    public function setSteps(array $steps)
+    public function getStep(): Step
     {
+        return new StepStub();
     }
 
     public function getSteps()
     {
     }
 
-    public function setRequest(Request $request)
+    public function setRequest(Request $request): void
     {
     }
 
@@ -42,19 +50,16 @@ class StubStep implements StepActionInterface
     {
     }
 
-    public function getCharacterProperty($key = null)
+    public function getCharacterProperty(string $key = null)
     {
     }
 
-    public function setCharacterClass($class)
+    public function setCharacterClass(string $class): void
     {
     }
 
-    public function getCharacterClass()
+    public function getCharacterClass(): string
     {
-    }
-
-    public function getStep()
-    {
+        return CharacterStub::class;
     }
 }

@@ -49,6 +49,7 @@ class StepsPass implements CompilerPassInterface
      */
     private function validateSteps(ContainerBuilder $container)
     {
+        /** @var array[] $steps */
         $steps = $container->getParameter('pierstoval_character_manager.steps');
 
         $stepNumber = 1;

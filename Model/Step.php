@@ -13,34 +13,11 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Model;
 
 class Step
 {
-    /**
-     * @var int
-     */
     protected $step;
-
-    /**
-     * @var string
-     */
     protected $name;
-
-    /**
-     * @var string
-     */
     protected $action;
-
-    /**
-     * @var string
-     */
     protected $label;
-
-    /**
-     * @var array
-     */
     protected $onchangeClear;
-
-    /**
-     * @var array
-     */
     protected $dependsOn;
 
     /**
@@ -51,7 +28,7 @@ class Step
      * @param array  $onchangeClear
      * @param array  $dependsOn
      */
-    public function __construct($step, $name, $action, $label, array $onchangeClear, array $dependsOn)
+    public function __construct(int $step, string $name, string $action, $label, array $onchangeClear, array $dependsOn)
     {
         $this->step          = $step;
         $this->name          = $name;
@@ -61,12 +38,7 @@ class Step
         $this->dependsOn     = $dependsOn;
     }
 
-    /**
-     * @param array $data
-     *
-     * @return Step
-     */
-    public static function createFromData(array $data)
+    public static function createFromData(array $data): Step
     {
         return new static(
             $data['step'],
@@ -78,50 +50,32 @@ class Step
         );
     }
 
-    /**
-     * @return int
-     */
-    public function getStep()
+    public function getStep(): int
     {
         return $this->step;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return string
-     */
-    public function getAction()
+    public function getAction(): string
     {
         return $this->action;
     }
 
-    /**
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
 
-    /**
-     * @return array
-     */
-    public function getOnchangeClear()
+    public function getOnchangeClear(): array
     {
         return $this->onchangeClear;
     }
 
-    /**
-     * @return array
-     */
-    public function getDependencies()
+    public function getDependencies(): array
     {
         return $this->dependsOn;
     }

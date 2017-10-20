@@ -33,7 +33,7 @@ class StepActionResolver
     /**
      * @return Step[]
      */
-    public function getSteps()
+    public function getSteps(): array
     {
         if (null === $this->steps) {
             $this->resolveAllSteps();
@@ -42,12 +42,7 @@ class StepActionResolver
         return $this->steps ?: [];
     }
 
-    /**
-     * @param string $stepName
-     *
-     * @return Step
-     */
-    public function resolve($stepName)
+    public function resolve(string $stepName): ?Step
     {
         if (null === $this->steps) {
             $this->resolveAllSteps();
@@ -63,7 +58,7 @@ class StepActionResolver
     /**
      * Create Step instances from steps configuration.
      */
-    private function resolveAllSteps()
+    private function resolveAllSteps(): void
     {
         $steps = [];
 

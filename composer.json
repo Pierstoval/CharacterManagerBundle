@@ -1,7 +1,7 @@
 {
     "name": "pierstoval/character_manager",
     "description": "Skeleton of a character manager for games",
-    "license": "GPL-3.0",
+    "license": "MIT",
     "type": "symfony-bundle",
     "keywords": ["symfony", "character", "game", "bundle"],
     "homepage": "https://github.com/Pierstoval/CharacterManagerBundle",
@@ -11,16 +11,16 @@
         }
     },
     "require": {
-        "php": ">=5.6",
+        "php": "^7.1",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/orm": "^2.5",
-        "symfony/asset": "^3.0",
-        "symfony/expression-language": "^3.0",
-        "symfony/framework-bundle": "^3.0",
-        "symfony/templating": "^3.0",
-        "symfony/translation": "^3.0",
-        "symfony/twig-bundle": "^3.0",
-        "symfony/yaml": "^3.0"
+        "symfony/asset": "^3.0|^4.0",
+        "symfony/expression-language": "^3.0|^4.0",
+        "symfony/framework-bundle": "^3.0|^4.0",
+        "symfony/templating": "^3.0|^4.0",
+        "symfony/translation": "^3.0|^4.0",
+        "symfony/twig-bundle": "^3.0|^4.0",
+        "symfony/yaml": "^3.0|^4.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.0|^6.0",

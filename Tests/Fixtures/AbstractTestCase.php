@@ -13,12 +13,10 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures;
 
 use Tests\WebTestCase;
 
-/**
- * Class AbstractTestCase.
- */
 class AbstractTestCase extends WebTestCase
 {
-    protected static function getKernelClass() {
+    protected static function getKernelClass(): string
+    {
         return App\AppKernel::class;
     }
 }

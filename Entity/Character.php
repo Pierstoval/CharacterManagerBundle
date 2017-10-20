@@ -30,40 +30,24 @@ abstract class Character implements CharacterInterface
      */
     protected $nameSlug;
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
-        return $this->name;
+        return $this->name ?: '';
     }
 
-    /**
-     * @param string $name
-     *
-     * @return $this
-     */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getNameSlug()
+    public function getNameSlug(): string
     {
-        return $this->nameSlug;
+        return $this->nameSlug ?: '';
     }
 
-    /**
-     * @param string $nameSlug
-     *
-     * @return $this
-     */
-    public function setNameSlug($nameSlug)
+    public function setNameSlug(string $nameSlug): self
     {
         $this->nameSlug = $nameSlug;
 

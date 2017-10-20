@@ -19,7 +19,7 @@ class DefaultTestStep extends StepAction
     /**
      * {@inheritdoc}
      */
-    public function execute()
+    public function execute(): Response
     {
         return new Response('Working');
     }

@@ -51,10 +51,7 @@ class StepController
         $this->actionsRegistry = $actionsRegistry;
     }
 
-    /**
-     * @return RedirectResponse
-     */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request): RedirectResponse
     {
         $stepName = null;
 
@@ -80,15 +77,13 @@ class StepController
         ]));
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return RedirectResponse
-     */
-    public function resetAction(Request $request)
+    public function resetCharacterAction(Request $request): RedirectResponse
     {
         /** @var Session $session */
         $session = $request->getSession();
+        if (!$session) {
+            throw new \RuntimeException('A session must be available for the character generator to work.');
+        }
         $session->set('character', []);
         $session->set('step', 1);
         $session->getFlashBag()->add('success', $this->translator->trans('steps.reset.character', [], 'PierstovalCharacterManager'));
@@ -96,13 +91,7 @@ class StepController
         return new RedirectResponse($this->router->generate('pierstoval_character_generator_index'));
     }
 
-    /**
-     * @param string $requestStep
-     * @param Request $request
-     *
-     * @return RedirectResponse
-     */
-    public function resetStepAction($requestStep, Request $request)
+    public function resetStepAction(string $requestStep, Request $request): RedirectResponse
     {
         if (!array_key_exists($requestStep, $this->steps)) {
             throw new NotFoundHttpException('Step not found.');
@@ -112,6 +101,9 @@ class StepController
 
         /** @var Session $session */
         $session = $request->getSession();
+        if (!$session) {
+            throw new \RuntimeException('A session must be available for the character generator to work.');
+        }
 
         $character = $session->get('character');
         unset($character[$step->getName()]);
@@ -127,13 +119,7 @@ class StepController
         return new RedirectResponse($this->router->generate('pierstoval_character_generator_step', ['requestStep' => $requestStep]));
     }
 
-    /**
-     * @param string  $requestStep
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function stepAction($requestStep, Request $request)
+    public function stepAction(string $requestStep, Request $request): Response
     {
         if (!array_key_exists($requestStep, $this->steps)) {
             throw new NotFoundHttpException('Step not found.');
@@ -143,6 +129,9 @@ class StepController
 
         /** @var Session $session */
         $session = $request->getSession();
+        if (!$session) {
+            throw new \RuntimeException('A session must be available for the character generator to work.');
+        }
         $character = $session->get('character');
 
         // Make sure that dependencies exist, else redirect to first step with a message.

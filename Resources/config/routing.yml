@@ -6,7 +6,7 @@ pierstoval_character_generator_index:
 pierstoval_character_generator_reset:
     path: '/reset/'
     defaults:
-        _controller: 'pierstoval.character_manager.controller:resetAction'
+        _controller: 'pierstoval.character_manager.controller:resetCharacterAction'
 
 pierstoval_character_generator_reset_step:
     path: '/reset/{requestStep}'

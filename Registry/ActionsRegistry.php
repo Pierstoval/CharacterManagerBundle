@@ -20,7 +20,7 @@ class ActionsRegistry
      */
     private $actions = [];
 
-    public function addStepAction(StepActionInterface $action)
+    public function addStepAction(StepActionInterface $action): void
     {
         $this->actions[$action->getStep()->getName()] = $action;
     }
@@ -28,17 +28,12 @@ class ActionsRegistry
     /**
      * @return StepActionInterface[]
      */
-    public function getActions()
+    public function getActions(): array
     {
         return $this->actions;
     }
 
-    /**
-     * @param string $stepName
-     *
-     * @return StepActionInterface
-     */
-    public function getAction($stepName)
+    public function getAction(string $stepName): StepActionInterface
     {
         if (!array_key_exists($stepName, $this->actions)) {
             throw new \InvalidArgumentException('Step "'.$stepName.'" not found in registry.');

@@ -13,13 +13,7 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Model;
 
 interface CharacterInterface
 {
-    /**
-     * @return string
-     */
-    public function getName();
+    public function getName(): string;
 
-    /**
-     * @return string
-     */
-    public function getNameSlug();
+    public function getNameSlug(): string;
 }

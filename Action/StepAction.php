@@ -24,6 +24,9 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 abstract class StepAction implements StepActionInterface
 {
+    /**
+     * Used when you need to change the translation domain used in controller-generated messages.
+     */
     protected static $translationDomain = 'PierstovalCharacterBundle';
 
     /**
@@ -70,34 +73,22 @@ abstract class StepAction implements StepActionInterface
      */
     protected $translator;
 
-    /**
-     * @param RouterInterface $router
-     */
-    public function setRouter(RouterInterface $router)
+    public function setRouter(RouterInterface $router): void
     {
         $this->router = $router;
     }
 
-    /**
-     * @param EntityManager $em
-     */
-    public function setEntityManager(EntityManager $em)
+    public function setEntityManager(EntityManager $em): void
     {
         $this->em = $em;
     }
 
-    /**
-     * @param TwigEngine $templating
-     */
-    public function setTemplating(TwigEngine $templating)
+    public function setTemplating(TwigEngine $templating): void
     {
         $this->templating = $templating;
     }
 
-    /**
-     * @param TranslatorInterface $translator
-     */
-    public function setTranslator(TranslatorInterface $translator)
+    public function setTranslator(TranslatorInterface $translator): void
     {
         $this->translator = $translator;
     }
@@ -105,7 +96,7 @@ abstract class StepAction implements StepActionInterface
     /**
      * {@inheritdoc}
      */
-    public function setCharacterClass($class)
+    public function setCharacterClass(string $class): void
     {
         if (!class_exists($class) || !is_a($class, CharacterInterface::class, true)) {
             throw new \InvalidArgumentException(sprintf(
@@ -120,7 +111,7 @@ abstract class StepAction implements StepActionInterface
     /**
      * {@inheritdoc}
      */
-    public function getCharacterClass()
+    public function getCharacterClass(): string
     {
         return $this->class;
     }
@@ -128,7 +119,7 @@ abstract class StepAction implements StepActionInterface
     /**
      * {@inheritdoc}
      */
-    public function setStep(Step $step)
+    public function setStep(Step $step): void
     {
         $this->step = $step;
     }
@@ -136,7 +127,7 @@ abstract class StepAction implements StepActionInterface
     /**
      * {@inheritdoc}
      */
-    public function getStep()
+    public function getStep(): Step
     {
         return $this->step;
     }
@@ -144,7 +135,7 @@ abstract class StepAction implements StepActionInterface
     /**
      * {@inheritdoc}
      */
-    public function setSteps(array $steps)
+    public function setSteps(array $steps): void
     {
         foreach ($steps as $step) {
             if (!$step instanceof Step) {
@@ -161,7 +152,7 @@ abstract class StepAction implements StepActionInterface
     /**
      * {@inheritdoc}
      */
-    public function getSteps()
+    public function getSteps(): array
     {
         return $this->steps;
     }
@@ -169,7 +160,7 @@ abstract class StepAction implements StepActionInterface
     /**
      * {@inheritdoc}
      */
-    public function setRequest(Request $request)
+    public function setRequest(Request $request): void
     {
         $this->request = $request;
     }
@@ -185,10 +176,10 @@ abstract class StepAction implements StepActionInterface
     /**
      * {@inheritdoc}
      */
-    public function getCharacterProperty($key = null)
+    public function getCharacterProperty(string $key = null)
     {
         if (null === $key) {
-            if (!$this->step) {
+            if (!$this->step instanceof Step) {
                 throw new \InvalidArgumentException(sprintf(
                     'To get current step you need to use %s:%s method and inject a Step instance.',
                     __CLASS__, 'setStep'
@@ -199,13 +190,13 @@ abstract class StepAction implements StepActionInterface
 
         $character = $this->getCurrentCharacter();
 
-        return array_key_exists($key, $character) ? $character[$key] : null;
+        return $character[$key] ?? null;
     }
 
     /**
      * @return RedirectResponse
      */
-    protected function nextStep()
+    protected function nextStep(): RedirectResponse
     {
         return $this->goToStep($this->step->getStep() + 1);
     }
@@ -217,7 +208,7 @@ abstract class StepAction implements StepActionInterface
      *
      * @return RedirectResponse
      */
-    protected function goToStep($stepNumber)
+    protected function goToStep(int $stepNumber): RedirectResponse
     {
         if (!$this->router) {
             throw new \InvalidArgumentException('Cannot use '.__METHOD__.' if no router is injected in StepAction.');
@@ -237,7 +228,7 @@ abstract class StepAction implements StepActionInterface
     /**
      * @param mixed $value
      */
-    protected function updateCharacterStep($value)
+    protected function updateCharacterStep($value): void
     {
         $character = $this->getCurrentCharacter();
 
@@ -253,14 +244,8 @@ abstract class StepAction implements StepActionInterface
 
     /**
      * Adds a new flash message.
-     *
-     * @param string $msg
-     * @param string $type
-     * @param array  $msgParams
-     *
-     * @return $this
      */
-    protected function flashMessage($msg, $type = null, array $msgParams = [])
+    protected function flashMessage(string $msg, string $type = null, array $msgParams = []): self
     {
         // Allows not knowing about the default type in the method signature.
         if (null === $type) {
@@ -273,8 +258,11 @@ abstract class StepAction implements StepActionInterface
             $msg = strtr($msg, $msgParams);
         }
 
-        /** @var Session $session */
         $session = $this->getSession();
+
+        if (!$session instanceof Session) {
+            throw new \RuntimeException('Current session must be an instance of '.Session::class.' to use the FlashBag');
+        }
 
         $flashbag = $session->getFlashBag();
 
@@ -288,10 +276,7 @@ abstract class StepAction implements StepActionInterface
         return $this;
     }
 
-    /**
-     * @return Request
-     */
-    protected function getRequest()
+    protected function getRequest(): Request
     {
         if (!$this->request) {
             throw new \InvalidArgumentException('Request is not set in step action.');
@@ -300,10 +285,7 @@ abstract class StepAction implements StepActionInterface
         return $this->request;
     }
 
-    /**
-     * @return Session|SessionInterface
-     */
-    protected function getSession()
+    protected function getSession(): SessionInterface
     {
         if (!$session = $this->getRequest()->getSession()) {
             throw new \InvalidArgumentException('No session available in current request.');

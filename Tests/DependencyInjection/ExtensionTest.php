@@ -21,24 +21,6 @@ use Symfony\Component\Yaml\Yaml;
  */
 class ExtensionTest extends AbstractTestCase
 {
-
-    /**
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     * @expectedExceptionMessage Character class must be a valid class extending Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface. "Inexistent\Class" given.
-     */
-    public function test inexistent class()
-    {
-        $builder = new ContainerBuilder();
-
-        $ext = new PierstovalCharacterManagerExtension(true);
-
-        $ext->load([
-            'pierstoval_character_manager' => [
-                'character_class' => 'Inexistent\Class',
-            ],
-        ], $builder);
-    }
-
     /**
      * @dataProvider provideYamlConfiguration
      *
