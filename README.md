@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/Pierstoval/CharacterManagerBundle.svg?branch=master)](https://travis-ci.org/Pierstoval/CharacterManagerBundle)
 [![Coverage Status](https://coveralls.io/repos/github/Pierstoval/CharacterManagerBundle/badge.svg?branch=master)](https://coveralls.io/github/Pierstoval/CharacterManagerBundle?branch=master)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/566f9019-3d3e-4606-95e6-0ab84ab0f735/big.png)](https://insight.sensiolabs.com/projects/566f9019-3d3e-4606-95e6-0ab84ab0f735)
 
 # Character manager bundle
 
