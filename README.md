@@ -229,4 +229,4 @@ A list of "todos":
 
 ## License
 
-The project is published under GPL license. See the [license file](LICENSE) for more information.
+The project is published under MIT license. See the [license file](LICENSE) for more information.
