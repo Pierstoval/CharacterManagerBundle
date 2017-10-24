@@ -173,8 +173,8 @@ If you define the step action as a service and extend the abstract class, you wi
 /** @var EntityManager */
 $this->em;
 
-/** @var TwigEngine */
-$this->templating;
+/** @var Twig\Environment */
+$this->twig;
 
 /** @var RouterInterface */
 $this->router;

@@ -17,7 +17,7 @@ use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Action\Stubs\ActionStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\CharacterStub;
-use Symfony\Bundle\TwigBundle\TwigEngine;
+use Twig\Environment;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
@@ -332,15 +332,15 @@ final class BaseActionTest extends AbstractActionTestCase
     {
         /** @var EntityManager|MockObject $em */
         $em = $this->createMock(EntityManager::class);
-        /** @var TwigEngine|MockObject $templating */
-        $templating = $this->createMock(TwigEngine::class);
+        /** @var Environment|MockObject $twig */
+        $twig = $this->createMock(Environment::class);
 
         $stub = new ActionStub();
         $steps = [new Step(1, 'step_1', get_class($stub), 'step_1', [], [])];
 
         // Just to make sure setters don't fail
         $stub->setEntityManager($em);
-        $stub->setTemplating($templating);
+        $stub->setTwig($twig);
 
         $stub->setStep($step = new Step(1, 'step1', '', '', [], []));
         static::assertSame($step, $stub->getStep());

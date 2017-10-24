@@ -171,8 +171,8 @@ class StepsPass implements CompilerPassInterface
                 if ($container->has('doctrine.orm.entity_manager')) {
                     $definition->addMethodCall('setEntityManager', [new Reference('doctrine.orm.entity_manager')]);
                 }
-                if ($container->has('templating')) {
-                    $definition->addMethodCall('setTemplating', [new Reference('templating')]);
+                if ($container->has('twig')) {
+                    $definition->addMethodCall('setTwig', [new Reference('twig')]);
                 }
                 if ($container->has('router')) {
                     $definition->addMethodCall('setRouter', [new Reference('router')]);

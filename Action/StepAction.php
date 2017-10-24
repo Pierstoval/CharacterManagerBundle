@@ -14,7 +14,7 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Action;
 use Doctrine\ORM\EntityManager;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
-use Symfony\Bundle\TwigBundle\TwigEngine;
+use Twig\Environment;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -64,9 +64,9 @@ abstract class StepAction implements StepActionInterface
     protected $em;
 
     /**
-     * @var TwigEngine
+     * @var Environment
      */
-    protected $templating;
+    protected $twig;
 
     /**
      * @var TranslatorInterface
@@ -83,9 +83,9 @@ abstract class StepAction implements StepActionInterface
         $this->em = $em;
     }
 
-    public function setTemplating(TwigEngine $templating): void
+    public function setTwig(Environment $twig): void
     {
-        $this->templating = $templating;
+        $this->twig = $twig;
     }
 
     public function setTranslator(TranslatorInterface $translator): void

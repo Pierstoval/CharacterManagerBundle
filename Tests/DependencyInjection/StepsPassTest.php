@@ -55,7 +55,7 @@ class StepsPassTest extends AbstractTestCase
 
         $container->register('pierstoval.character_manager.actions_registry');
         $container->register('doctrine.orm.entity_manager');
-        $container->register('templating');
+        $container->register('twig');
         $container->register('router');
         $container->register('translator');
 
@@ -72,7 +72,7 @@ class StepsPassTest extends AbstractTestCase
 
         static::assertCount(6, $calls);
         static::assertSame('setEntityManager', $calls[0][0]);
-        static::assertSame('setTemplating', $calls[1][0]);
+        static::assertSame('setTwig', $calls[1][0]);
         static::assertSame('setRouter', $calls[2][0]);
         static::assertSame('setTranslator', $calls[3][0]);
         static::assertSame(['setCharacterClass', ['test_abstract']], $calls[4]);
@@ -109,7 +109,7 @@ class StepsPassTest extends AbstractTestCase
 
         $container->register('pierstoval.character_manager.actions_registry');
         $container->register('doctrine.orm.entity_manager');
-        $container->register('templating');
+        $container->register('twig');
         $container->register('router');
         $container->register('translator');
 

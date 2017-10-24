@@ -7,7 +7,6 @@ framework:
     test:            ~
     router:          { resource: "%kernel.root_dir%/config/routing.yml" }
     csrf_protection: false
-    templating:      { engines: ['twig'] }
     assets:          ~
     session:
         storage_id: session.storage.filesystem
