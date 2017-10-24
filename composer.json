@@ -12,19 +12,21 @@
     },
     "require": {
         "php": "^7.1",
-        "doctrine/doctrine-bundle": "^1.6",
+        "doctrine/doctrine-bundle": "^1.6.8",
+        "doctrine/inflector": "^1.1",
         "doctrine/orm": "^2.5",
-        "symfony/asset": "^3.0|^4.0",
-        "symfony/expression-language": "^3.0|^4.0",
-        "symfony/framework-bundle": "^3.0|^4.0",
-        "symfony/translation": "^3.0|^4.0",
-        "symfony/twig-bundle": "^3.0|^4.0",
-        "symfony/yaml": "^3.0|^4.0",
-        "twig/twig": "^1.34|^2.0"
+        "symfony/asset": "^3.3|^4.0",
+        "symfony/expression-language": "^3.3|^4.0",
+        "symfony/framework-bundle": "^3.3|^4.0",
+        "symfony/translation": "^3.3|^4.0",
+        "symfony/twig-bridge": "^3.3|^4.0",
+        "symfony/twig-bundle": "^3.3|^4.0",
+        "symfony/yaml": "^3.3|^4.0",
+        "twig/twig": "^1.34|^2.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.0|^6.0",
-        "pierstoval/web-test-case": "^0.1"
+        "phpunit/phpunit": "^6.0",
+        "pierstoval/web-test-case": "^0.1.8"
     },
     "authors": [
         {
