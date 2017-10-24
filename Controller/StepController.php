@@ -55,6 +55,10 @@ class StepController
     {
         $stepName = null;
 
+        if (!$request->getSession()) {
+            throw new \RuntimeException('Session is mandatory when using the character generator.');
+        }
+
         $stepNumber = $request->getSession()->get('step');
         if (null !== $stepNumber) {
             foreach ($this->steps as $step) {
