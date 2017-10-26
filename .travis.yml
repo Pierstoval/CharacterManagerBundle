@@ -32,6 +32,7 @@ matrix:
 before_install:
     - 'if [[ "$TWIG_VERSION" != "" ]]; then composer require "twig/twig:${TWIG_VERSION}" --no-update; fi;'
     - 'if [[ "$SYMFONY_VERSION" != "" ]]; then sed -r -e "s/(symfony\/[^:]+: \").+(\",?)$/\1$SYMFONY_VERSION\2/" -i composer.json; fi;'
+    - 'if [[ "$SYMFONY_VERSION" == *beta ]]; then composer config minimum-stability beta; fi;'
     - 'if [[ "$ENABLE_CODE_COVERAGE" != "true" ]]; then phpenv config-rm xdebug.ini; fi;'
     - 'cat phpunit.xml.dist | sed -e "s/\(<!--\)\|\(-->\)//g" > phpunit.xml'
     - 'if [[ "$TRAVIS_PHP_VERSION" == "7.1" ]]; then wget https://github.com/satooshi/php-coveralls/releases/download/v1.0.1/coveralls.phar; fi;'
