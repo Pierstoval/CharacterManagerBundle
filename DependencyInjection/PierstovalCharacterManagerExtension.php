@@ -11,6 +11,7 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection;
 
+use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler\StepsPass;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
@@ -32,12 +33,10 @@ class PierstovalCharacterManagerExtension extends Extension
         $config        = $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.yml');
+        $loader->load('services.yaml');
 
         // Set all config in container.
         // Steps will be validated in compiler pass.
-        foreach ($config as $key => $value) {
-            $container->setParameter('pierstoval_character_manager.'.$key, $value);
-        }
+        $container->setParameter(StepsPass::PARAMETERS_MANAGERS, $config['managers']);
     }
 }

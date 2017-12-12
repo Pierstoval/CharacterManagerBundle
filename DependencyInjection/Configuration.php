@@ -11,10 +11,8 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection;
 
-use Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
-use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 /**
  * This is the class that validates and merges configuration from your app/config files.
@@ -34,31 +32,35 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
-                ->scalarNode('character_class')
-                    ->isRequired()
-                ->end()
-                ->arrayNode('steps')
-                    ->defaultValue([])
+                ->arrayNode('managers')
                     ->useAttributeAsKey('name')
+                    ->normalizeKeys(true)
                     ->prototype('array')
                         ->children()
-                            ->scalarNode('action')
-                                ->info('Can be a class or a service. Must implement interface or extend abstract classes from this bundle.')
-                                ->isRequired()
-                            ->end()
-                            ->scalarNode('name')->defaultValue('')->end()
-                            ->scalarNode('label')->defaultValue('')->end()
-                            ->arrayNode('depends_on')
-                                ->info('Steps that the current step may depend on. If step is not set in session, will throw an exception.')
-                                ->defaultValue([])
-                                ->prototype('scalar')->end()
-                            ->end()
-                            ->arrayNode('onchange_clear')
-                                ->info('When this step will be updated, it will clear values for specified steps.')
-                                ->defaultValue([])
-                                ->prototype('scalar')->end()
+                            ->scalarNode('character_class')->isRequired()->end()
+                            ->arrayNode('steps')
+                                ->useAttributeAsKey('name')
+                                ->prototype('array')
+                                    ->children()
+                                        ->scalarNode('action')
+                                            ->info('Can be a class or a service. Must implement StepActionInterface or extend abstract Action class.')
+                                            ->isRequired()
+                                        ->end()
+                                        ->scalarNode('label')->defaultValue('')->end()
+                                        ->arrayNode('dependencies')
+                                            ->info('Steps that the current step may depend on. If step is not set in session, will throw an exception.')
+                                            ->defaultValue([])
+                                            ->prototype('scalar')->end()
+                                        ->end()
+                                        ->arrayNode('onchange_clear')
+                                            ->info("When this step will be updated, it will clear values for specified steps.\nOnly available for the abstract class")
+                                            ->defaultValue([])
+                                            ->prototype('scalar')->end()
+                                        ->end()
+                                    ->end()
                             ->end()
                         ->end()
+                    ->end()
                 ->end()
             ->end()
         ;

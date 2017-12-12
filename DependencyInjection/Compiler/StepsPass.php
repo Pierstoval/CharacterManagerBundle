@@ -12,15 +12,22 @@
 namespace Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler;
 
 use Doctrine\Common\Inflector\Inflector;
-use Pierstoval\Bundle\CharacterManagerBundle\Action\StepAction;
+use Doctrine\Common\Persistence\ObjectManager;
+use Pierstoval\Bundle\CharacterManagerBundle\Action\AbstractStepAction;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
+use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry;
+use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Translation\TranslatorInterface;
+use Twig\Environment;
 
 /**
  * Check that every action class extends the right action interface.
@@ -29,45 +36,51 @@ use Symfony\Component\ExpressionLanguage\Expression;
  */
 class StepsPass implements CompilerPassInterface
 {
-    const ACTION_TAG_NAME = 'pierstoval_character_step';
-    const AUTOMATIC_SERVICE_PREFIX = 'pierstoval_character_manager.actions';
+    public const PARAMETERS_MANAGERS = 'pierstoval_character_manager.managers';
 
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {
-        $this->validateSteps($container);
+        $this->validateManagers($container);
         $this->processConfiguredServices($container);
-        $this->processTaggedServices($container);
+    }
+
+    private function validateManagers(ContainerBuilder $container): void
+    {
+        $managers = $container->getParameter(static::PARAMETERS_MANAGERS);
+
+        foreach ($managers as $name => $config) {
+            $config['name'] = $name;
+            $managers[$name] = $this->validateManagerSteps($config, $container);
+        }
+
+        $container->setParameter(static::PARAMETERS_MANAGERS, $managers);
     }
 
     /**
-     * Validate steps defined in configuration.
-     *
-     * @param ContainerBuilder $container
+     * Validate steps defined in configuration, and makes sure all "action" classes are instances of StepActionInterface
      */
-    private function validateSteps(ContainerBuilder $container)
+    private function validateManagerSteps(array $managerConfiguration, ContainerBuilder $container): array
     {
         /** @var array[] $steps */
-        $steps = $container->getParameter('pierstoval_character_manager.steps');
+        $steps = $managerConfiguration['steps'];
 
         $stepNumber = 1;
 
         // Validate steps that can't be validated in Configuration.
         // First loop mandatory because we re-validate each step dependency in another loop after normalization.
         foreach ($steps as $id => $step) {
-            if (is_numeric($id)) {
-                throw new InvalidConfigurationException('Step key should not be numeric but contain the step name. Maybe the extension was not processed properly?');
-            }
-
             $name = $step['name'] = $id;
 
             if (!$step['label']) {
                 $step['label'] = $this->generateStepLabel($step['name']);
             }
 
-            $step['step'] = $stepNumber++;
+            $step['manager_name'] = $managerConfiguration['name'];
+
+            $step['number'] = $stepNumber++;
 
             $steps[$name] = $step;
         }
@@ -85,7 +98,7 @@ class StepsPass implements CompilerPassInterface
             }
 
             // Validate steps dependencies, to be sure each step is defined.
-            foreach ($step['depends_on'] as $stepDependency) {
+            foreach ($step['dependencies'] as $stepDependency) {
                 if (!array_key_exists($stepDependency, $steps)) {
                     throw new InvalidConfigurationException(sprintf(
                         'Step dependency must be a valid step name, "%s" given.'."\n".
@@ -104,107 +117,79 @@ class StepsPass implements CompilerPassInterface
             if (!class_exists($class) || !is_a($class, StepActionInterface::class, true)) {
                 throw new InvalidArgumentException(sprintf(
                     'Step action must be a valid class implementing %s. "%s" given.',
-                    StepActionInterface::class, class_exists($class) ? $class : gettype($class)
+                    StepActionInterface::class, class_exists($class) ? $class : \gettype($class)
                 ));
             }
         }
 
         // And update all steps.
-        $container->setParameter('pierstoval_character_manager.steps', $steps);
+        $managerConfiguration['steps'] = $steps;
+
+        return $managerConfiguration;
     }
 
     /**
-     * Automatically adds tag for services on which tag is not configured.
+     * Automatically convert the actions into services.
+     * If they're defined as classes, this has the advantage to autowire them, etc.
      *
      * @param ContainerBuilder $container
      */
     private function processConfiguredServices(ContainerBuilder $container)
     {
-        /** @var array[] $finalSteps */
-        $finalSteps = $container->getParameter('pierstoval_character_manager.steps');
-
-        foreach ($finalSteps as $step) {
-            $action = $step['action'];
-            if ($container->has($action)) {
-                /** @var  $definition */
-                $definition = $container->getDefinition($action);
-                if (!$definition->hasTag(static::ACTION_TAG_NAME)) {
-                    $definition->addTag(static::ACTION_TAG_NAME);
-                }
-            } else {
-                $definition = new Definition($action);
-                $definition->addTag(static::ACTION_TAG_NAME);
-                $serviceId = static::AUTOMATIC_SERVICE_PREFIX.'.'.$step['name'];
-                $container->setDefinition($serviceId, $definition);
-            }
+        if (!$container->hasDefinition(ActionsRegistry::class)) {
+            throw new InvalidConfigurationException('Step actions registry not set in your configuration. Maybe the extension was not processed properly?');
         }
 
-    }
+        $registryDefinition = $container->getDefinition(ActionsRegistry::class);
 
-    /**
-     * Update tagged services with cool stuff.
-     *
-     * @param ContainerBuilder $container
-     */
-    private function processTaggedServices(ContainerBuilder $container)
-    {
-        $definitions = $container->findTaggedServiceIds(static::ACTION_TAG_NAME);
+        foreach ($container->getParameter(static::PARAMETERS_MANAGERS) as $managerName => $config) {
 
-        $registryDefinition = $container->getDefinition('pierstoval.character_manager.actions_registry');
+            /** @var array[] $finalSteps */
+            $finalSteps = $config['steps'];
 
-        /** @var array[] $finalSteps */
-        $finalSteps = $container->getParameter('pierstoval_character_manager.steps');
-
-        // Get all steps by their action name
-        $reorderedByAction = [];
-        foreach ($finalSteps as $step) {
-            $reorderedByAction[$step['action']]  = $step;
-        }
-
-        foreach ($definitions as $serviceId => $params) {
-            $definition = $container->getDefinition($serviceId);
-
-            $class = $definition->getClass();
-
-            // If class extends the abstract one, we inject some cool services.
-            if (is_a($class, StepAction::class, true)) {
-                if ($container->has('doctrine.orm.entity_manager')) {
-                    $definition->addMethodCall('setEntityManager', [new Reference('doctrine.orm.entity_manager')]);
+            foreach ($finalSteps as $step) {
+                $action = $step['action'];
+                if ($container->has($action)) {
+                    /** @var  $definition */
+                    $definition = $container->getDefinition($action);
+                } else {
+                    // If action is not yet a service, it means it's a class name.
+                    // In this case, we create a new service.
+                    $definition = new Definition($action);
+                    $definition
+                        ->setLazy(true)
+                        ->setPrivate(true)
+                        ->setAutowired(true)
+                    ;
+                    $container->setDefinition($action, $definition);
                 }
-                if ($container->has('twig')) {
-                    $definition->addMethodCall('setTwig', [new Reference('twig')]);
+
+                // Make sure character class is injected into service.
+                $definition
+                    // Lazy can be used only if ProxyManager is installed, but it has the benefits of being automatically set in case of.
+                    ->addMethodCall('setCharacterClass', [$config['character_class']])
+                    ->addMethodCall('setStep', [new Expression(sprintf('service("%s").resolve("%s")', StepResolverInterface::class, $step['name']))])
+                    ->addMethodCall('setSteps', [new Expression(sprintf('service("%s").getManagerSteps("%s")', StepResolverInterface::class, $step['manager_name']))])
+                ;
+
+                // If class extends the abstract one, we inject some cool services.
+                if (is_a($definition->getClass(), AbstractStepAction::class, true)) {
+                    $ignoreOnInvalid = ContainerInterface::IGNORE_ON_INVALID_REFERENCE;
+                    $definition
+                        ->addMethodCall('setObjectManager', [new Reference(ObjectManager::class, $ignoreOnInvalid)])
+                        ->addMethodCall('setTwig', [new Reference(Environment::class, $ignoreOnInvalid)])
+                        ->addMethodCall('setRouter', [new Reference(RouterInterface::class, $ignoreOnInvalid)])
+                        ->addMethodCall('setTranslator', [new Reference(TranslatorInterface::class, $ignoreOnInvalid)])
+                    ;
                 }
-                if ($container->has('router')) {
-                    $definition->addMethodCall('setRouter', [new Reference('router')]);
-                }
-                if ($container->has('translator')) {
-                    $definition->addMethodCall('setTranslator', [new Reference('translator')]);
-                }
+
+                // Finally add the step action to the registry
+                $registryDefinition->addMethodCall('addStepAction', [$step['name'], new Reference($action)]);
             }
-
-            // Make sure character class is injected into service.
-            $definition->addMethodCall('setCharacterClass', [$container->getParameter('pierstoval_character_manager.character_class')]);
-
-            // Make sure corresponding step is injected in service
-            if (array_key_exists($serviceId, $reorderedByAction)) {
-                $step = $reorderedByAction[$serviceId];
-                $definition->addMethodCall('setStep', [new Expression("service('pierstoval.character_manager.step_action_resolver').resolve('".$step['name']."')")]);
-            }
-
-            // Make sure all other steps are injected in the service
-            $definition->addMethodCall('setSteps', [new Expression("service('pierstoval.character_manager.step_action_resolver').getSteps()")]);
-
-            // Add action to registry
-            $registryDefinition->addMethodCall('addStepAction', [new Reference($serviceId)]);
         }
     }
 
-    /**
-     * @param string $name
-     *
-     * @return string
-     */
-    private function generateStepLabel($name)
+    private function generateStepLabel(string $name): string
     {
         $name = str_replace(['.', '_', '-'], ' ', $name);
         $name = trim($name);
