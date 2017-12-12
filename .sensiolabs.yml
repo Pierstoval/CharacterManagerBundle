@@ -1,0 +1,3 @@
+rules:
+    symfony.dependency_injection.no_entity_manager_as_parameter:
+        enabled: false
