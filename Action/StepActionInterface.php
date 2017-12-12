@@ -11,7 +11,7 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Action;
 
-use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
+use Pierstoval\Bundle\CharacterManagerBundle\Model\StepInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -29,26 +29,26 @@ interface StepActionInterface
     /**
      * Allows using the Step value object in the action.
      *
-     * @param Step $step
+     * @param StepInterface $step
      */
-    public function setStep(Step $step): void;
+    public function setStep(StepInterface $step): void;
 
     /**
      * Allow having all steps in the action, to redirect to next action.
      *
-     * @param Step[] $steps
+     * @param StepInterface[] $steps
      */
     public function setSteps(array $steps): void;
 
     /**
-     * @return Step
+     * @return StepInterface
      */
-    public function getStep(): Step;
+    public function getStep(): StepInterface;
 
     /**
-     * @return Step[]
+     * @return StepInterface[]
      */
-    public function getSteps();
+    public function getSteps(): iterable;
 
     /**
      * Current Request object that will be used in the Step action.
@@ -60,9 +60,9 @@ interface StepActionInterface
     /**
      * Return the current character that is built in the steps process.
      *
-     * @return mixed
+     * @return array
      */
-    public function getCurrentCharacter();
+    public function getCurrentCharacter(): array;
 
     /**
      * Get a property from the current character.
