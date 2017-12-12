@@ -1,5 +1,5 @@
 {
-    "name": "pierstoval/character_manager",
+    "name": "pierstoval/character-manager",
     "description": "Skeleton of a character manager for games",
     "license": "MIT",
     "type": "symfony-bundle",
@@ -15,23 +15,24 @@
         "doctrine/doctrine-bundle": "^1.6.8",
         "doctrine/inflector": "^1.1",
         "doctrine/orm": "^2.5",
-        "symfony/asset": "^3.3|^4.0",
-        "symfony/expression-language": "^3.3|^4.0",
-        "symfony/framework-bundle": "^3.3|^4.0",
-        "symfony/translation": "^3.3|^4.0",
-        "symfony/twig-bridge": "^3.3|^4.0",
-        "symfony/twig-bundle": "^3.3|^4.0",
-        "symfony/yaml": "^3.3|^4.0",
-        "twig/twig": "^1.34|^2.4"
+        "symfony/expression-language": "^3.4|^4.0",
+        "symfony/framework-bundle": "^3.4|^4.0",
+        "symfony/translation": "^3.4|^4.0",
+        "symfony/yaml": "^3.4|^4.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0",
+        "symfony/twig-bundle": "^3.4|^4.0",
         "pierstoval/web-test-case": "^0.1.8"
+    },
+    "suggest": {
+        "symfony/twig-bundle": "To use Twig templating engine in your actions",
+        "ocramius/proxy-manager": "To use lazy actions"
     },
     "authors": [
         {
             "name": "Alex \"Pierstoval\" Rock Ancelet",
-            "email": "alex.ancelet@gmail.com"
+            "email": "pierstoval@gmail.com"
         }
     ]
 }
