@@ -1,18 +1,21 @@
 input:
     pierstoval_character_manager:
-        character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\CharacterStub
-        steps:
-            - action: steps.default
-              name: named_step
+        managers:
+            main:
+                character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\CharacterStub
+                steps:
+                    named_step:
+                        action: steps.default
 
 output:
     pierstoval_character_manager:
-        character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\CharacterStub
-        steps:
-            named_step:
-                action: steps.default
-                name: 'named_step'
-                label: 'Named Step'
-                depends_on: []
-                onchange_clear: []
-                step: 1
+        managers:
+            main:
+                character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\CharacterStub
+                steps:
+                    named_step:
+                        action: steps.default
+                        label: 'Named Step'
+                        dependencies: []
+                        onchange_clear: []
+                        step: 1

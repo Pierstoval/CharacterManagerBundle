@@ -3,7 +3,7 @@
 /**
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
- * (c) Alexandre Rock Ancelet <alex.ancelet@gmail.com>
+ * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,72 +11,100 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Model;
 
-class Step
+class Step implements StepInterface
 {
-    protected $step;
+    protected $number;
     protected $name;
     protected $action;
     protected $label;
     protected $onchangeClear;
-    protected $dependsOn;
+    protected $dependencies;
+    protected $managerName;
 
-    /**
-     * @param int    $step
-     * @param string $name
-     * @param string $action
-     * @param string $label
-     * @param array  $onchangeClear
-     * @param array  $dependsOn
-     */
-    public function __construct(int $step, string $name, string $action, $label, array $onchangeClear, array $dependsOn)
-    {
-        $this->step          = $step;
+    public function __construct(
+        int $number,
+        string $name,
+        string $label,
+        string $action,
+        string $managerName,
+        array $onchangeClear,
+        array $dependencies
+    ) {
+        $this->number        = $number;
         $this->name          = $name;
         $this->action        = $action;
         $this->label         = $label;
+        $this->managerName   = $managerName;
         $this->onchangeClear = $onchangeClear;
-        $this->dependsOn     = $dependsOn;
+        $this->dependencies  = $dependencies;
     }
 
     public static function createFromData(array $data): Step
     {
         return new static(
-            $data['step'],
+            $data['number'],
             $data['name'],
-            $data['action'],
             $data['label'],
+            $data['action'],
+            $data['manager_name'],
             $data['onchange_clear'],
-            $data['depends_on']
+            $data['dependencies']
         );
     }
 
-    public function getStep(): int
+    /**
+     * {@inheritdoc}
+     */
+    public function getNumber(): int
     {
-        return $this->step;
+        return $this->number;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getAction(): string
     {
         return $this->action;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getLabel(): string
     {
         return $this->label;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getOnchangeClear(): array
     {
         return $this->onchangeClear;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getDependencies(): array
     {
-        return $this->dependsOn;
+        return $this->dependencies;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getManagerName(): string
+    {
+        return $this->managerName;
     }
 }

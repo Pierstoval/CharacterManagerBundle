@@ -4,11 +4,16 @@
 
 # Character manager bundle
 
+This bundle is here to provide a customizable skeleton to create characters based on a list of actions representing each
+step of character creation.
+
 You can configure your steps both from configuration and services.
 
 ## Setup
 
-* Install the bundle
+* Install the bundle<br>
+  If you are using Symfony with Flex, all you have to do is `composer require pierstoval/character-manager`.<br>
+  If you do not have Flex, please refer to the next steps.
 * Add it to your Kernel:
 
    ```php
@@ -40,63 +45,64 @@ You can configure your steps both from configuration and services.
    ```
 
 * **Pro tip:** You can also extend the abstract class `Pierstoval\Bundle\CharacterManagerBundle\Entity\Character`,
-  which already implements the different methods AND is already a Doctrine ORM entity for which you just have to add your
-  own `id` property.
+  which already implements the different methods AND is already a Doctrine ORM Entity for which you just have to add
+  your own `id` property.
 * Load the routing file:
-
-   ```yaml
-    generator_steps:
-        resource: "@PierstovalCharacterManagerBundle/Controller/StepController.php"
-        type:     annotation
-        prefix:   /character_generator/    # Or any prefix you like, actually
-   ```
-
-  This routing file is important because it is the place where character generation will be handled.
+  ```yaml
+   generator_steps:
+       resource: "@PierstovalCharacterManagerBundle/Resources/config/routing.yaml"
+       prefix:   /character_generator/    # Or any prefix you like
+  ```
+  This routing file is important because it is the place where character generation will be handled.<br>
+  **Note:** You can add the `{manager}` route option to your url prefix, when using multiple character managers.
 * You're set for the base setup!<br>Now you have to create your Step actions, for you to be able to generate a character
 
 ## Character generation
 
-
 ### Step actions
 
-To generate characters, you need what I call _Step Action_ classes.
+To generate characters, you need what are called _Step Action_ classes.
 
 One generation step = one class.
 
-Each class must implement `StepActionInterface`, but you can also extend the abstract class `StepAction` which already
- implements the interface and just misses the `execute()` method that you have to implement yourself.
+Each class must implement `StepActionInterface`, but you can also extend the abstract class `AbstractStepAction` which 
+  implements the interface and adds cool logic, so you just have to implement the `execute()` method.
 
 You can define it at a simple class like this:
 
 ```yaml
 pierstoval_character_manager:
-    character_class: 'AppBundle\Entity\Character'
-    steps:
-        step_01:
-            action: AppBundle\StepAction\Step1
-
-services:
-    app.steps.step_1:
-        class: AppBundle\Step\Step01
-        tags: [{ name: pierstoval_character_step }]
+    managers:
+        default:
+            character_class: 'AppBundle\Entity\Character'
+            steps:
+                step_01:
+                    action: App\Step\Step01
 ```
 
-Or as a service like this, by adding the `pierstoval_character_step` tag:
-
-**Note:** Tagged services will work **only if they extend** the abstract class, not only the interface.
+You can also refer to an already existing service:
 
 ```yaml
 pierstoval_character_manager:
-    character_class: 'AppBundle\Entity\Character'
-    steps:
-        step_01:    # Step name, mandatory to reference steps in the app, and must be unique
-            action: app.steps.step_1   # This is the service name
+    managers:
+        default:
+            character_class: 'AppBundle\Entity\Character'
+            steps:
+                step_01:
+                    action: app.steps.step_1
 
 services:
     app.steps.step_1:
-        class: AppBundle\Step\Step01   # Extends abstract StepAction class
-        tags: [{ name: pierstoval_character_step }]
+        class: App\Step\Step01
+        arguments:
+            - ...
 ```
+
+**💯 Note:** You should know that **all action classes** that are **not set as service** will be **defined as service**,
+ autowired and set private, because it is mandatory for the `ActionRegistry` to have them as services.<br>
+However, **your services will be untouched**, to keep consistency with your own logic.
+
+💠 Magic 
 
 ### Important things about steps
 
@@ -104,26 +110,31 @@ Step configuration reference:
 
 ```
 pierstoval_character_manager:
-    steps:
+    managers:
+        # Prototype
         name:
-            action: ~  # Required
-            label:  '' # "Humanized" step name by default, but you can use a translation key too 
-
-            # Steps that the current step may depend on. If step is not set in session, will throw an exception.
-            depends_on: []
-
-            # When this step will be updated, it will clear values for specified steps.
-            onchange_clear: []
+            character_class:      ~ # Required
+            steps:
+                # Prototype
+                name:
+                    # Can be a class or a service. Must implement StepActionInterface or extend abstract Action class.
+                    action:               ~ # Required
+                    label:                ''
+                    # Steps that the current step may depend on. If step is not set in session, will throw an exception.
+                    dependencies:           []
+                    # When this step will be updated, it will clear values for specified steps.
+                    # Only available for the abstract class
+                    onchange_clear:       []
 ```
 
-* Step name must be **unique**, you can refer to it in the application, so be sure it is verbose enough for you, and
-  more informative than just "Step 1", "Step 2", etc.
-* **Steps order matter**! The step number starts at 1 (not zero) and if you change the order of a step, the whole order
-  will change. Keep this in mind when using the `StepAction::goToStep($stepNumber)` method (see below).
-* The `onchange_clear` parameter is only handled in the abstract `StepAction` class, but you can implement it manually
-  in your `StepAction::execute()` methods for example.
+* Step name must be **unique** for each character manager. You can refer to it in the application, so be sure it is
+  verbose enough for you, and more informative than just "Step 1", "Step 2", etc.
+* **Steps order matter**! The step number starts at 1 and if you change the order of a step, the whole order will change.
+  Keep this in mind when using the `AbstractStepAction::goToStep($stepNumber)` method (see below).
+* The `onchange_clear` parameter is only handled in the abstract `AbstractStepAction` class, but you can implement it
+  manually in your `StepActionInterface::execute()` method for example.
 
-### `StepAction` class
+### `AbstractStepAction` class
 
 This is an example of a basic action:
 
@@ -132,33 +143,55 @@ This is an example of a basic action:
 
 namespace AppBundle\Step;
 
-use Pierstoval\Bundle\CharacterManagerBundle\Action\StepAction;
+use Pierstoval\Bundle\CharacterManagerBundle\Action\AbstractStepAction;
+use Symfony\Component\HttpFoundation\Response;
 
-class Step1 extends StepAction
+class Step1 extends AbstractStepAction
 {
     /**
      * {@inheritdoc}
      */
-    public function execute()
+    public function execute(): Response
     {
-        // Must return a `Response` object
+        // Implement your step logic here.
+        
+        return new Response('This step is now rendered');
     }
 }
 ```
 
-#### What is injected in the StepAction class
+#### What is injected in the AbstractStepAction class
 
-When using the abstract class and if the action is **defined as a service**, other services will be injected.
+When you have defined all your character managers configurations, the `StepsPass` will process them and execute certain
+  actions:
 
+* Check if your action is an existing class extending `StepActionInterface`.<br>
+  If it exists and is not defined as a service, it will:
+  * Define it as a service
+  * Make the service `private`, `autowired` and `lazy`.
+
+  If it is already defined as a service, it will not do something else than the next steps:
+* For all actions, now they should be defined as services, so the compiler pass will process them:
+  * If it extends the `AbstractStepAction` class, it will also inject:
+    * The router if available (via the `RouterInterface`)
+    * The entity manager if available (it actually injects the `ObjectManager`, so works with both ORM and ODM).
+    * The translator (it should already be available via `TranslatorInterface`, even if not enabled in the framework).
+    * The Twig environment, if available.
+  * It will inject the step configuration:
+    * The `character_class` option
+    * The `Step` object, retrieved from the `StepActionResolver`
+    * All steps from this manager, again retrieved from the `StepActionResolver`. They're mostly used to manage the 
+    `goToStep()` and `nextStep()` methods in the abstract action class.
+    * Add the action to the `ActionRegistryInterface` service registered in the container.
+    
 And the abstract class has cool new methods, too.
 
 ##### Constructor
 
-First, you must know that the StepAction has **no constructor**.
+First, you must know that the AbstractStepAction has **no constructor**.
 
-Why?
-
-Because you're free to have your own constructor without being forced to rely on the parent's logic.
+Then, you're free to have your own constructor without being forced to rely on the parent's logic, and inject all your
+  necessary services and parameters in the constructor, via autowiring. 
 
 The abstract class only adds some nice stuff to use (and if someone don't extend it, send me a message, I'd like to hear
   why you don't want to extend it), and this cool logic resides in other methods.
@@ -186,7 +219,7 @@ $this->translator;
 Most of the time, you don't need many other things, but if you need other things, just add the `arguments:` or `calls:`
   options to your service definition.
 
-#### The cool methods of the StepAction class
+#### The cool methods of the AbstractStepAction class
 
 I won't talk about the methods that have to be implemented by the interface.
 Just [look at the Interface's code](Action/StepActionInterface.php) if you need, comments are enough.
