@@ -9,23 +9,31 @@
  * file that was distributed with this source code.
  */
 
+use Doctrine\Common\Persistence\ObjectManager;
+use PHPUnit\Framework\TestCase;
 use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler\StepsPass;
-use Pierstoval\Bundle\CharacterManagerBundle\Tests\Action\Stubs\ActionStub;
-use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\AbstractTestCase;
-use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\DefaultTestStep;
-use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Action\StubStep;
+use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry;
+use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Yaml\Yaml;
+use Twig\Environment;
 
 /**
  * Test the extension and the compiler pass.
  */
-class StepsPassTest extends AbstractTestCase
+class StepsPassTest extends TestCase
 {
     /**
      * @dataProvider provideNonWorkingConfigurations
      */
-    public function test compiler pass should not work if extension not processed(array $config, $expectedException, $expectedExceptionMessage, $stepClass)
+    public function test compiler pass should not work if extension not processed(
+        array $config,
+        string $expectedException,
+        string $expectedExceptionMessage,
+        string $stepClass
+    )
     {
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -35,47 +43,12 @@ class StepsPassTest extends AbstractTestCase
         $container = new ContainerBuilder();
         $container
             ->register('steps.default')
-            ->setClass($stepClass);
-
-        $container->setParameter('pierstoval_character_manager.steps', $config);
-
-        $stepsPass->process($container);
-    }
-
-    public function test abstract class service definitions()
-    {
-        $stepsPass = new StepsPass();
-
-        $container = new ContainerBuilder();
-        $container
-            ->register('steps.default')
-            ->setClass(DefaultTestStep::class)
-            ->addTag('pierstoval_character_step')
+            ->setClass($stepClass)
         ;
 
-        $container->register('pierstoval.character_manager.actions_registry');
-        $container->register('doctrine.orm.entity_manager');
-        $container->register('twig');
-        $container->register('router');
-        $container->register('translator');
-
-        // Empty config here, we just test definition tags
-        $container->setParameter('pierstoval_character_manager.steps', []);
-        $container->setParameter('pierstoval_character_manager.character_class', 'test_abstract');
+        $container->setParameter('pierstoval_character_manager.managers', $config);
 
         $stepsPass->process($container);
-
-        // Test references calls are correct.
-        $definition = $container->getDefinition('steps.default');
-
-        $calls = $definition->getMethodCalls();
-
-        static::assertCount(6, $calls);
-        static::assertSame('setEntityManager', $calls[0][0]);
-        static::assertSame('setTwig', $calls[1][0]);
-        static::assertSame('setRouter', $calls[2][0]);
-        static::assertSame('setTranslator', $calls[3][0]);
-        static::assertSame(['setCharacterClass', ['test_abstract']], $calls[4]);
     }
 
     public function provideNonWorkingConfigurations()
@@ -86,19 +59,63 @@ class StepsPassTest extends AbstractTestCase
 
         sort($configFiles);
 
-        $tests = [];
-
         foreach ($configFiles as $k => $file) {
             $config = Yaml::parse(file_get_contents($file));
-            $tests[basename($file)] = [
+            yield basename($file) => [
                 $config['config'],
                 $config['expected_exception'],
                 $config['expected_exception_message'],
                 $config['step_class'],
             ];
         }
+    }
 
-        return $tests;
+    public function test abstract class service definitions()
+    {
+        $stepsPass = new StepsPass();
+
+        $container = new ContainerBuilder();
+        $container
+            ->register('steps.default')
+            ->setClass(ConcreteAbstractActionStub::class)
+        ;
+
+        $container->register(ActionsRegistry::class);
+        $container->register(ObjectManager::class);
+        $container->register(Environment::class);
+        $container->register(RouterInterface::class);
+        $container->register(TranslatorInterface::class);
+
+        // Empty config here, we just test definition tags
+        $container->setParameter('pierstoval_character_manager.managers', [
+            'main' => [
+                'character_class' => 'test_abstract',
+                'steps' => [
+                    '01' => [
+                        'action' => 'steps.default',
+                        'label' => '',
+                        'onchange_clear' => [],
+                        'dependencies' => [],
+                    ],
+                ],
+            ],
+        ]);
+
+        $stepsPass->process($container);
+
+        // Test references calls are correct.
+        $definition = $container->getDefinition('steps.default');
+
+        $calls = $definition->getMethodCalls();
+
+        static::assertCount(7, $calls);
+        static::assertSame('setCharacterClass', $calls[0][0]);
+        static::assertSame('setStep', $calls[1][0]);
+        static::assertSame('setSteps', $calls[2][0]);
+        static::assertSame('setObjectManager', $calls[3][0]);
+        static::assertSame('setTwig', $calls[4][0]);
+        static::assertSame('setRouter', $calls[5][0]);
+        static::assertSame('setTranslator', $calls[6][0]);
     }
 
     public function test simple classes are automatically registered as services()
@@ -107,90 +124,98 @@ class StepsPassTest extends AbstractTestCase
 
         $container = new ContainerBuilder();
 
-        $container->register('pierstoval.character_manager.actions_registry');
-        $container->register('doctrine.orm.entity_manager');
-        $container->register('twig');
-        $container->register('router');
-        $container->register('translator');
+        $container->register(ActionsRegistry::class);
+        $container->register(ObjectManager::class);
+        $container->register(Environment::class);
+        $container->register(RouterInterface::class);
+        $container->register(TranslatorInterface::class);
 
         // Empty config here, we just test definition tags
-        $step1 = [
-            'action'         => StubStep::class,
-            'name'           => 'step_1',
-            'label'          => 'Step 1',
-            'depends_on'     => [],
-            'onchange_clear' => [],
-            'step'           => 1,
-        ];
-        $container->setParameter('pierstoval_character_manager.steps', ['step_1' => $step1]);
-        $container->setParameter('pierstoval_character_manager.character_class', 'test_abstract');
-
-        $stepsPass->process($container);
-
-        // Test references calls are correct.
-        $computedServiceName = StepsPass::AUTOMATIC_SERVICE_PREFIX.'.'.$step1['name'];
-        static::assertTrue($container->hasDefinition($computedServiceName));
-
-        $definition = $container->getDefinition($computedServiceName);
-
-        static::assertTrue($definition->hasTag(StepsPass::ACTION_TAG_NAME));
-    }
-
-    public function test stub class service definitions()
-    {
-        $stepsPass = new StepsPass();
-
-        $container = new ContainerBuilder();
-        $container
-            ->register('steps.default')
-            ->setClass(StubStep::class)
-            ->addTag('pierstoval_character_step')
-        ;
-
-        $container->register('pierstoval.character_manager.actions_registry');
-
-        // Empty config here, we just test definition tags
-        $container->setParameter('pierstoval_character_manager.steps', []);
-        $container->setParameter('pierstoval_character_manager.character_class', 'test_stub');
-
-        $stepsPass->process($container);
-
-        $definition = $container->getDefinition('steps.default');
-
-        $calls = $definition->getMethodCalls();
-
-        static::assertCount(2, $calls);
-        static::assertSame(['setCharacterClass', ['test_stub']], $calls[0]);
-    }
-
-    public function test non tagged services are automatically tagged()
-    {
-        $stepsPass = new StepsPass();
-
-        $container = new ContainerBuilder();
-
-        $container->setParameter('pierstoval_character_manager.character_class', ActionStub::class);
-
-        // Default service without the tag
-        $container->register('steps.default')->setClass(StubStep::class);
-        $container->register('pierstoval.character_manager.actions_registry');
-
-        // Need fully operational config here, processed by the extension
-        $container->setParameter('pierstoval_character_manager.steps', [
-            'step_1' => [
-                'action'         => 'steps.default',
-                'name'           => 'step_1',
-                'label'          => 'Step 1',
-                'depends_on'     => [],
-                'onchange_clear' => [],
-                'step'           => 1,
+        $container->setParameter('pierstoval_character_manager.managers', [
+            'main' => [
+                'character_class' => 'test_abstract',
+                'steps' => [
+                    '01' => [
+                        'action'         => ConcreteAbstractActionStub::class,
+                        'name'           => 'step_1',
+                        'label'          => 'Step 1',
+                        'dependencies'     => [],
+                        'onchange_clear' => [],
+                        'number'         => 1,
+                    ],
+                ],
             ],
         ]);
 
         $stepsPass->process($container);
 
-        $definition = $container->getDefinition('steps.default');
+        // Test references calls are correct.
+        static::assertTrue($container->hasDefinition(ConcreteAbstractActionStub::class));
 
-        static::assertTrue($definition->hasTag('pierstoval_character_step'));
+        $definition = $container->getDefinition(ConcreteAbstractActionStub::class);
+
+        // These should be set by default on every action class not already registered as service
+        static::assertTrue($definition->isPrivate());
+        static::assertTrue($definition->isAutowired());
+        static::assertTrue($definition->isLazy());
+        static::assertSame(ConcreteAbstractActionStub::class, $definition->getClass());
+    }
+
+    public function test steps order starts from one()
+    {
+        $stepsPass = new StepsPass();
+        $container = new ContainerBuilder();
+
+        $container->register(ActionsRegistry::class);
+
+        $inlineStub1 = new class extends ConcreteAbstractActionStub
+        {};
+        $inlineStub2 = new class extends ConcreteAbstractActionStub{};
+
+        $container->setParameter('pierstoval_character_manager.managers', [
+            'main' => [
+                'character_class' => 'test_abstract',
+                'steps' => [
+                    '01' => [
+                        'action'         => ConcreteAbstractActionStub::class,
+                        'label'          => 'Step 1',
+                        'dependencies'     => [],
+                        'onchange_clear' => [],
+                    ],
+                    '02' => [
+                        'action'         => ConcreteAbstractActionStub::class,
+                        'label'          => 'Step 1',
+                        'dependencies'     => [],
+                        'onchange_clear' => [],
+                    ],
+                ],
+            ],
+            'another_manager' => [
+                'character_class' => 'test_abstract',
+                'steps' => [
+                    '01' => [
+                        'action'         => \get_class($inlineStub1),
+                        'label'          => 'Step 1',
+                        'dependencies'     => [],
+                        'onchange_clear' => [],
+                    ],
+                    '02' => [
+                        'action'         => \get_class($inlineStub2),
+                        'label'          => 'Step 1',
+                        'dependencies'     => [],
+                        'onchange_clear' => [],
+                    ],
+                ],
+            ],
+        ]);
+
+        $stepsPass->process($container);
+
+        $managersConfiguration = $container->getParameter('pierstoval_character_manager.managers');
+
+        static::assertSame(1, $managersConfiguration['main']['steps']['01']['number']);
+        static::assertSame(2, $managersConfiguration['main']['steps']['02']['number']);
+        static::assertSame(1, $managersConfiguration['another_manager']['steps']['01']['number']);
+        static::assertSame(2, $managersConfiguration['another_manager']['steps']['02']['number']);
     }
 }

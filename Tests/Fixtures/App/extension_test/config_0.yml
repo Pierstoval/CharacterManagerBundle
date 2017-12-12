@@ -1,7 +1,11 @@
 input:
     pierstoval_character_manager:
-        character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\CharacterStub
+        managers:
+            main:
+                character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\CharacterStub
 
 output:
     pierstoval_character_manager:
-        character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\TestBundle\Entity\CharacterStub
+        managers:
+            main:
+                character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\CharacterStub
