@@ -30,12 +30,10 @@ You can configure your steps both from configuration and services.
    }
    ```
 
-* Create a `Character` class (for now, only one is allowed per app. FOSUserBundle's style, sorry about that guys, but
-  it's not very relevant for now to have more than one character class)
-
+* Create a `Character` class, for your first character manager:
    ```php
    <?php
-   namespace AppBundle\Entity;
+   namespace App\Entity;
   
    use Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface;
  
@@ -74,7 +72,7 @@ You can define it at a simple class like this:
 pierstoval_character_manager:
     managers:
         default:
-            character_class: 'AppBundle\Entity\Character'
+            character_class: 'App\Entity\Character'
             steps:
                 step_01:
                     action: App\Step\Step01
@@ -86,7 +84,7 @@ You can also refer to an already existing service:
 pierstoval_character_manager:
     managers:
         default:
-            character_class: 'AppBundle\Entity\Character'
+            character_class: 'App\Entity\Character'
             steps:
                 step_01:
                     action: app.steps.step_1
@@ -141,7 +139,7 @@ This is an example of a basic action:
 ```php
 <?php
 
-namespace AppBundle\Step;
+namespace App\Step;
 
 use Pierstoval\Bundle\CharacterManagerBundle\Action\AbstractStepAction;
 use Symfony\Component\HttpFoundation\Response;
