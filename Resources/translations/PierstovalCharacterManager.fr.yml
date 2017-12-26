@@ -1,7 +1,0 @@
-steps:
-    dependency_not_set: |
-        L'étape "%current_step%" dépend de "%dependency%", mais celle-ci n'est pas présente
-        dans le personnage en cours de création...
-    reset:
-        character: 'Le personnage en cours de création a été réinitialisé !'
-        step: 'L''étape a été correctement réinitialisée !'

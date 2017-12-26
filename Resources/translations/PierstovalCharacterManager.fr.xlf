@@ -1,0 +1,18 @@
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="fr" datatype="plaintext" original="PierstovalCharacterManager.fr.xlf">
+        <body>
+            <trans-unit id="steps.dependency_not_set">
+                <source>steps.dependency_not_set</source>
+                <target>L'étape "%current_step%" dépend de "%dependency%", mais celle-ci n'est pas présente dans le personnage en cours de création...</target>
+            </trans-unit>
+            <trans-unit id="steps.reset.character">
+                <source>steps.reset.character</source>
+                <target>Le personnage en cours de création a été réinitialisé !</target>
+            </trans-unit>
+            <trans-unit id="steps.reset.step">
+                <source>steps.reset.step</source>
+                <target>L'étape a été correctement réinitialisée !</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
