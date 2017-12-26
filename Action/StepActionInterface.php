@@ -12,6 +12,7 @@
 namespace Pierstoval\Bundle\CharacterManagerBundle\Action;
 
 use Pierstoval\Bundle\CharacterManagerBundle\Model\StepInterface;
+use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -27,18 +28,9 @@ interface StepActionInterface
     public function execute(): Response;
 
     /**
-     * Allows using the Step value object in the action.
-     *
-     * @param StepInterface $step
+     * Should be executed when compiling the service in the container, or before it's executed.
      */
-    public function setStep(StepInterface $step): void;
-
-    /**
-     * Allow having all steps in the action, to redirect to next action.
-     *
-     * @param StepInterface[] $steps
-     */
-    public function setSteps(array $steps): void;
+    public function configure(string $managerName, string $stepName, string $characterClassName, StepResolverInterface $resolver): void;
 
     /**
      * @return StepInterface
@@ -46,46 +38,9 @@ interface StepActionInterface
     public function getStep(): StepInterface;
 
     /**
-     * @return StepInterface[]
-     */
-    public function getSteps(): iterable;
-
-    /**
      * Current Request object that will be used in the Step action.
      *
      * @param Request $request
      */
     public function setRequest(Request $request): void;
-
-    /**
-     * Return the current character that is built in the steps process.
-     *
-     * @return array
-     */
-    public function getCurrentCharacter(): array;
-
-    /**
-     * Get a property from the current character.
-     * Default null can be managed to retrieve current step's name.
-     *
-     * @param string|null $key
-     *
-     * @return mixed
-     */
-    public function getCharacterProperty(string $key = null);
-
-    /**
-     * Any action must be injected the character class, because are not always defined as services.
-     * Called automatically by compiler pass if service is tagged.
-     *
-     * @param string $class
-     */
-    public function setCharacterClass(string $class): void;
-
-    /**
-     * Get configured character class.
-     *
-     * @return string
-     */
-    public function getCharacterClass(): string;
 }
