@@ -14,6 +14,7 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Action;
 use Doctrine\Common\Persistence\ObjectManager;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\StepInterface;
+use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface;
 use Twig\Environment;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,49 +29,58 @@ abstract class AbstractStepAction implements StepActionInterface
      */
     protected static $translationDomain = 'PierstovalCharacterBundle';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $class;
 
-    /**
-     * @var Request
-     */
+    /** @var Request */
     protected $request;
 
-    /**
-     * @var StepInterface
-     */
+    /** @var StepInterface */
     protected $step;
 
-    /**
-     * @var StepInterface[]
-     */
+    /** @var StepInterface[] */
     protected $steps = [];
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $stepName;
-    /**
-     * @var RouterInterface
-     */
+
+    /** @var string */
+    protected $managerName;
+
+    /** @var RouterInterface */
     protected $router;
 
-    /**
-     * @var ObjectManager
-     */
+    /** @var ObjectManager */
     protected $em;
 
-    /**
-     * @var Environment
-     */
+    /** @var Environment */
     protected $twig;
 
-    /**
-     * @var TranslatorInterface
-     */
+    /** @var TranslatorInterface */
     protected $translator;
+
+    public function configure(string $managerName, string $stepName, string $characterClassName, StepResolverInterface $resolver): void
+    {
+        if (!class_exists($characterClassName) || !is_a($characterClassName, CharacterInterface::class, true)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Step action must be a valid class implementing %s. "%s" given.',
+                CharacterInterface::class, class_exists($characterClassName) ? $characterClassName : \gettype($characterClassName)
+            ));
+        }
+
+        $this->class = $characterClassName;
+        $this->managerName = $managerName;
+        $this->step = $resolver->resolve($stepName, $managerName);
+        $this->setSteps($resolver->getManagerSteps($managerName));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setRequest(Request $request): void
+    {
+        $this->request = $request;
+    }
 
     public function setRouter(RouterInterface $router): void
     {
@@ -92,99 +102,30 @@ abstract class AbstractStepAction implements StepActionInterface
         $this->translator = $translator;
     }
 
+     public function getStep(): StepInterface
+     {
+         if (!$this->step) {
+             throw new \RuntimeException('Step is not defined in current step action. Did you run the "configure()" method?');
+         }
+
+         return $this->step;
+     }
+
     /**
      * {@inheritdoc}
      */
-    public function setCharacterClass(string $class): void
+    protected function getCurrentCharacter(): array
     {
-        if (!class_exists($class) || !is_a($class, CharacterInterface::class, true)) {
-            throw new \InvalidArgumentException(sprintf(
-                'Step action must be a valid class implementing %s. "%s" given.',
-                CharacterInterface::class, class_exists($class) ? $class : \gettype($class)
-            ));
-        }
-
-        $this->class = $class;
+        return $this->getSession()->get('character.'.$this->managerName, []) ?: [];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getCharacterClass(): string
-    {
-        return $this->class;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setStep(StepInterface $step): void
-    {
-        $this->step = $step;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStep(): StepInterface
-    {
-        return $this->step;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setSteps(array $steps): void
-    {
-        foreach ($steps as $step) {
-            if (!$step instanceof StepInterface) {
-                throw new \InvalidArgumentException(sprintf(
-                    'Expected %s instance, "%s" given.',
-                    StepActionInterface::class, \is_object($step) ? \get_class($step) : \gettype($step)
-                ));
-            }
-        }
-
-        $this->steps = $steps;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getSteps(): array
-    {
-        return $this->steps;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setRequest(Request $request): void
-    {
-        $this->request = $request;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCurrentCharacter(): array
-    {
-        return $this->getSession()->get('character.'.$this->getManagerName(), []) ?: [];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCharacterProperty(string $key = null)
+    protected function getCharacterProperty(string $key = null)
     {
         if (null === $key) {
-            if (!$this->step instanceof StepInterface) {
-                throw new \InvalidArgumentException(sprintf(
-                    'To get current step you need to use %s:%s method and inject a StepInterface instance.',
-                    __CLASS__, 'setStep'
-                ));
-            }
-            $key = $this->step->getName();
+            $key = $this->getStep()->getName();
         }
 
         $character = $this->getCurrentCharacter();
@@ -197,7 +138,7 @@ abstract class AbstractStepAction implements StepActionInterface
      */
     protected function nextStep(): RedirectResponse
     {
-        return $this->goToStep($this->step->getNumber() + 1);
+        return $this->goToStep($this->getStep()->getNumber() + 1);
     }
 
     /**
@@ -215,7 +156,7 @@ abstract class AbstractStepAction implements StepActionInterface
 
         foreach ($this->steps as $step) {
             if ($step->getNumber() === $stepNumber) {
-                $this->getSession()->set('step.'.$this->getManagerName(), $stepNumber);
+                $this->getSession()->set('step.'.$this->managerName, $stepNumber);
 
                 return new RedirectResponse($this->router->generate('pierstoval_character_generator_step', ['requestStep' => $step->getName()]));
             }
@@ -231,14 +172,14 @@ abstract class AbstractStepAction implements StepActionInterface
     {
         $character = $this->getCurrentCharacter();
 
-        $character[$this->step->getName()] = $value;
+        $character[$this->getStep()->getName()] = $value;
 
-        foreach ($this->step->getOnchangeClear() as $stepToDisable) {
+        foreach ($this->getStep()->getOnchangeClear() as $stepToDisable) {
             unset($character[$stepToDisable]);
         }
 
-        $this->getSession()->set('step.'.$this->getManagerName(), $this->step->getNumber());
-        $this->getSession()->set('character.'.$this->getManagerName(), $character);
+        $this->getSession()->set('step.'.$this->managerName, $this->getStep()->getNumber());
+        $this->getSession()->set('character.'.$this->managerName, $character);
     }
 
     /**
@@ -290,15 +231,20 @@ abstract class AbstractStepAction implements StepActionInterface
         return $session;
     }
 
-    protected function getManagerName(): string
+    /**
+     * {@inheritdoc}
+     */
+    private function setSteps(array $steps): void
     {
-        if (!$this->step instanceof StepInterface) {
-            throw new \InvalidArgumentException(sprintf(
-                'To get current step you need to use %s:%s method and inject a StepInterface instance.',
-                __CLASS__, 'setStep'
-            ));
+        foreach ($steps as $step) {
+            if (!$step instanceof StepInterface) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Expected %s instance, "%s" given.',
+                    StepActionInterface::class, \is_object($step) ? \get_class($step) : \gettype($step)
+                ));
+            }
         }
 
-        return $this->step->getManagerName();
+        $this->steps = $steps;
     }
-}
+ }
