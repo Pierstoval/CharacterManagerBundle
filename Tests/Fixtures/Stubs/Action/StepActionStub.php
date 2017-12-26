@@ -14,7 +14,6 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\StepInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface;
-use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\CharacterStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Model\StepStub;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,44 +27,13 @@ class StepActionStub implements StepActionInterface
         return new Response('Stub response');
     }
 
-    public function setStep(StepInterface $step): void
-    {
-    }
-
-    public function setSteps(array $steps): void
-    {
-    }
-
     public function getStep(): StepInterface
     {
         return $this->step ?: ($this->step = StepStub::createStub());
     }
 
-    public function getSteps(): array
-    {
-        return [$this->getStep()];
-    }
-
     public function setRequest(Request $request): void
     {
-    }
-
-    public function getCurrentCharacter(): array
-    {
-        return [];
-    }
-
-    public function getCharacterProperty(string $key = null)
-    {
-    }
-
-    public function setCharacterClass(string $class): void
-    {
-    }
-
-    public function getCharacterClass(): string
-    {
-        return CharacterStub::class;
     }
 
     public function configure(string $managerName, string $stepName, string $characterClassName, StepResolverInterface $resolver): void
