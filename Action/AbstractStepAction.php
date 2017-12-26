@@ -247,4 +247,4 @@ abstract class AbstractStepAction implements StepActionInterface
 
         $this->steps = $steps;
     }
- }
+}

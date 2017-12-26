@@ -53,7 +53,7 @@ abstract class AbstractGeneratorControllerTest extends TestCase
             $actionsRegistry = $this->createMock(ActionsRegistryInterface::class);
         }
 
-        return new GeneratorController($resolver, $translator, $router, $actionsRegistry);
+        return new GeneratorController($resolver, $actionsRegistry, $router, $translator);
     }
 
     protected function createManagerConfiguration(string $managerName, array $steps = []): array

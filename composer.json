@@ -23,7 +23,6 @@
         "pierstoval/web-test-case": "^0.2.0",
         "symfony/translation": "^3.4|^4.0",
         "symfony/twig-bundle": "^3.4|^4.0",
-        "symfony/phpunit-bridge": "^3.4|^4.0",
         "symfony/yaml": "^3.4|^4.0"
     },
     "suggest": {
