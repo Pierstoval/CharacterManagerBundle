@@ -17,15 +17,16 @@
         "doctrine/orm": "^2.5",
         "symfony/expression-language": "^3.4|^4.0",
         "symfony/framework-bundle": "^3.4|^4.0",
-        "symfony/translation": "^3.4|^4.0",
         "symfony/yaml": "^3.4|^4.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0",
+        "symfony/translation": "^3.4|^4.0",
         "symfony/twig-bundle": "^3.4|^4.0",
         "pierstoval/web-test-case": "^0.1.8"
     },
     "suggest": {
+        "symfony/translation": "To translate the messages instead of using the default keys",
         "symfony/twig-bundle": "To use Twig templating engine in your actions",
         "ocramius/proxy-manager": "To use lazy actions"
     },

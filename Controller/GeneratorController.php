@@ -82,7 +82,7 @@ class GeneratorController
 
         $session->set('character', []);
         $session->set('step', 1);
-        $session->getFlashBag()->add('success', $this->translator->trans('steps.reset.character', [], 'PierstovalCharacterManager'));
+        $session->getFlashBag()->add('success', $this->trans('steps.reset.character', [], 'PierstovalCharacterManager'));
 
         return new RedirectResponse($this->router->generate('pierstoval_character_generator_index'));
     }
@@ -108,7 +108,7 @@ class GeneratorController
 
         $session->set('character', $character);
 
-        $session->getFlashBag()->add('success', $this->translator->trans('steps.reset.step', [], 'PierstovalCharacterManager'));
+        $session->getFlashBag()->add('success', $this->trans('steps.reset.step', [], 'PierstovalCharacterManager'));
 
         $routeParams = ['requestStep' => $step->getName()];
 
@@ -136,7 +136,7 @@ class GeneratorController
         // Make sure that dependencies exist, else redirect to first step with a message.
         foreach ($step->getDependencies() as $stepName) {
             if (!isset($character[$resolvedManagerName][$stepName])) {
-                $msg = $this->translator->trans('steps.dependency_not_set', [
+                $msg = $this->trans('steps.dependency_not_set', [
                     '%current_step%' => $step->getLabel(),
                     '%dependency%' => $this->stepsResolver->resolve($stepName, $resolvedManagerName)->getLabel(),
                 ], 'PierstovalCharacterManager');
@@ -153,6 +153,15 @@ class GeneratorController
 
         // Execute the action and expect a response. Symfony will do the rest.
         return $action->execute();
+    }
+
+    private function trans(string $message, array $parameters = [], string $translationDomain = null): string
+    {
+        if (!$this->translator) {
+            return strtr($message, $parameters);
+        }
+
+        return (string) $this->translator->trans($message, $parameters, $translationDomain ?: 'messages');
     }
 
     private function getSession(Request $request): Session

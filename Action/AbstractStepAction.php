@@ -251,11 +251,10 @@ abstract class AbstractStepAction implements StepActionInterface
             $type = 'error';
         }
 
-        if ($this->translator) {
-            $msg = $this->translator->trans($msg, $msgParams, static::$translationDomain);
-        } elseif (\count($msgParams)) {
-            $msg = strtr($msg, $msgParams);
-        }
+        $msg = $this->translator
+            ? $this->translator->trans($msg, $msgParams, static::$translationDomain)
+            : strtr($msg, $msgParams)
+        ;
 
         $session = $this->getSession();
 
