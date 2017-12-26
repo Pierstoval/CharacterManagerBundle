@@ -1,0 +1,4 @@
+
+generator_steps:
+    resource: "@PierstovalCharacterManagerBundle/Resources/config/routing.xml"
+    prefix: '/{manager}'
