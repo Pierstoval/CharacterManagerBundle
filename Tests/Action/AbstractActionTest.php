@@ -41,6 +41,52 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         $stub->{$method}(...$arguments);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Step action must be a valid class implementing Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface. "stdClass" given.
+     */
+    public function test configure with wrong character class throws exception()
+    {
+        $stub = new ConcreteAbstractActionStub();
+        $stub->configure('', '', \stdClass::class, $this->createMock(StepResolverInterface::class));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Step action must be a valid class implementing Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface. "string" given.
+     */
+    public function test configure with wrong character class type throws exception()
+    {
+        $stub = new ConcreteAbstractActionStub();
+        $stub->configure('', '', 'wrong_class_name', $this->createMock(StepResolverInterface::class));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Expected Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface instance, "stdClass" given.
+     */
+    public function test configure with wrong steps class throws exception()
+    {
+        $stub = new ConcreteAbstractActionStub();
+        $resolver = $this->createMock(StepResolverInterface::class);
+        $resolver->expects($this->once())->method('resolve');
+        $resolver->expects($this->once())->method('getManagerSteps')->willReturn([new \stdClass]);
+        $stub->configure('', '', CharacterStub::class, $resolver);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Expected Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface instance, "string" given.
+     */
+    public function test configure with wrong steps type throws exception()
+    {
+        $stub = new ConcreteAbstractActionStub();
+        $resolver = $this->createMock(StepResolverInterface::class);
+        $resolver->expects($this->once())->method('resolve');
+        $resolver->expects($this->once())->method('getManagerSteps')->willReturn(['error']);
+        $stub->configure('', '', CharacterStub::class, $resolver);
+    }
+
     public function provideMethodsThatDependOnStepObject()
     {
         yield ['updateCharacterStep', ['']];

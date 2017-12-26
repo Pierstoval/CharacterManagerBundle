@@ -11,6 +11,9 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller\GeneratorController;
 
+use Pierstoval\Bundle\CharacterManagerBundle\Controller\GeneratorController;
+use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistryInterface;
+use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller\AbstractGeneratorControllerTest;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -62,6 +65,40 @@ class ResetCharacterActionTest extends AbstractGeneratorControllerTest
         static::assertSame([], $session->get('character'));
         static::assertSame(1, $session->get('step'));
         static::assertSame(['Translated flash message'], $session->getFlashBag()->get('success'));
+        static::assertInstanceOf(RedirectResponse::class, $response);
+        static::assertSame('/generate/', $response->headers->get('location'));
+    }
+
+    public function test reset session and flash message without translator()
+    {
+        $router = $this->createMock(RouterInterface::class);
+        $router->expects(self::once())
+            ->method('generate')
+            ->with('pierstoval_character_generator_index')
+            ->willReturn('/generate/')
+        ;
+
+        $controller = new GeneratorController(
+            $this->createMock(StepResolverInterface::class),
+            $this->createMock(ActionsRegistryInterface::class),
+            $router
+        );
+
+        $request = $this->createRequest();
+        $session = $request->getSession();
+
+        if (!$session) {
+            throw new \RuntimeException('Session should have been set in the test.');
+        }
+
+        $session->set('step', 10);
+        $session->set('character', ['01' => 'step value is set and has to be removed']);
+
+        $response = $controller->resetCharacterAction($request);
+
+        static::assertSame([], $session->get('character'));
+        static::assertSame(1, $session->get('step'));
+        static::assertSame(['steps.reset.character'], $session->getFlashBag()->get('success'));
         static::assertInstanceOf(RedirectResponse::class, $response);
         static::assertSame('/generate/', $response->headers->get('location'));
     }
