@@ -14,6 +14,7 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\AbstractStepAction;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Mostly here to make protected methods public in order to test them.
@@ -43,5 +44,20 @@ class ConcreteAbstractActionStub extends AbstractStepAction
     public function goToStep(int $stepNumber): RedirectResponse
     {
         return parent::goToStep($stepNumber);
+    }
+
+    public function getCurrentCharacter(): array
+    {
+        return parent::getCurrentCharacter();
+    }
+
+    public function getCharacterProperty(string $key = null)
+    {
+        return parent::getCharacterProperty($key);
+    }
+
+    public function getSession(): Session
+    {
+        return parent::getSession();
     }
 }

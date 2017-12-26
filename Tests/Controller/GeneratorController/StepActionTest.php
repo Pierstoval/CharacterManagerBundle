@@ -15,6 +15,7 @@ use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolver;
 use \Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller\AbstractGeneratorControllerTest;
+use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\CharacterStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Model\StepStub;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,7 +64,7 @@ class StepActionTest extends AbstractGeneratorControllerTest
         $step = StepStub::createStub();
 
         $action = new ConcreteAbstractActionStub();
-        $action->setStep($step);
+        $action->configure($step->getManagerName(), $step->getName(), CharacterStub::class, $resolver);
 
         $registry = new ActionsRegistry();
         $registry->addStepAction('test_manager', $action);
@@ -110,7 +111,7 @@ class StepActionTest extends AbstractGeneratorControllerTest
         $step2 = $resolver->resolve('second_step');
 
         $action = new ConcreteAbstractActionStub();
-        $action->setStep($step2);
+        $action->configure($step2->getManagerName(), $step2->getName(), CharacterStub::class, $resolver);
 
         $registry = new ActionsRegistry();
         $registry->addStepAction('test_manager', $action);

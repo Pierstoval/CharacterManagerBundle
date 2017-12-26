@@ -108,14 +108,12 @@ class StepsPassTest extends TestCase
 
         $calls = $definition->getMethodCalls();
 
-        static::assertCount(7, $calls);
-        static::assertSame('setCharacterClass', $calls[0][0]);
-        static::assertSame('setStep', $calls[1][0]);
-        static::assertSame('setSteps', $calls[2][0]);
-        static::assertSame('setObjectManager', $calls[3][0]);
-        static::assertSame('setTwig', $calls[4][0]);
-        static::assertSame('setRouter', $calls[5][0]);
-        static::assertSame('setTranslator', $calls[6][0]);
+        static::assertCount(5, $calls);
+        static::assertSame('configure', $calls[0][0]);
+        static::assertSame('setObjectManager', $calls[1][0]);
+        static::assertSame('setTwig', $calls[2][0]);
+        static::assertSame('setRouter', $calls[3][0]);
+        static::assertSame('setTranslator', $calls[4][0]);
     }
 
     public function test simple classes are automatically registered as services()
