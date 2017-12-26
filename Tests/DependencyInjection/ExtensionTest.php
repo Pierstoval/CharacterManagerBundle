@@ -69,7 +69,7 @@ class ExtensionTest extends TestCase
     {
         $dir = __DIR__.'/../Fixtures/App/extension_test/';
 
-        $configFiles = glob($dir.'config_*.yml');
+        $configFiles = glob($dir.'config_*.yaml');
 
         sort($configFiles);
 

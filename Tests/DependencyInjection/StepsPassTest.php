@@ -55,7 +55,7 @@ class StepsPassTest extends TestCase
     {
         $dir = __DIR__ . '/../Fixtures/App/compiler_pass_test_non_working/';
 
-        $configFiles = glob($dir . 'compiler_config_*.yml');
+        $configFiles = glob($dir . 'compiler_config_*.yaml');
 
         sort($configFiles);
 
