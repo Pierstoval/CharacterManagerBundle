@@ -69,10 +69,6 @@ class StepResolver implements StepResolverInterface
 
     private function resolveManagerSteps(string $managerName = null): void
     {
-        if (!$this->managersConfiguration) {
-            throw new \RuntimeException('No character managers to resolve configuration for.');
-        }
-
         $managerName = $this->resolveManagerName($managerName);
 
         if (isset($this->steps[$managerName])) {
@@ -93,6 +89,10 @@ class StepResolver implements StepResolverInterface
 
     public function resolveManagerName(string $managerName = null): string
     {
+        if (\count($this->managersConfiguration) === 0) {
+            throw new \RuntimeException('No character managers to resolve configuration for.');
+        }
+
         if (!$managerName && \count($this->managersConfiguration) > 0) {
             if (\count($this->managersConfiguration) === 1) {
                 return array_keys($this->managersConfiguration)[0];
@@ -111,5 +111,4 @@ class StepResolver implements StepResolverInterface
 
         return $managerName;
     }
-
 }
