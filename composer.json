@@ -12,14 +12,14 @@
     },
     "require": {
         "php": "^7.1",
-        "doctrine/doctrine-bundle": "^1.6.8",
         "doctrine/inflector": "^1.1",
-        "doctrine/orm": "^2.5",
         "symfony/expression-language": "^3.4|^4.0",
         "symfony/framework-bundle": "^3.4|^4.0",
         "symfony/yaml": "^3.4|^4.0"
     },
     "require-dev": {
+        "doctrine/doctrine-bundle": "^1.6.8",
+        "doctrine/orm": "^2.5",
         "phpunit/phpunit": "^6.0",
         "symfony/translation": "^3.4|^4.0",
         "symfony/twig-bundle": "^3.4|^4.0",
@@ -28,6 +28,8 @@
     "suggest": {
         "symfony/translation": "To translate the messages instead of using the default keys",
         "symfony/twig-bundle": "To use Twig templating engine in your actions",
+        "doctrine/doctrine-bundle": "To inject the object manager in steps and map your Character entities with the ORM",
+        "doctrine/orm": "To inject the object manager in steps and map your Character entities with the ORM",
         "ocramius/proxy-manager": "To use lazy actions"
     },
     "authors": [
