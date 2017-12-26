@@ -10,7 +10,9 @@
         <service id="Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry" />
         <service id="Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistryInterface" alias="Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry" />
 
-        <service id="Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolver" />
+        <service id="Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolver">
+            <argument key="$managersConfiguration">%pierstoval_character_manager.managers%</argument>
+        </service>
         <service id="Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface" alias="Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolver" />
 
         <service id="Pierstoval\Bundle\CharacterManagerBundle\Controller\GeneratorController" public="true" />
