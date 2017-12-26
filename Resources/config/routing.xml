@@ -4,29 +4,25 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="fos_user_security_login" path="/login" methods="GET POST">
-        <default key="_controller">fos_user.security.controller:loginAction</default>
-    </route>
-
     <route id="pierstoval_character_generator_index" path="/generate">
-        <default key="_controller">Pierstoval\Bundle\CharacterManagerBundle\Controller\StepController:indexAction</default>
-        <default key="manager">null</default>
+        <default key="_controller">Pierstoval\Bundle\CharacterManagerBundle\Controller\GeneratorController:indexAction</default>
+        <default key="manager" xsi:nil="true" />
     </route>
 
     <route id="pierstoval_character_generator_step" path="/generate/{requestStep}">
-        <default key="_controller">Pierstoval\Bundle\CharacterManagerBundle\Controller\StepController:stepAction</default>
-        <default key="manager">null</default>
+        <default key="_controller">Pierstoval\Bundle\CharacterManagerBundle\Controller\GeneratorController:stepAction</default>
+        <default key="manager" xsi:nil="true" />
         <requirement key="requestStep">[\w-]+</requirement>
     </route>
 
     <route id="pierstoval_character_generator_reset" path="/reset/">
-        <default key="_controller">Pierstoval\Bundle\CharacterManagerBundle\Controller\StepController:resetCharacterAction</default>
-        <default key="manager">null</default>
+        <default key="_controller">Pierstoval\Bundle\CharacterManagerBundle\Controller\GeneratorController:resetCharacterAction</default>
+        <default key="manager" xsi:nil="true" />
     </route>
 
     <route id="pierstoval_character_generator_reset_step" path="/reset/{requestStep}">
-        <default key="_controller">Pierstoval\Bundle\CharacterManagerBundle\Controller\StepController:resetStepAction</default>
-        <default key="manager">null</default>
+        <default key="_controller">Pierstoval\Bundle\CharacterManagerBundle\Controller\GeneratorController:resetStepAction</default>
+        <default key="manager" xsi:nil="true" />
         <requirement key="requestStep">[\w-]+</requirement>
     </route>
 </routes>
