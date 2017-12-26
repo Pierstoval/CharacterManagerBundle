@@ -16,6 +16,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\AbstractStepAction;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry;
+use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepActionConfigurator;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -24,7 +25,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Twig\Environment;
@@ -164,12 +164,13 @@ class StepsPass implements CompilerPassInterface
                     $container->setDefinition($action, $definition);
                 }
 
-                // Make sure character class is injected into service.
                 $definition
-                    // Lazy can be used only if ProxyManager is installed, but it has the benefits of being automatically set in case of.
-                    ->addMethodCall('setCharacterClass', [$config['character_class']])
-                    ->addMethodCall('setStep', [new Expression(sprintf('service("%s").resolve("%s")', StepResolverInterface::class, $step['name']))])
-                    ->addMethodCall('setSteps', [new Expression(sprintf('service("%s").getManagerSteps("%s")', StepResolverInterface::class, $step['manager_name']))])
+                    ->addMethodCall('configure', [
+                        $managerName,
+                        $step['name'],
+                        $config['character_class'],
+                        new Reference(StepResolverInterface::class),
+                    ])
                 ;
 
                 // If class extends the abstract one, we inject some cool services.
