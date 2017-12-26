@@ -32,7 +32,9 @@
     -->
 
     <php>
-        <server name="KERNEL_DIR" value="./Tests/Fixtures/App" />
+        <env name="KERNEL_CLASS" value="Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\App\TestKernel" />
+        <env name="KERNEL_DIR" value="./Tests/Fixtures/App" />
+        <env name="SHELL_VERBOSITY" value="-2" />
         <ini name="zend.enable_gc" value="0" />
     </php>
 

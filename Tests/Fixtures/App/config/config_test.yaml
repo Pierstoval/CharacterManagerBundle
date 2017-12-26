@@ -1,0 +1,10 @@
+imports:
+    - { resource: config.yaml }
+
+pierstoval_character_manager:
+    managers:
+        main:
+            character_class: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\CharacterStub
+            steps:
+                step_01:
+                    action: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub

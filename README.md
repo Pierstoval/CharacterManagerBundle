@@ -48,7 +48,7 @@ You can configure your steps both from configuration and services.
 * Load the routing file:
   ```yaml
    generator_steps:
-       resource: "@PierstovalCharacterManagerBundle/Resources/config/routing.yaml"
+       resource: "@PierstovalCharacterManagerBundle/Resources/config/routing.xml"
        prefix:   /character_generator/    # Or any prefix you like
   ```
   This routing file is important because it is the place where character generation will be handled.<br>
