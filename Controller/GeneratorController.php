@@ -47,9 +47,9 @@ class GeneratorController
 
     public function __construct(
         StepResolverInterface $resolver,
-        TranslatorInterface $translator,
+        ActionsRegistryInterface $actionsRegistry,
         RouterInterface $router,
-        ActionsRegistryInterface $actionsRegistry
+        TranslatorInterface $translator = null
     ) {
         $this->stepsResolver = $resolver;
         $this->translator = $translator;
@@ -158,7 +158,7 @@ class GeneratorController
     private function trans(string $message, array $parameters = [], string $translationDomain = null): string
     {
         if (!$this->translator) {
-            return strtr($message, $parameters);
+            return \strtr($message, $parameters);
         }
 
         return (string) $this->translator->trans($message, $parameters, $translationDomain ?: 'messages');
