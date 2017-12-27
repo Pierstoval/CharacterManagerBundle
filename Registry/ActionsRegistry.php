@@ -35,7 +35,7 @@ class ActionsRegistry implements ActionsRegistryInterface
 
     public function getAction(string $stepName, string $manager = null): StepActionInterface
     {
-        if (!$manager) {
+        if ($manager === null) {
             $manager = array_keys($this->actions)[0];
         }
 

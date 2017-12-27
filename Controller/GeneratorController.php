@@ -69,7 +69,7 @@ class GeneratorController
 
         $routeParams = ['requestStep' => $step->getName()];
 
-        if ($manager) {
+        if ($manager !== null) {
             $routeParams['manager'] = $manager;
         }
 
@@ -112,7 +112,7 @@ class GeneratorController
 
         $routeParams = ['requestStep' => $step->getName()];
 
-        if ($manager) {
+        if ($manager !== null) {
             $routeParams['manager'] = $manager;
         }
 

@@ -93,7 +93,7 @@ class StepResolver implements StepResolverInterface
             throw new \RuntimeException('No character managers to resolve configuration for.');
         }
 
-        if (!$managerName && \count($this->managersConfiguration) > 0) {
+        if ($managerName === null && \count($this->managersConfiguration) > 0) {
             if (\count($this->managersConfiguration) === 1) {
                 return array_keys($this->managersConfiguration)[0];
             }
