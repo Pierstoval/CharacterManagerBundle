@@ -37,7 +37,8 @@ You can configure your steps both from configuration and services.
   
    use Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface;
  
-   class Character implements CharacterInterface {
+   class Character implements CharacterInterface
+   {
        // Implement interface methods
    }
    ```
@@ -219,13 +220,12 @@ Most of the time, you don't need many other things, but if you need other things
 
 #### The cool methods of the AbstractStepAction class
 
-I won't talk about the methods that have to be implemented by the interface.
-Just [look at the Interface's code](Action/StepActionInterface.php) if you need, comments are enough.
-
-Here I'm just gonna talk about the **abstract** class and the methods it adds:
+The **abstract** class adds cool methods to manage your steps:
 
 ```php
 <?php
+/** @var $this \Pierstoval\Bundle\CharacterManagerBundle\Action\AbstractStepAction */
+
 // Get the character property for specified step name (or current step by default)
 $this->getCharacterProperty($stepName = null);
 
@@ -251,11 +251,7 @@ A list of "todos":
 
 * Add a factory, a service, or whatever, which goal will be to handle converting the final step submission into a
   proper `Character` object. Abstract, obviously, because it has to be implemented manually by the user.
-* Add a `ServiceStepAction` interface or something similar for better injection system, because for now, compiler pass &
-  injections are not very intuitive.
-* Create tests for the controller class
 * Try to find a way to reduce the size of the controller class
-* Maybe propose some form types, services, or find cool stuff that makes things easier
 * Create lots of character managers for different games so we find the flaws of this bundle and rip them off! (help
   appreciated 😁 )
 
