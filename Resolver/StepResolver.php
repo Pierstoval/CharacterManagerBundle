@@ -39,7 +39,7 @@ class StepResolver implements StepResolverInterface
         $managerName = $this->resolveManagerName($managerName);
 
         if (!isset($this->steps[$managerName][$stepName])) {
-            throw new StepNotFoundException("Step $stepName does not exist in manager $managerName.");
+            throw new StepNotFoundException($stepName, $managerName);
         }
 
         return $this->steps[$managerName][$stepName];
@@ -64,7 +64,7 @@ class StepResolver implements StepResolverInterface
             }
         }
 
-        throw new StepNotFoundException("Step number $stepNumber does not exist in manager $managerName.");
+        throw new StepNotFoundException($stepNumber, $managerName);
     }
 
     private function resolveManagerSteps(string $managerName = null): void
@@ -106,7 +106,7 @@ class StepResolver implements StepResolverInterface
         }
 
         if (!isset($this->managersConfiguration[$managerName])) {
-            throw new \InvalidArgumentException("Manager $managerName does not exist, or is not initialized yet.");
+            throw new \InvalidArgumentException("\"$managerName\" manager does not exist, or is not initialized yet.");
         }
 
         return $managerName;

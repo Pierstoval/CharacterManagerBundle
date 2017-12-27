@@ -33,8 +33,7 @@ class StepsPassTest extends TestCase
         string $expectedException,
         string $expectedExceptionMessage,
         string $stepClass
-    )
-    {
+    ) {
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
 
@@ -53,9 +52,9 @@ class StepsPassTest extends TestCase
 
     public function provideNonWorkingConfigurations()
     {
-        $dir = __DIR__ . '/../Fixtures/App/compiler_pass_test_non_working/';
+        $dir = __DIR__.'/../Fixtures/App/compiler_pass_test_non_working/';
 
-        $configFiles = glob($dir . 'compiler_config_*.yaml');
+        $configFiles = glob($dir.'compiler_config_*.yaml');
 
         sort($configFiles);
 
@@ -167,8 +166,11 @@ class StepsPassTest extends TestCase
         $container->register(ActionsRegistry::class);
 
         $inlineStub1 = new class extends ConcreteAbstractActionStub
-        {};
-        $inlineStub2 = new class extends ConcreteAbstractActionStub{};
+        {
+        };
+        $inlineStub2 = new class extends ConcreteAbstractActionStub
+        {
+        };
 
         $container->setParameter('pierstoval_character_manager.managers', [
             'main' => [

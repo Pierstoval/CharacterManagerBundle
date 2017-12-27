@@ -11,7 +11,7 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller;
 
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use PHPUnit\Framework\TestCase;
 use Pierstoval\Bundle\CharacterManagerBundle\Controller\GeneratorController;
 use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistryInterface;

@@ -102,14 +102,14 @@ abstract class AbstractStepAction implements StepActionInterface
         $this->translator = $translator;
     }
 
-     public function getStep(): StepInterface
-     {
-         if (!$this->step) {
-             throw new \RuntimeException('Step is not defined in current step action. Did you run the "configure()" method?');
-         }
+    public function getStep(): StepInterface
+    {
+        if (!$this->step) {
+            throw new \RuntimeException('Step is not defined in current step action. Did you run the "configure()" method?');
+        }
 
-         return $this->step;
-     }
+        return $this->step;
+    }
 
     /**
      * {@inheritdoc}

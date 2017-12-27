@@ -56,7 +56,7 @@ class StepResolverTest extends TestCase
 
     /**
      * @expectedException \Pierstoval\Bundle\CharacterManagerBundle\Exception\StepNotFoundException
-     * @expectedExceptionMessage Step non_existent_step does not exist in manager main_manager.
+     * @expectedExceptionMessage "non_existent_step" step does not exist in manager main_manager.
      */
     public function test resolve non existent step name should throw exception()
     {
@@ -81,7 +81,7 @@ class StepResolverTest extends TestCase
 
     /**
      * @expectedException \Pierstoval\Bundle\CharacterManagerBundle\Exception\StepNotFoundException
-     * @expectedExceptionMessage Step number 5 does not exist in manager main_manager.
+     * @expectedExceptionMessage "5" step does not exist in manager main_manager.
      */
     public function test resolve non existent step number should throw an exception()
     {
@@ -170,7 +170,7 @@ class StepResolverTest extends TestCase
 
     /**
      * @expectedException \RuntimeException
-     * @expectedExceptionMessage Step non_existent_step does not exist in manager test.
+     * @expectedExceptionMessage "non_existent_step" step does not exist in manager test.
      */
     public function test resolve with no steps should throw exception()
     {
@@ -181,7 +181,7 @@ class StepResolverTest extends TestCase
 
     /**
      * @expectedException \RuntimeException
-     * @expectedExceptionMessage Step number 0 does not exist in manager test.
+     * @expectedExceptionMessage "0" step does not exist in manager test.
      */
     public function test resolve number with no steps should throw exception()
     {
@@ -192,7 +192,7 @@ class StepResolverTest extends TestCase
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Manager invalid_manager does not exist, or is not initialized yet.
+     * @expectedExceptionMessage "invalid_manager" manager does not exist, or is not initialized yet.
      */
     public function test resolve invalid manager should throw exception()
     {

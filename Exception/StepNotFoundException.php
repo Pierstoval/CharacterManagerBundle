@@ -13,4 +13,11 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Exception;
 
 class StepNotFoundException extends \RuntimeException
 {
+    /**
+     * @param int|string $step
+     */
+    public function __construct($step, string $managerName)
+    {
+        parent::__construct("\"$step\" step does not exist in manager $managerName.");
+    }
 }
