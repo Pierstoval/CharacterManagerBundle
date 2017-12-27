@@ -197,9 +197,7 @@ abstract class AbstractStepAction implements StepActionInterface
             : strtr($msg, $msgParams)
         ;
 
-        $session = $this->getSession();
-
-        $flashbag = $session->getFlashBag();
+        $flashbag = $this->getSession()->getFlashBag();
 
         // Add the message manually.
         $existingMessages = $flashbag->peek($type);

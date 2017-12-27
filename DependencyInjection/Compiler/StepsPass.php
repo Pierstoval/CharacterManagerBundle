@@ -143,50 +143,54 @@ class StepsPass implements CompilerPassInterface
         $registryDefinition = $container->getDefinition(ActionsRegistry::class);
 
         foreach ($container->getParameter(static::PARAMETERS_MANAGERS) as $managerName => $config) {
+            $this->processStepAction($managerName, $config, $registryDefinition, $container);
+        }
+    }
 
-            /** @var array[] $finalSteps */
-            $finalSteps = $config['steps'];
+    private function processStepAction(string $managerName, array $config, Definition $registryDefinition, ContainerBuilder $container): void
+    {
+        /** @var array[] $finalSteps */
+        $finalSteps = $config['steps'];
 
-            foreach ($finalSteps as $step) {
-                $action = $step['action'];
-                if ($container->has($action)) {
-                    /** @var  $definition */
-                    $definition = $container->getDefinition($action);
-                } else {
-                    // If action is not yet a service, it means it's a class name.
-                    // In this case, we create a new service.
-                    $definition = new Definition($action);
-                    $definition
-                        ->setLazy(true)
-                        ->setPrivate(true)
-                        ->setAutowired(true)
-                    ;
-                    $container->setDefinition($action, $definition);
-                }
-
+        foreach ($finalSteps as $step) {
+            $action = $step['action'];
+            if ($container->has($action)) {
+                /** @var  $definition */
+                $definition = $container->getDefinition($action);
+            } else {
+                // If action is not yet a service, it means it's a class name.
+                // In this case, we create a new service.
+                $definition = new Definition($action);
                 $definition
-                    ->addMethodCall('configure', [
-                        $managerName,
-                        $step['name'],
-                        $config['character_class'],
-                        new Reference(StepResolverInterface::class),
-                    ])
+                    ->setLazy(true)
+                    ->setPrivate(true)
+                    ->setAutowired(true)
                 ;
-
-                // If class extends the abstract one, we inject some cool services.
-                if (is_a($definition->getClass(), AbstractStepAction::class, true)) {
-                    $ignoreOnInvalid = ContainerInterface::IGNORE_ON_INVALID_REFERENCE;
-                    $definition
-                        ->addMethodCall('setObjectManager', [new Reference(ObjectManager::class, $ignoreOnInvalid)])
-                        ->addMethodCall('setTwig', [new Reference(Environment::class, $ignoreOnInvalid)])
-                        ->addMethodCall('setRouter', [new Reference(RouterInterface::class, $ignoreOnInvalid)])
-                        ->addMethodCall('setTranslator', [new Reference(TranslatorInterface::class, $ignoreOnInvalid)])
-                    ;
-                }
-
-                // Finally add the step action to the registry
-                $registryDefinition->addMethodCall('addStepAction', [$step['name'], new Reference($action)]);
+                $container->setDefinition($action, $definition);
             }
+
+            $definition
+                ->addMethodCall('configure', [
+                    $managerName,
+                    $step['name'],
+                    $config['character_class'],
+                    new Reference(StepResolverInterface::class),
+                ])
+            ;
+
+            // If class extends the abstract one, we inject some cool services.
+            if (is_a($definition->getClass(), AbstractStepAction::class, true)) {
+                $ignoreOnInvalid = ContainerInterface::IGNORE_ON_INVALID_REFERENCE;
+                $definition
+                    ->addMethodCall('setObjectManager', [new Reference(ObjectManager::class, $ignoreOnInvalid)])
+                    ->addMethodCall('setTwig', [new Reference(Environment::class, $ignoreOnInvalid)])
+                    ->addMethodCall('setRouter', [new Reference(RouterInterface::class, $ignoreOnInvalid)])
+                    ->addMethodCall('setTranslator', [new Reference(TranslatorInterface::class, $ignoreOnInvalid)])
+                ;
+            }
+
+            // Finally add the step action to the registry
+            $registryDefinition->addMethodCall('addStepAction', [$step['name'], new Reference($action)]);
         }
     }
 
