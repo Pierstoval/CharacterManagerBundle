@@ -1,6 +1,9 @@
+[![Latest Stable Version](https://poser.pugx.org/pierstoval/character-manager/v/stable)](https://packagist.org/packages/pierstoval/character-manager)
 [![Build Status](https://travis-ci.org/Pierstoval/CharacterManagerBundle.svg?branch=master)](https://travis-ci.org/Pierstoval/CharacterManagerBundle)
 [![Coverage Status](https://coveralls.io/repos/github/Pierstoval/CharacterManagerBundle/badge.svg?branch=master)](https://coveralls.io/github/Pierstoval/CharacterManagerBundle?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Pierstoval/CharacterManagerBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Pierstoval/CharacterManagerBundle/?branch=master)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/566f9019-3d3e-4606-95e6-0ab84ab0f735/mini.png)](https://insight.sensiolabs.com/projects/566f9019-3d3e-4606-95e6-0ab84ab0f735)
+[![License](https://poser.pugx.org/pierstoval/character-manager/license)](https://packagist.org/packages/pierstoval/character-manager)
 
 # Character manager bundle
 
