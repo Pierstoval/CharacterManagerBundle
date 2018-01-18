@@ -190,7 +190,7 @@ class StepsPass implements CompilerPassInterface
             }
 
             // Finally add the step action to the registry
-            $registryDefinition->addMethodCall('addStepAction', [$step['name'], new Reference($action)]);
+            $registryDefinition->addMethodCall('addStepAction', [$managerName, new Reference($action)]);
         }
     }
 
