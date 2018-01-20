@@ -139,7 +139,7 @@ class GeneratorController
 
         // Make sure that dependencies exist, else redirect to first step with a message.
         foreach ($step->getDependencies() as $stepName) {
-            if (!isset($character[$resolvedManagerName][$stepName])) {
+            if (!isset($character[$stepName])) {
                 $msg = $this->trans('steps.dependency_not_set', [
                     '%current_step%' => $step->getLabel(),
                     '%dependency%' => $this->stepsResolver->resolve($stepName, $resolvedManagerName)->getLabel(),
