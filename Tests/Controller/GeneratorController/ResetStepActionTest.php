@@ -80,12 +80,10 @@ class ResetStepActionTest extends AbstractGeneratorControllerTest
         $request = $this->createRequest();
         $session = $request->getSession();
 
-        $session->set('character', [
-            'manager_one' => [
-                '01' => 'Should be removed',
-                '02' => 'Should be kept',
-                '03' => 'Should be removed',
-            ],
+        $session->set('character.manager_one', [
+            '01' => 'Should be removed',
+            '02' => 'Should be kept',
+            '03' => 'Should be removed',
         ]);
 
         $response = $controller->resetStepAction($request, '01');
@@ -93,10 +91,8 @@ class ResetStepActionTest extends AbstractGeneratorControllerTest
         static::assertInstanceOf(RedirectResponse::class, $response);
         static::assertTrue($response->isRedirect('/generate/01'));
         static::assertSame([
-            'manager_one' => [
-                '02' => 'Should be kept'
-            ],
-        ], $session->get('character'));
+            '02' => 'Should be kept'
+        ], $session->get('character.manager_one'));
         static::assertSame(['Translated flash message'], $session->getFlashBag()->get('success'));
     }
 

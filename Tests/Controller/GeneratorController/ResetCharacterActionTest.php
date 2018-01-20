@@ -48,8 +48,14 @@ class ResetCharacterActionTest extends AbstractGeneratorControllerTest
             ->with('steps.reset.character', [], 'PierstovalCharacterManager')
             ->willReturn('Translated flash message')
         ;
+        $stepResolver = $this->createMock(StepResolverInterface::class);
+        $stepResolver->expects($this->once())
+            ->method('resolveManagerName')
+            ->with(null)
+            ->willReturn('manager_test')
+        ;
 
-        $controller = $this->createController(null, $router, $translator);
+        $controller = $this->createController($stepResolver, $router, $translator);
         $request = $this->createRequest();
         $session = $request->getSession();
 
@@ -57,13 +63,13 @@ class ResetCharacterActionTest extends AbstractGeneratorControllerTest
             throw new \RuntimeException('Session should have been set in the test.');
         }
 
-        $session->set('step', 10);
-        $session->set('character', ['01' => 'step value is set and has to be removed']);
+        $session->set('step.manager_test', 10);
+        $session->set('character.manager_test', ['01' => 'step value is set and has to be removed']);
 
         $response = $controller->resetCharacterAction($request);
 
-        static::assertSame([], $session->get('character'));
-        static::assertSame(1, $session->get('step'));
+        static::assertSame([], $session->get('character.manager_test'));
+        static::assertSame(1, $session->get('step.manager_test'));
         static::assertSame(['Translated flash message'], $session->getFlashBag()->get('success'));
         static::assertInstanceOf(RedirectResponse::class, $response);
         static::assertSame('/generate/', $response->headers->get('location'));
@@ -77,9 +83,15 @@ class ResetCharacterActionTest extends AbstractGeneratorControllerTest
             ->with('pierstoval_character_generator_index')
             ->willReturn('/generate/')
         ;
+        $stepResolver = $this->createMock(StepResolverInterface::class);
+        $stepResolver->expects($this->once())
+            ->method('resolveManagerName')
+            ->with(null)
+            ->willReturn('manager_test')
+        ;
 
         $controller = new GeneratorController(
-            $this->createMock(StepResolverInterface::class),
+            $stepResolver,
             $this->createMock(ActionsRegistryInterface::class),
             $router
         );
@@ -91,13 +103,13 @@ class ResetCharacterActionTest extends AbstractGeneratorControllerTest
             throw new \RuntimeException('Session should have been set in the test.');
         }
 
-        $session->set('step', 10);
-        $session->set('character', ['01' => 'step value is set and has to be removed']);
+        $session->set('step.manager_test', 10);
+        $session->set('character.manager_test', ['01' => 'step value is set and has to be removed']);
 
         $response = $controller->resetCharacterAction($request);
 
-        static::assertSame([], $session->get('character'));
-        static::assertSame(1, $session->get('step'));
+        static::assertSame([], $session->get('character.manager_test'));
+        static::assertSame(1, $session->get('step.manager_test'));
         static::assertSame(['steps.reset.character'], $session->getFlashBag()->get('success'));
         static::assertInstanceOf(RedirectResponse::class, $response);
         static::assertSame('/generate/', $response->headers->get('location'));
