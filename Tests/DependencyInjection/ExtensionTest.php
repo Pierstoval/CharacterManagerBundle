@@ -73,7 +73,7 @@ class ExtensionTest extends TestCase
 
         sort($configFiles);
 
-        foreach ($configFiles as $k => $file) {
+        foreach ($configFiles as $file) {
             $content = Yaml::parse(file_get_contents($file));
             yield basename($file) => [
                 $content['input'],

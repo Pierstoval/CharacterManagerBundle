@@ -58,7 +58,7 @@ class StepsPassTest extends TestCase
 
         sort($configFiles);
 
-        foreach ($configFiles as $k => $file) {
+        foreach ($configFiles as $file) {
             $config = Yaml::parse(file_get_contents($file));
             yield basename($file) => [
                 $config['config'],

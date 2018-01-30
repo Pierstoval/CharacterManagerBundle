@@ -61,7 +61,7 @@ abstract class AbstractStepAction implements StepActionInterface
 
     public function configure(string $managerName, string $stepName, string $characterClassName, StepResolverInterface $resolver): void
     {
-        if (!class_exists($characterClassName) || !is_a($characterClassName, CharacterInterface::class, true)) {
+        if (!class_exists($characterClassName) || !is_subclass_of($characterClassName, CharacterInterface::class, true)) {
             throw new \InvalidArgumentException(sprintf(
                 'Step action must be a valid class implementing %s. "%s" given.',
                 CharacterInterface::class, class_exists($characterClassName) ? $characterClassName : \gettype($characterClassName)
