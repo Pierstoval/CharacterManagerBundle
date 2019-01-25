@@ -7,37 +7,24 @@ cache:
       - $HOME/.composer/cache
       - $HOME/.app/cache
 
-php: 7.1
-
-env:
-  global:
-    - COMPOSER_FLAGS=""
-    - SYMFONY_VERSION=""
-    - ENABLE_CODE_COVERAGE="false"
+php: 7.2
 
 matrix:
     fast_finish: true
     include:
-        - env: 'COMPOSER_FLAGS="--prefer-lowest"'
-        - env: 'SYMFONY_VERSION="3.4.*"'
-        - env: 'SYMFONY_VERSION="4.0.*"'
-        - env: 'SYMFONY_VERSION="^4.1@dev"'
+        - env: 'ENABLE_CODE_COVERAGE="false"'
         - env: 'ENABLE_CODE_COVERAGE="true"'
 
 before_install:
     - 'if [[ "$SYMFONY_VERSION" != "" ]]; then sed -r -e "s/(symfony\/[^:]+: \").+(\",?)$/\1$SYMFONY_VERSION\2/" -i composer.json; fi;'
     - 'if [[ "$ENABLE_CODE_COVERAGE" != "true" ]]; then phpenv config-rm xdebug.ini; fi;'
     - 'if [[ "$ENABLE_CODE_COVERAGE" == "true" ]]; then wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.0.0/php-coveralls.phar; fi;'
-    - 'cat phpunit.xml.dist | sed -e "s/\(<!--\)\|\(-->\)//g" > phpunit.xml'
 
 install:
-    - composer update --prefer-dist --no-interaction --optimize-autoloader $COMPOSER_FLAGS
+    - composer update --prefer-dist --no-interaction --optimize-autoloader
 
 script:
-    - if [[ "$ENABLE_CODE_COVERAGE" == "true" ]]; then vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml; else phpunit; fi;
+    - if [[ "$ENABLE_CODE_COVERAGE" == "true" ]]; then vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml; else vendor/bin/phpunit; fi;
 
 after_success: |
     if [[ "$ENABLE_CODE_COVERAGE" == "true" ]]; then php php-coveralls.phar -v --config .coveralls.yml; fi;
-
-notifications:
-    email: pierstoval@gmail.com
