@@ -30,7 +30,6 @@
     "suggest": {
         "doctrine/doctrine-bundle": "To inject the object manager in steps and map your Character entities with the ORM",
         "doctrine/orm": "To inject the object manager in steps and map your Character entities with the ORM",
-        "ocramius/proxy-manager": "To use lazy actions",
         "symfony/translation": "To translate the messages instead of using the default keys",
         "symfony/twig-bundle": "To use Twig templating engine in your actions"
     },

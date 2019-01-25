@@ -162,7 +162,6 @@ class StepsPass implements CompilerPassInterface
                 // In this case, we create a new service.
                 $definition = new Definition($action);
                 $definition
-                    ->setLazy(true)
                     ->setPrivate(true)
                     ->setAutowired(true)
                 ;

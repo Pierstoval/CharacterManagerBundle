@@ -154,7 +154,6 @@ class StepsPassTest extends TestCase
         // These should be set by default on every action class not already registered as service
         static::assertTrue($definition->isPrivate());
         static::assertTrue($definition->isAutowired());
-        static::assertTrue($definition->isLazy());
         static::assertSame(ConcreteAbstractActionStub::class, $definition->getClass());
     }
 
