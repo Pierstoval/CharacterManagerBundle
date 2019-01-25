@@ -12,7 +12,7 @@
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Action;
 
 use InvalidArgumentException;
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolver;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface;
@@ -24,7 +24,7 @@ use RuntimeException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AbstractActionTest extends AbstractGeneratorControllerTest
 {
