@@ -16,7 +16,7 @@ use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Yaml\Yaml;
 use Twig\Environment;
 
@@ -154,7 +154,6 @@ class StepsPassTest extends TestCase
         // These should be set by default on every action class not already registered as service
         static::assertTrue($definition->isPrivate());
         static::assertTrue($definition->isAutowired());
-        static::assertTrue($definition->isLazy());
         static::assertSame(ConcreteAbstractActionStub::class, $definition->getClass());
     }
 

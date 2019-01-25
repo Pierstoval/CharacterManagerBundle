@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.1/phpunit.xsd"
-         backupGlobals="false"
-         backupStaticAttributes="false"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
+         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/7.5/phpunit.xsd"
          colors="true"
          verbose="true"
          bootstrap="./Tests/bootstrap.php"
-         beStrictAboutTestsThatDoNotTestAnything="true"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
          beStrictAboutResourceUsageDuringSmallTests="true"
@@ -39,14 +31,15 @@
     </php>
 
     <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true" addUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./Action</directory>
-            <directory suffix=".php">./Controller</directory>
-            <directory suffix=".php">./Model</directory>
-            <directory suffix=".php">./DependencyInjection</directory>
-            <directory suffix=".php">./Resolver</directory>
-            <directory suffix=".php">./Resources</directory>
-            <directory suffix=".php">./SheetsManagers</directory>
+        <whitelist>
+            <directory>./Action/</directory>
+            <directory>./Controller/</directory>
+            <directory>./DependencyInjection/</directory>
+            <directory>./Entity/</directory>
+            <directory>./Exception/</directory>
+            <directory>./Model/</directory>
+            <directory>./Registry/</directory>
+            <directory>./Resolver/</directory>
             <exclude>
                 <directory>./build</directory>
                 <directory>./Tests</directory>
