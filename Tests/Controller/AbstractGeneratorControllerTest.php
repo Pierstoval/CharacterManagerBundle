@@ -11,7 +11,7 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller;
 
-use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Pierstoval\Bundle\CharacterManagerBundle\Controller\GeneratorController;
 use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistryInterface;
@@ -20,7 +20,7 @@ use \Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\Concre
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\CharacterStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\RequestTestTrait;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractGeneratorControllerTest extends TestCase
 {

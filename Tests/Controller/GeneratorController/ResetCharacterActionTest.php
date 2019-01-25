@@ -18,7 +18,7 @@ use Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller\AbstractGeneratorC
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ResetCharacterActionTest extends AbstractGeneratorControllerTest
 {

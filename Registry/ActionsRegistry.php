@@ -25,22 +25,28 @@ class ActionsRegistry implements ActionsRegistryInterface
         $this->actions[$manager][$action->getStep()->getName()] = $action;
     }
 
-    /**
-     * @return StepActionInterface[]
-     */
-    public function getActions(): array
-    {
-        return $this->actions;
-    }
-
     public function getAction(string $stepName, string $manager = null): StepActionInterface
     {
+        if (!$this->actions) {
+            throw new \RuntimeException('No actions in the registry.');
+        }
+
         if ($manager === null) {
             $manager = array_keys($this->actions)[0];
         }
 
+        if (!isset($this->actions[$manager])) {
+            throw new \InvalidArgumentException(\sprintf(
+                'Manager "%s" does not exist.',
+                $manager
+            ));
+        }
+
         if (!isset($this->actions[$manager][$stepName])) {
-            throw new \InvalidArgumentException('Step "'.$stepName.'" not found in registry.');
+                throw new \InvalidArgumentException(\sprintf(
+                'Step "%s" not found in manager "%s".',
+                $stepName, $manager
+            ));
         }
 
         return $this->actions[$manager][$stepName];

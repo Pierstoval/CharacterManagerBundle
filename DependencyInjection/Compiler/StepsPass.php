@@ -26,7 +26,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
 /**
@@ -162,7 +162,6 @@ class StepsPass implements CompilerPassInterface
                 // In this case, we create a new service.
                 $definition = new Definition($action);
                 $definition
-                    ->setLazy(true)
                     ->setPrivate(true)
                     ->setAutowired(true)
                 ;

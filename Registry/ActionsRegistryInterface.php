@@ -16,7 +16,9 @@ use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 interface ActionsRegistryInterface
 {
     /**
-     * @throws \RuntimeException for an action that do not exist.
+     * @throws \RuntimeException if there are no managers available.
+     * @throws \InvalidArgumentException for an action that do not exist.
+     * @throws \InvalidArgumentException for a manager that do not exist.
      */
-    public function getAction(string $stepName): StepActionInterface;
+    public function getAction(string $stepName, string $manager = null): StepActionInterface;
 }
