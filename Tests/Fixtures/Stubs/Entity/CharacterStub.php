@@ -28,6 +28,11 @@ class CharacterStub extends BaseCharacter
      */
     protected $id;
 
+    public function __construct()
+    {
+        parent::__construct('Stub characte', 'stub-character');
+    }
+
     /**
      * @return int
      */
