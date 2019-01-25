@@ -1,0 +1,18 @@
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="PierstovalCharacterManager.en.xlf">
+        <body>
+            <trans-unit id="steps.dependency_not_set">
+                <source>steps.dependency_not_set</source>
+                <target>The step "%current_step%" depends on "%dependency%" but it has not been initialized for current character being created...</target>
+            </trans-unit>
+            <trans-unit id="steps.reset.character">
+                <source>steps.reset.character</source>
+                <target>Character being created has been successfully reset!</target>
+            </trans-unit>
+            <trans-unit id="steps.reset.step">
+                <source>steps.reset.step</source>
+                <target>Current step has been successfully reset!</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
