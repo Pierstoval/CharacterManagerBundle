@@ -25,14 +25,6 @@ class ActionsRegistry implements ActionsRegistryInterface
         $this->actions[$manager][$action->getStep()->getName()] = $action;
     }
 
-    /**
-     * @return StepActionInterface[]
-     */
-    public function getActions(): array
-    {
-        return $this->actions;
-    }
-
     public function getAction(string $stepName, string $manager = null): StepActionInterface
     {
         if (!$this->actions) {
