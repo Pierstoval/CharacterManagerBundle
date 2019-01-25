@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <defaults autoconfigure="true" public="false" autowire="true" />
+        <defaults public="false" />
 
         <service id="Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry" />
         <service id="Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistryInterface" alias="Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry" />
@@ -15,6 +15,11 @@
         </service>
         <service id="Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface" alias="Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolver" />
 
-        <service id="Pierstoval\Bundle\CharacterManagerBundle\Controller\GeneratorController" public="true" />
+        <service id="Pierstoval\Bundle\CharacterManagerBundle\Controller\GeneratorController" public="true">
+            <argument type="service" id="Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface" />
+            <argument type="service" id="Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistryInterface" />
+            <argument type="service" id="Symfony\Component\Routing\RouterInterface" />
+            <argument type="service" id="Symfony\Contracts\Translation\TranslatorInterface" />
+        </service>
     </services>
 </container>
