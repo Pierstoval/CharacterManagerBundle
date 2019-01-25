@@ -22,14 +22,14 @@ class StepResolverTest extends TestCase
      * @expectedException \RuntimeException
      * @expectedExceptionMessage No character managers to resolve configuration for.
      */
-    public function test manager steps with empty config throws exception()
+    public function test steps resolver with empty config throws exception()
     {
         $resolver = new StepResolver();
 
         $resolver->getManagerSteps();
     }
 
-    public function test manager steps with single config option()
+    public function test steps resolver with single config option()
     {
         $stepsArray = [
             'one' => [
@@ -42,14 +42,13 @@ class StepResolverTest extends TestCase
                 'manager_name'   => 'main_manager',
             ]
         ];
+        $resolver = new StepResolver(['main_manager' => ['steps' => $stepsArray]]);
 
         $stepsObjects = [];
 
         foreach ($stepsArray as $name => $step) {
             $stepsObjects[$name] = Step::createFromData($step);
         }
-
-        $resolver = new StepResolver(['main_manager' => ['steps' => $stepsArray]]);
 
         static::assertEquals($stepsObjects, $resolver->getManagerSteps('main_manager'));
     }
