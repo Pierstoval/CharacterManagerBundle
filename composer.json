@@ -11,7 +11,7 @@
         }
     },
     "require": {
-        "php": "^7.2",
+        "php": ">=7.2",
         "doctrine/inflector": "^1.1",
         "symfony/expression-language": "^4.2",
         "symfony/framework-bundle": "^4.2"
