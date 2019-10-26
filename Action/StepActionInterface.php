@@ -22,8 +22,6 @@ interface StepActionInterface
      * Any step action is like a controller action: we inject the request to it, and we need a response.
      * As we can have tons of steps, it's much better to rely on action pattern,
      *   rather than one controller with tons of methods.
-     *
-     * @return Response
      */
     public function execute(): Response;
 
@@ -32,15 +30,12 @@ interface StepActionInterface
      */
     public function configure(string $managerName, string $stepName, string $characterClassName, StepResolverInterface $resolver): void;
 
-    /**
-     * @return StepInterface
-     */
     public function getStep(): StepInterface;
+
+    public function stepName(): string;
 
     /**
      * Current Request object that will be used in the Step action.
-     *
-     * @param Request $request
      */
     public function setRequest(Request $request): void;
 }

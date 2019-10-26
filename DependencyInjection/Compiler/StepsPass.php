@@ -19,9 +19,9 @@ use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepActionConfigurator;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
@@ -179,26 +179,27 @@ class StepsPass implements CompilerPassInterface
 
             // If class extends the abstract one, we inject some cool services.
             if (is_a($definition->getClass(), AbstractStepAction::class, true)) {
-                $ignoreOnInvalid = ContainerInterface::IGNORE_ON_INVALID_REFERENCE;
-                $definition
-                    ->addMethodCall('setObjectManager', [new Reference(ObjectManager::class, $ignoreOnInvalid)])
-                    ->addMethodCall('setTwig', [new Reference(Environment::class, $ignoreOnInvalid)])
-                    ->addMethodCall('setRouter', [new Reference(RouterInterface::class, $ignoreOnInvalid)])
-                    ->addMethodCall('setTranslator', [new Reference(TranslatorInterface::class, $ignoreOnInvalid)])
-                ;
+                if ($container->hasDefinition(ObjectManager::class)) {
+                    $definition->addMethodCall('setObjectManager', [new Reference(ObjectManager::class)]);
+                }
+                if ($container->hasDefinition(Environment::class)) {
+                    $definition->addMethodCall('setTwig', [new Reference(Environment::class)]);
+                }
+                if ($container->hasDefinition(RouterInterface::class)) {
+                    $definition->addMethodCall('setRouter', [new Reference(RouterInterface::class)]);
+                }
+                if ($container->hasDefinition(TranslatorInterface::class)) {
+                    $definition->addMethodCall('setTranslator', [new Reference(TranslatorInterface::class)]);
+                }
             }
 
             // Finally add the step action to the registry
-            $registryDefinition->addMethodCall('addStepAction', [$managerName, new Reference($action)]);
+            $registryDefinition->addMethodCall('addStepAction', [$managerName, $step['name'], new ServiceClosureArgument(new Reference($action))]);
         }
     }
 
     private function generateStepLabel(string $name): string
     {
-        $name = str_replace(['.', '_', '-'], ' ', $name);
-        $name = trim($name);
-        $name = Inflector::ucwords($name);
-
-        return $name;
+        return Inflector::ucwords(trim(str_replace(['.', '_', '-'], ' ', $name)));
     }
 }

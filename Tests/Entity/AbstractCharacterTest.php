@@ -20,7 +20,7 @@ class AbstractCharacterTest extends TestCase
     {
         $character = new CharacterStub();
 
-        static::assertInternalType('string', $character->getName());
-        static::assertInternalType('string', $character->getNameSlug());
+        static::assertIsString($character->getName());
+        static::assertIsString($character->getNameSlug());
     }
 }

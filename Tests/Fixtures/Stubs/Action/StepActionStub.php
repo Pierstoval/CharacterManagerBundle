@@ -39,4 +39,9 @@ class StepActionStub implements StepActionInterface
     public function configure(string $managerName, string $stepName, string $characterClassName, StepResolverInterface $resolver): void
     {
     }
+
+    public function stepName(): string
+    {
+        return $this->getStep()->getName();
+    }
 }

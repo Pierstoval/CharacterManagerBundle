@@ -16,6 +16,11 @@ use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 interface ActionsRegistryInterface
 {
     /**
+     * @param StepActionInterface|\Closure $action If it's a callable, it's lazy-loaded.
+     */
+    public function addStepAction(string $manager, string $stepName, $action): void;
+
+    /**
      * @throws \RuntimeException if there are no managers available.
      * @throws \InvalidArgumentException for an action that do not exist.
      * @throws \InvalidArgumentException for a manager that do not exist.

@@ -21,25 +21,21 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class StepActionTest extends AbstractGeneratorControllerTest
 {
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Session is mandatory when using the character generator.
-     */
     public function test step action needs session()
     {
         $controller = $this->createController();
         $request = new Request();
 
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Session is mandatory when using the character generator.');
+
         $controller->stepAction($request, '');
     }
 
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     * @expectedExceptionMessage Step not found.
-     */
     public function test step action with non existent name()
     {
         $resolver = new StepResolver([
@@ -47,6 +43,9 @@ class StepActionTest extends AbstractGeneratorControllerTest
         ]);
 
         $controller = $this->createController($resolver);
+
+        $this->expectException(NotFoundHttpException::class);
+        $this->expectExceptionMessage('Step not found.');
 
         $controller->stepAction($this->createRequest(), 'non_existent_step');
     }
@@ -67,11 +66,9 @@ class StepActionTest extends AbstractGeneratorControllerTest
         $action->configure($step->getManagerName(), $step->getName(), CharacterStub::class, $resolver);
 
         $registry = new ActionsRegistry();
-        $registry->addStepAction('test_manager', $action);
+        $registry->addStepAction('test_manager', $action->stepName(), $action);
 
-        $controller = $this->createController($resolver, null, null, $registry);
-
-        $response = $controller->stepAction($this->createRequest(), 'test_step');
+        $response = $this->createController($resolver, null, null, $registry)->stepAction($this->createRequest(), 'test_step');
 
         static::assertSame('Stub response based on abstract class', $response->getContent());
     }
@@ -114,7 +111,7 @@ class StepActionTest extends AbstractGeneratorControllerTest
         $action->configure($step2->getManagerName(), $step2->getName(), CharacterStub::class, $resolver);
 
         $registry = new ActionsRegistry();
-        $registry->addStepAction('test_manager', $action);
+        $registry->addStepAction('test_manager', $action->stepName(), $action);
 
         $request = $this->createRequest();
         $controller = $this->createController($resolver, $router, $translator, $registry);

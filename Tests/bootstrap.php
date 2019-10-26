@@ -37,7 +37,7 @@ if (!file_exists($file)) {
 }
 $autoload = require $file;
 
-(function(){
+(static function(){
     if (\file_exists($dbFile = __DIR__.'/build/database_test.db')) {
         unlink($dbFile);
     }

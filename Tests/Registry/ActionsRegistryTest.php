@@ -28,16 +28,66 @@ class ActionsRegistryTest extends TestCase
 
         $action = $this->createMock(StepActionInterface::class);
         $action->expects($this->once())
-            ->method('getStep')
-            ->willReturn($step);
+            ->method('stepName')
+            ->willReturn($step->getName());
 
         $registry = new ActionsRegistry();
-        $registry->addStepAction('default', $action);
+        $registry->addStepAction('default', $action->stepName(), $action);
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Manager "inexistent_manager" does not exist.');
 
         $registry->getAction('whatever_step', 'inexistent_manager');
+    }
+
+    public function test injecting closure action loads it lazily()
+    {
+        $step = $this->createMock(StepInterface::class);
+        $step->expects($this->once())
+            ->method('getName')
+            ->willReturn('default_step');
+
+        $action = $this->createMock(StepActionInterface::class);
+        $action->expects($this->once())
+            ->method('stepName')
+            ->willReturn($step->getName());
+
+        $closure = static function () use ($action) {
+            return $action;
+        };
+
+        $registry = new ActionsRegistry();
+        $registry->addStepAction('default', $action->stepName(), $closure);
+
+        static::assertSame($action, $registry->getAction('default_step'));
+    }
+
+    public function test injecting closure that returns a wrong object throws exception()
+    {
+        $step = $this->createMock(StepInterface::class);
+        $step->expects($this->once())
+            ->method('getName')
+            ->willReturn('default_step');
+
+        $action = $this->createMock(StepActionInterface::class);
+        $action->expects($this->once())
+            ->method('stepName')
+            ->willReturn($step->getName());
+
+        $closure = static function () use ($action) {
+            return 'wrong';
+        };
+
+        $registry = new ActionsRegistry();
+        $registry->addStepAction('default', $action->stepName(), $closure);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage(\sprintf(
+            "Lazy-loaded action \"%s\" for character manager \"%s\" must be resolved to an instance of \"%s\".\n\"%s\" given.",
+            'default_step', 'default', StepActionInterface::class, 'string'
+        ));
+
+        static::assertSame($action, $registry->getAction('default_step'));
     }
 
     /**
@@ -52,11 +102,11 @@ class ActionsRegistryTest extends TestCase
 
         $action = $this->createMock(StepActionInterface::class);
         $action->expects($this->once())
-            ->method('getStep')
-            ->willReturn($step);
+            ->method('stepName')
+            ->willReturn($step->getName());
 
         $registry = new ActionsRegistry();
-        $registry->addStepAction('default', $action);
+        $registry->addStepAction('default', $action->stepName(), $action);
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Step "inexistent_step" not found in manager "default".');

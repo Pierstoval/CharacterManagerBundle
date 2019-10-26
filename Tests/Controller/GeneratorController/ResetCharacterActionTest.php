@@ -22,14 +22,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ResetCharacterActionTest extends AbstractGeneratorControllerTest
 {
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Session is mandatory when using the character generator.
-     */
     public function test reset needs session()
     {
         $controller = $this->createController();
         $request = new Request();
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Session is mandatory when using the character generator.');
 
         $controller->resetCharacterAction($request);
     }

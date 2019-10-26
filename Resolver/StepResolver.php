@@ -67,26 +67,6 @@ class StepResolver implements StepResolverInterface
         throw new StepNotFoundException($stepNumber, $managerName);
     }
 
-    private function resolveManagerSteps(string $managerName = null): void
-    {
-        $managerName = $this->resolveManagerName($managerName);
-
-        if (isset($this->steps[$managerName])) {
-            return;
-        }
-
-        // Transform array of array in array of value objects.
-        foreach ($this->managersConfiguration as $manager => $config) {
-            if ($manager !== $managerName) {
-                continue;
-            }
-            $this->steps[$manager] = [];
-            foreach ($config['steps'] as $key => $stepArray) {
-                $this->steps[$manager][$key] = Step::createFromData($stepArray);
-            }
-        }
-    }
-
     public function resolveManagerName(string $managerName = null): string
     {
         if (\count($this->managersConfiguration) === 0) {
@@ -110,5 +90,25 @@ class StepResolver implements StepResolverInterface
         }
 
         return $managerName;
+    }
+
+    private function resolveManagerSteps(string $managerName = null): void
+    {
+        $managerName = $this->resolveManagerName($managerName);
+
+        if (isset($this->steps[$managerName])) {
+            return;
+        }
+
+        // Transform array of array in array of value objects.
+        foreach ($this->managersConfiguration as $manager => $config) {
+            if ($manager !== $managerName) {
+                continue;
+            }
+            $this->steps[$manager] = [];
+            foreach ($config['steps'] as $key => $stepArray) {
+                $this->steps[$manager][$key] = Step::createFromData($stepArray);
+            }
+        }
     }
 }

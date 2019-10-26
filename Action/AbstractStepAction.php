@@ -111,6 +111,11 @@ abstract class AbstractStepAction implements StepActionInterface
         return $this->step;
     }
 
+    public function stepName(): string
+    {
+        return $this->step->getName();
+    }
+
     /**
      * {@inheritdoc}
      */

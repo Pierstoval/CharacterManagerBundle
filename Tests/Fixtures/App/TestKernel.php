@@ -40,6 +40,21 @@ class TestKernel extends Kernel
 
     public function getRootDir()
     {
-        return $this->getProjectDir().'/build';
+        return \dirname(__DIR__, 3);
+    }
+
+    public function getProjectDir()
+    {
+        return $this->getRootDir();
+    }
+
+    public function getLogDir()
+    {
+        return $this->getProjectDir().'/build/log/'.$this->environment;
+    }
+
+    public function getCacheDir()
+    {
+        return $this->getProjectDir().'/build/cache/'.$this->environment;
     }
 }

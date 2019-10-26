@@ -20,9 +20,9 @@ class ActionsRegistry implements ActionsRegistryInterface
      */
     private $actions = [];
 
-    public function addStepAction(string $manager, StepActionInterface $action): void
+    public function addStepAction(string $manager, string $stepName, $action): void
     {
-        $this->actions[$manager][$action->getStep()->getName()] = $action;
+        $this->actions[$manager][$stepName] = $action;
     }
 
     public function getAction(string $stepName, string $manager = null): StepActionInterface
@@ -49,6 +49,20 @@ class ActionsRegistry implements ActionsRegistryInterface
             ));
         }
 
-        return $this->actions[$manager][$stepName];
+        $action = $this->actions[$manager][$stepName];
+
+        if ($action instanceof \Closure) {
+            // Lazy loading
+            $action = $this->actions[$manager][$stepName]();
+            if (!$action instanceof StepActionInterface) {
+                throw new \RuntimeException(\sprintf(
+                    "Lazy-loaded action \"%s\" for character manager \"%s\" must be resolved to an instance of \"%s\".\n\"%s\" given.",
+                    $stepName, $manager, StepActionInterface::class, \is_object($action) ? \get_class($action) : \gettype($action)
+                ));
+            }
+            $this->actions[$manager][$stepName] = $action;
+        }
+
+        return $action;
     }
 }

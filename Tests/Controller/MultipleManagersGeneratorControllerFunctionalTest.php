@@ -12,7 +12,7 @@
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Tests\WebTestCase as PiersTestCase;
+use Pierstoval\Tests\WebTestCase as PiersTestCase;
 
 class MultipleManagersGeneratorControllerFunctionalTest extends WebTestCase
 {
@@ -26,7 +26,7 @@ class MultipleManagersGeneratorControllerFunctionalTest extends WebTestCase
 
     public function test main generate redirects to first step()
     {
-        $client = $this->getClient();
+        $client = $this->getHttpClient();
 
         $client->getKernel()->boot();
 
@@ -38,7 +38,7 @@ class MultipleManagersGeneratorControllerFunctionalTest extends WebTestCase
 
     public function test other generate redirects to first step()
     {
-        $client = $this->getClient();
+        $client = $this->getHttpClient();
 
         $client->getKernel()->boot();
 

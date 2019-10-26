@@ -12,7 +12,7 @@
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Tests\WebTestCase as PiersTestCase;
+use Pierstoval\Tests\WebTestCase as PiersTestCase;
 
 class GeneratorControllerFunctionalTest extends WebTestCase
 {
@@ -20,7 +20,7 @@ class GeneratorControllerFunctionalTest extends WebTestCase
 
     public function test generate redirects to first step()
     {
-        $client = $this->getClient();
+        $client = $this->getHttpClient();
 
         $client->getKernel()->boot();
 
@@ -32,7 +32,7 @@ class GeneratorControllerFunctionalTest extends WebTestCase
 
     public function test base step route renders correctly()
     {
-        $client = $this->getClient();
+        $client = $this->getHttpClient();
 
         $client->getKernel()->boot();
 
@@ -44,7 +44,7 @@ class GeneratorControllerFunctionalTest extends WebTestCase
 
     public function test non existent step route throws 404()
     {
-        $client = $this->getClient();
+        $client = $this->getHttpClient();
 
         $client->getKernel()->boot();
 

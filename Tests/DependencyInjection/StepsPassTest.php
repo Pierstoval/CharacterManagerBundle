@@ -30,12 +30,12 @@ class StepsPassTest extends TestCase
      */
     public function test compiler pass should not work if extension not processed(
         array $config,
-        string $expectedException,
-        string $expectedExceptionMessage,
+        string $expectException,
+        string $expectExceptionMessage,
         string $stepClass
     ) {
-        $this->expectException($expectedException);
-        $this->expectExceptionMessage($expectedExceptionMessage);
+        $this->expectException($expectException);
+        $this->expectExceptionMessage($expectExceptionMessage);
 
         $stepsPass = new StepsPass();
 
@@ -164,12 +164,8 @@ class StepsPassTest extends TestCase
 
         $container->register(ActionsRegistry::class);
 
-        $inlineStub1 = new class extends ConcreteAbstractActionStub
-        {
-        };
-        $inlineStub2 = new class extends ConcreteAbstractActionStub
-        {
-        };
+        $inlineStub1 = new TestStub();
+        $inlineStub2 = new TestStub();
 
         $container->setParameter('pierstoval_character_manager.managers', [
             'main' => [
@@ -217,4 +213,8 @@ class StepsPassTest extends TestCase
         static::assertSame(1, $managersConfiguration['another_manager']['steps']['01']['number']);
         static::assertSame(2, $managersConfiguration['another_manager']['steps']['02']['number']);
     }
+}
+
+class TestStub extends ConcreteAbstractActionStub
+{
 }

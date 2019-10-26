@@ -13,29 +13,25 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller\GeneratorCon
 
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolver;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller\AbstractGeneratorControllerTest;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ResetStepActionTest extends AbstractGeneratorControllerTest
 {
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Session is mandatory when using the character generator.
-     */
     public function test reset step needs session()
     {
         $controller = $this->createController();
         $request = new Request();
 
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Session is mandatory when using the character generator.');
+
         $controller->resetStepAction($request, '');
     }
 
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     * @expectedExceptionMessage Step not found.
-     */
     public function test reset step with non existent name()
     {
         $resolver = new StepResolver([
@@ -43,6 +39,9 @@ class ResetStepActionTest extends AbstractGeneratorControllerTest
         ]);
 
         $controller = $this->createController($resolver);
+
+        $this->expectException(NotFoundHttpException::class);
+        $this->expectExceptionMessage('Step not found.');
 
         $controller->resetStepAction($this->createRequest(), 'non_existent_step');
     }
@@ -78,6 +77,7 @@ class ResetStepActionTest extends AbstractGeneratorControllerTest
 
         $controller = $this->createController($resolver, $router, $translator);
         $request = $this->createRequest();
+        /** @var Session $session */
         $session = $request->getSession();
 
         $session->set('character.manager_one', [
@@ -88,7 +88,6 @@ class ResetStepActionTest extends AbstractGeneratorControllerTest
 
         $response = $controller->resetStepAction($request, '01');
 
-        static::assertInstanceOf(RedirectResponse::class, $response);
         static::assertTrue($response->isRedirect('/generate/01'));
         static::assertSame([
             '02' => 'Should be kept'
@@ -117,11 +116,8 @@ class ResetStepActionTest extends AbstractGeneratorControllerTest
             ->willReturn('/generate/manager_two/01')
         ;
 
-        $controller = $this->createController($resolver, $router);
+        $response = $this->createController($resolver, $router)->resetStepAction($this->createRequest(), '01', 'manager_two');
 
-        $response = $controller->resetStepAction($this->createRequest(), '01', 'manager_two');
-
-        static::assertInstanceOf(RedirectResponse::class, $response);
         static::assertTrue($response->isRedirect('/generate/manager_two/01'));
     }
 }
