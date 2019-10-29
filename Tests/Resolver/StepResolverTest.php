@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -12,15 +14,15 @@
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Resolver;
 
 use PHPUnit\Framework\TestCase;
+use Pierstoval\Bundle\CharacterManagerBundle\Exception\StepNotFoundException;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\StepInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolver;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub;
-use Pierstoval\Bundle\CharacterManagerBundle\Exception\StepNotFoundException;
 
 class StepResolverTest extends TestCase
 {
-    public function test steps resolver with empty config throws exception()
+    public function test steps resolver with empty config throws exception(): void
     {
         $resolver = new StepResolver();
 
@@ -30,18 +32,18 @@ class StepResolverTest extends TestCase
         $resolver->getManagerSteps();
     }
 
-    public function test steps resolver with single config option()
+    public function test steps resolver with single config option(): void
     {
         $stepsArray = [
             'one' => [
-                'number'         => 1,
-                'name'           => '01',
-                'action'         => ConcreteAbstractActionStub::class,
-                'label'          => '',
+                'number' => 1,
+                'name' => '01',
+                'action' => ConcreteAbstractActionStub::class,
+                'label' => '',
                 'onchange_clear' => [],
-                'dependencies'   => [],
-                'manager_name'   => 'main_manager',
-            ]
+                'dependencies' => [],
+                'manager_name' => 'main_manager',
+            ],
         ];
         $resolver = new StepResolver(['main_manager' => ['steps' => $stepsArray]]);
 
@@ -54,19 +56,19 @@ class StepResolverTest extends TestCase
         static::assertEquals($stepsObjects, $resolver->getManagerSteps('main_manager'));
     }
 
-    public function test resolve non existent step name should throw exception()
+    public function test resolve non existent step name should throw exception(): void
     {
         $resolver = new StepResolver([
             'main_manager' => [
                 'steps' => [
                     'step_1' => [
                         'action' => ConcreteAbstractActionStub::class,
-                        'name' =>  'step_1',
-                        'label' =>  'Step 1',
-                        'dependencies' =>  [],
+                        'name' => 'step_1',
+                        'label' => 'Step 1',
+                        'dependencies' => [],
                         'manager_name' => 'main_manager',
-                        'onchange_clear' =>  [],
-                        'number' =>  1,
+                        'onchange_clear' => [],
+                        'number' => 1,
                     ],
                 ],
             ],
@@ -78,19 +80,19 @@ class StepResolverTest extends TestCase
         $resolver->resolve('non_existent_step');
     }
 
-    public function test resolve non existent step number should throw an exception()
+    public function test resolve non existent step number should throw an exception(): void
     {
         $resolver = new StepResolver([
             'main_manager' => [
                 'steps' => [
                     'step_1' => [
                         'action' => ConcreteAbstractActionStub::class,
-                        'name' =>  'step_1',
-                        'label' =>  'Step 1',
-                        'dependencies' =>  [],
+                        'name' => 'step_1',
+                        'label' => 'Step 1',
+                        'dependencies' => [],
                         'manager_name' => 'main_manager',
-                        'onchange_clear' =>  [],
-                        'number' =>  1,
+                        'onchange_clear' => [],
+                        'number' => 1,
                     ],
                 ],
             ],
@@ -102,16 +104,16 @@ class StepResolverTest extends TestCase
         $resolver->resolveNumber(5);
     }
 
-    public function test resolve step name should return correct step values()
+    public function test resolve step name should return correct step values(): void
     {
         $step1 = [
             'number' => 0,
-            'name' =>  'step_1',
+            'name' => 'step_1',
             'action' => ConcreteAbstractActionStub::class,
-            'label' =>  'Step 1',
+            'label' => 'Step 1',
             'manager_name' => 'main_manager',
-            'onchange_clear' =>  [],
-            'dependencies' =>  [],
+            'onchange_clear' => [],
+            'dependencies' => [],
         ];
 
         $resolver = new StepResolver([
@@ -127,16 +129,16 @@ class StepResolverTest extends TestCase
         $this->makeDefaultStepAssertions($resolvedStep, $step1);
     }
 
-    public function test resolve step number should return correct step()
+    public function test resolve step number should return correct step(): void
     {
         $step1 = [
             'number' => 0,
-            'name' =>  'step_1',
+            'name' => 'step_1',
             'action' => ConcreteAbstractActionStub::class,
-            'label' =>  'Step 1',
+            'label' => 'Step 1',
             'manager_name' => 'main_manager',
-            'onchange_clear' =>  [],
-            'dependencies' =>  [],
+            'onchange_clear' => [],
+            'dependencies' => [],
         ];
 
         $resolver = new StepResolver([
@@ -152,7 +154,7 @@ class StepResolverTest extends TestCase
         $this->makeDefaultStepAssertions($resolvedStep, $step1);
     }
 
-    public function test resolve with no steps should throw exception()
+    public function test resolve with no steps should throw exception(): void
     {
         $resolver = new StepResolver(['test' => ['steps' => []]]);
 
@@ -162,7 +164,7 @@ class StepResolverTest extends TestCase
         $resolver->resolve('non_existent_step');
     }
 
-    public function test resolve number with no steps should throw exception()
+    public function test resolve number with no steps should throw exception(): void
     {
         $resolver = new StepResolver(['test' => ['steps' => []]]);
 
@@ -172,18 +174,18 @@ class StepResolverTest extends TestCase
         $resolver->resolveNumber(0);
     }
 
-    public function test resolve invalid manager should throw exception()
+    public function test resolve invalid manager should throw exception(): void
     {
         $resolver = new StepResolver([
             'main_manager' => [
                 'steps' => [
                     'step_1' => [
-                        'action'         => '',
-                        'label'          => '',
-                        'number'         => 1,
-                        'name'           => '',
-                        'manager_name'   => '',
-                        'dependencies'   => [],
+                        'action' => '',
+                        'label' => '',
+                        'number' => 1,
+                        'name' => '',
+                        'manager_name' => '',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                 ],
@@ -196,33 +198,33 @@ class StepResolverTest extends TestCase
         $resolver->resolve('', 'invalid_manager');
     }
 
-    public function test resolve multiple manager names with same steps names()
+    public function test resolve multiple manager names with same steps names(): void
     {
         $resolver = new StepResolver([
             'manager_one' => [
                 'character_class' => '',
-                'steps'           => [
+                'steps' => [
                     '01' => [
-                        'action'         => '',
-                        'label'          => '',
-                        'number'         => 1,
-                        'name'           => '',
-                        'manager_name'   => 'manager_one',
-                        'dependencies'   => [],
+                        'action' => '',
+                        'label' => '',
+                        'number' => 1,
+                        'name' => '',
+                        'manager_name' => 'manager_one',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                 ],
             ],
             'manager_two' => [
                 'character_class' => '',
-                'steps'           => [
+                'steps' => [
                     '01' => [
-                        'action'         => '',
-                        'label'          => '',
-                        'number'         => 1,
-                        'name'           => '',
-                        'manager_name'   => 'manager_two',
-                        'dependencies'   => [],
+                        'action' => '',
+                        'label' => '',
+                        'number' => 1,
+                        'name' => '',
+                        'manager_name' => 'manager_two',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                 ],
@@ -238,33 +240,33 @@ class StepResolverTest extends TestCase
         static::assertSame('manager_two', $stepFromManagerTwo->getManagerName());
     }
 
-    public function test resolve with no manager name when multiple managers configured should throw exception()
+    public function test resolve with no manager name when multiple managers configured should throw exception(): void
     {
         $resolver = new StepResolver([
             'manager_one' => [
                 'character_class' => '',
-                'steps'           => [
+                'steps' => [
                     '01' => [
-                        'action'         => '',
-                        'label'          => '',
-                        'number'         => 1,
-                        'name'           => '',
-                        'manager_name'   => '',
-                        'dependencies'   => [],
+                        'action' => '',
+                        'label' => '',
+                        'number' => 1,
+                        'name' => '',
+                        'manager_name' => '',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                 ],
             ],
             'manager_two' => [
                 'character_class' => '',
-                'steps'           => [
+                'steps' => [
                     '01' => [
-                        'action'         => '',
-                        'label'          => '',
-                        'number'         => 1,
-                        'name'           => '',
-                        'manager_name'   => '',
-                        'dependencies'   => [],
+                        'action' => '',
+                        'label' => '',
+                        'number' => 1,
+                        'name' => '',
+                        'manager_name' => '',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                 ],

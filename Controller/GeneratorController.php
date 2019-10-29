@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -64,14 +66,14 @@ class GeneratorController
         $resolvedManagerName = $this->stepsResolver->resolveManagerName($manager);
 
         try {
-            $step = $this->stepsResolver->resolveNumber($session->get("step.$resolvedManagerName", 1), $resolvedManagerName);
+            $step = $this->stepsResolver->resolveNumber($session->get("step.{$resolvedManagerName}", 1), $resolvedManagerName);
         } catch (StepNotFoundException $e) {
             throw new NotFoundHttpException('No step found to start the generator.', $e);
         }
 
         $routeParams = ['requestStep' => $step->getName()];
 
-        if ($manager !== null) {
+        if (null !== $manager) {
             $routeParams['manager'] = $manager;
         }
 
@@ -84,8 +86,8 @@ class GeneratorController
 
         $resolvedManagerName = $this->stepsResolver->resolveManagerName($manager);
 
-        $session->set("character.$resolvedManagerName", []);
-        $session->set("step.$resolvedManagerName", 1);
+        $session->set("character.{$resolvedManagerName}", []);
+        $session->set("step.{$resolvedManagerName}", 1);
         $session->getFlashBag()->add('success', $this->trans('steps.reset.character', [], 'PierstovalCharacterManager'));
 
         return new RedirectResponse($this->router->generate('pierstoval_character_generator_index'));
@@ -103,20 +105,20 @@ class GeneratorController
             throw new NotFoundHttpException('Step not found.', $e);
         }
 
-        $character = $session->get("character.$resolvedManagerName", []);
+        $character = $session->get("character.{$resolvedManagerName}", []);
         unset($character[$step->getName()]);
 
         foreach ($step->getOnchangeClear() as $stepToClear) {
             unset($character[$stepToClear]);
         }
 
-        $session->set("character.$resolvedManagerName", $character);
+        $session->set("character.{$resolvedManagerName}", $character);
 
         $session->getFlashBag()->add('success', $this->trans('steps.reset.step', [], 'PierstovalCharacterManager'));
 
         $routeParams = ['requestStep' => $step->getName()];
 
-        if ($manager !== null) {
+        if (null !== $manager) {
             $routeParams['manager'] = $manager;
         }
 
@@ -135,7 +137,7 @@ class GeneratorController
             throw new NotFoundHttpException('Step not found.', $e);
         }
 
-        $character = $session->get("character.$resolvedManagerName", []);
+        $character = $session->get("character.{$resolvedManagerName}", []);
 
         // Make sure that dependencies exist, else redirect to first step with a message.
         foreach ($step->getDependencies() as $stepName) {

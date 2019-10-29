@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -69,24 +71,24 @@ class StepResolver implements StepResolverInterface
 
     public function resolveManagerName(string $managerName = null): string
     {
-        if (\count($this->managersConfiguration) === 0) {
+        if (0 === \count($this->managersConfiguration)) {
             throw new \RuntimeException('No character managers to resolve configuration for.');
         }
 
-        if ($managerName === null && \count($this->managersConfiguration) > 0) {
-            if (\count($this->managersConfiguration) === 1) {
-                return array_keys($this->managersConfiguration)[0];
+        if (null === $managerName && \count($this->managersConfiguration) > 0) {
+            if (1 === \count($this->managersConfiguration)) {
+                return \array_keys($this->managersConfiguration)[0];
             }
 
-            throw new \InvalidArgumentException(sprintf(
+            throw new \InvalidArgumentException(\sprintf(
                 'You did not specify which character manager you want to get the steps from, and you have more than one manager. '.
                 'Possible choices: %s',
-                implode(', ', array_keys($this->managersConfiguration))
+                \implode(', ', \array_keys($this->managersConfiguration))
             ));
         }
 
         if (!isset($this->managersConfiguration[$managerName])) {
-            throw new \InvalidArgumentException("\"$managerName\" manager does not exist, or is not initialized yet.");
+            throw new \InvalidArgumentException("\"{$managerName}\" manager does not exist, or is not initialized yet.");
         }
 
         return $managerName;

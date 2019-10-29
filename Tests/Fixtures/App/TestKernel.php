@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -33,7 +35,7 @@ class TestKernel extends Kernel
     /**
      * Loads the container configuration.
      */
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(__DIR__.'/config/config_'.$this->environment.'.yaml');
     }

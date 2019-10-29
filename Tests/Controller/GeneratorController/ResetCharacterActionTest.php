@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -22,7 +24,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ResetCharacterActionTest extends AbstractGeneratorControllerTest
 {
-    public function test reset needs session()
+    public function test reset needs session(): void
     {
         $controller = $this->createController();
         $request = new Request();
@@ -33,22 +35,22 @@ class ResetCharacterActionTest extends AbstractGeneratorControllerTest
         $controller->resetCharacterAction($request);
     }
 
-    public function test reset session and flash message()
+    public function test reset session and flash message(): void
     {
         $router = $this->createMock(RouterInterface::class);
-        $router->expects(self::once())
+        $router->expects(static::once())
             ->method('generate')
             ->with('pierstoval_character_generator_index')
             ->willReturn('/generate/')
         ;
         $translator = $this->createMock(TranslatorInterface::class);
-        $translator->expects(self::once())
+        $translator->expects(static::once())
             ->method('trans')
             ->with('steps.reset.character', [], 'PierstovalCharacterManager')
             ->willReturn('Translated flash message')
         ;
         $stepResolver = $this->createMock(StepResolverInterface::class);
-        $stepResolver->expects($this->once())
+        $stepResolver->expects(static::once())
             ->method('resolveManagerName')
             ->with(null)
             ->willReturn('manager_test')
@@ -74,16 +76,16 @@ class ResetCharacterActionTest extends AbstractGeneratorControllerTest
         static::assertSame('/generate/', $response->headers->get('location'));
     }
 
-    public function test reset session and flash message without translator()
+    public function test reset session and flash message without translator(): void
     {
         $router = $this->createMock(RouterInterface::class);
-        $router->expects(self::once())
+        $router->expects(static::once())
             ->method('generate')
             ->with('pierstoval_character_generator_index')
             ->willReturn('/generate/')
         ;
         $stepResolver = $this->createMock(StepResolverInterface::class);
-        $stepResolver->expects($this->once())
+        $stepResolver->expects(static::once())
             ->method('resolveManagerName')
             ->with(null)
             ->willReturn('manager_test')

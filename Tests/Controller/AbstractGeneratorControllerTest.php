@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -16,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 use Pierstoval\Bundle\CharacterManagerBundle\Controller\GeneratorController;
 use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistryInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface;
-use \Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub;
+use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\CharacterStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\RequestTestTrait;
 use Symfony\Component\Routing\RouterInterface;
@@ -30,9 +32,7 @@ abstract class AbstractGeneratorControllerTest extends TestCase
      * @param MockObject|StepResolverInterface    $resolver
      * @param MockObject|TranslatorInterface      $translator
      * @param MockObject|RouterInterface          $router
-     * @param MockObject|ActionsRegistryInterface $actionsRegistry
-     *
-     * @return GeneratorController
+     * @param ActionsRegistryInterface|MockObject $actionsRegistry
      */
     protected function createController(
         StepResolverInterface $resolver = null,
@@ -65,12 +65,12 @@ abstract class AbstractGeneratorControllerTest extends TestCase
 
         // Will be used to populate missing data
         $baseStep = [
-            'action'         => ConcreteAbstractActionStub::class,
-            'label'          => '',
-            'number'         => 1,
-            'name'           => '01',
-            'manager_name'   => $managerName,
-            'dependencies'   => [],
+            'action' => ConcreteAbstractActionStub::class,
+            'label' => '',
+            'number' => 1,
+            'name' => '01',
+            'manager_name' => $managerName,
+            'dependencies' => [],
             'onchange_clear' => [],
         ];
 

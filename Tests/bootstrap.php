@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -32,14 +34,14 @@ if (\function_exists('xdebug_set_filter')) {
 }
 
 $file = __DIR__.'/../vendor/autoload.php';
-if (!file_exists($file)) {
+if (!\file_exists($file)) {
     throw new RuntimeException('Install dependencies to run test suite.');
 }
 $autoload = require $file;
 
-(static function(){
+(static function (): void {
     if (\file_exists($dbFile = __DIR__.'/build/database_test.db')) {
-        unlink($dbFile);
+        \unlink($dbFile);
     }
 
     $kernel = new TestKernel('test', true);

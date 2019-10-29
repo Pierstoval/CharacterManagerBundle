@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -15,13 +17,13 @@ use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolver;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller\AbstractGeneratorControllerTest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ResetStepActionTest extends AbstractGeneratorControllerTest
 {
-    public function test reset step needs session()
+    public function test reset step needs session(): void
     {
         $controller = $this->createController();
         $request = new Request();
@@ -32,7 +34,7 @@ class ResetStepActionTest extends AbstractGeneratorControllerTest
         $controller->resetStepAction($request, '');
     }
 
-    public function test reset step with non existent name()
+    public function test reset step with non existent name(): void
     {
         $resolver = new StepResolver([
             'manager_one' => $this->createManagerConfiguration('manager_one'),
@@ -46,12 +48,12 @@ class ResetStepActionTest extends AbstractGeneratorControllerTest
         $controller->resetStepAction($this->createRequest(), 'non_existent_step');
     }
 
-    public function test reset step removes onchange clear steps()
+    public function test reset step removes onchange clear steps(): void
     {
         $resolver = new StepResolver([
             'manager_one' => $this->createManagerConfiguration('manager_one', [
                 '01' => [
-                    'name'           => '01',
+                    'name' => '01',
                     'onchange_clear' => ['03'],
                 ],
                 '02' => [
@@ -63,13 +65,13 @@ class ResetStepActionTest extends AbstractGeneratorControllerTest
             ]),
         ]);
         $router = $this->createMock(RouterInterface::class);
-        $router->expects(self::once())
+        $router->expects(static::once())
             ->method('generate')
             ->with('pierstoval_character_generator_step', ['requestStep' => '01'])
             ->willReturn('/generate/01')
         ;
         $translator = $this->createMock(TranslatorInterface::class);
-        $translator->expects(self::once())
+        $translator->expects(static::once())
             ->method('trans')
             ->with('steps.reset.step', [], 'PierstovalCharacterManager')
             ->willReturn('Translated flash message')
@@ -90,12 +92,12 @@ class ResetStepActionTest extends AbstractGeneratorControllerTest
 
         static::assertTrue($response->isRedirect('/generate/01'));
         static::assertSame([
-            '02' => 'Should be kept'
+            '02' => 'Should be kept',
         ], $session->get('character.manager_one'));
         static::assertSame(['Translated flash message'], $session->getFlashBag()->get('success'));
     }
 
-    public function test reset step with multiple managers correctly redirects()
+    public function test reset step with multiple managers correctly redirects(): void
     {
         $resolver = new StepResolver([
             'manager_one' => $this->createManagerConfiguration('manager_one', [
@@ -110,7 +112,7 @@ class ResetStepActionTest extends AbstractGeneratorControllerTest
             ]),
         ]);
         $router = $this->createMock(RouterInterface::class);
-        $router->expects(self::once())
+        $router->expects(static::once())
             ->method('generate')
             ->with('pierstoval_character_generator_step', ['requestStep' => '01', 'manager' => 'manager_two'])
             ->willReturn('/generate/manager_two/01')

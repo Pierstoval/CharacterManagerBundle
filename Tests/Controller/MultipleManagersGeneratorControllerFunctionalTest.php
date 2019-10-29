@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -11,20 +13,14 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Pierstoval\Tests\WebTestCase as PiersTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class MultipleManagersGeneratorControllerFunctionalTest extends WebTestCase
 {
     use PiersTestCase;
 
-    protected static function createKernel(array $options = [])
-    {
-        $options['environment'] = 'test_more_managers';
-        return parent::createKernel($options);
-    }
-
-    public function test main generate redirects to first step()
+    public function test main generate redirects to first step(): void
     {
         $client = $this->getHttpClient();
 
@@ -36,7 +32,7 @@ class MultipleManagersGeneratorControllerFunctionalTest extends WebTestCase
         static::assertSame('/main/generate/step_01', $client->getResponse()->headers->get('Location'));
     }
 
-    public function test other generate redirects to first step()
+    public function test other generate redirects to first step(): void
     {
         $client = $this->getHttpClient();
 
@@ -46,5 +42,12 @@ class MultipleManagersGeneratorControllerFunctionalTest extends WebTestCase
 
         static::assertSame(302, $client->getResponse()->getStatusCode());
         static::assertSame('/other/generate/step_01', $client->getResponse()->headers->get('Location'));
+    }
+
+    protected static function createKernel(array $options = [])
+    {
+        $options['environment'] = 'test_more_managers';
+
+        return parent::createKernel($options);
     }
 }

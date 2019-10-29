@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -15,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Pierstoval\Bundle\CharacterManagerBundle\Entity\Character as BaseCharacter;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity
  * @ORM\Table(name="character_stubs")
  */
 class CharacterStub extends BaseCharacter
@@ -33,9 +35,6 @@ class CharacterStub extends BaseCharacter
         parent::__construct('Stub characte', 'stub-character');
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;

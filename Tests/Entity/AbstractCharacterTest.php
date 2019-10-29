@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -16,7 +18,7 @@ use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\Charact
 
 class AbstractCharacterTest extends TestCase
 {
-    public function test public getters return types()
+    public function test public getters return types(): void
     {
         $character = new CharacterStub();
 

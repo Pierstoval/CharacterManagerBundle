@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -18,6 +20,6 @@ class StepNotFoundException extends \RuntimeException
      */
     public function __construct($step, string $managerName)
     {
-        parent::__construct("\"$step\" step does not exist in manager $managerName.");
+        parent::__construct("\"{$step}\" step does not exist in manager {$managerName}.");
     }
 }
