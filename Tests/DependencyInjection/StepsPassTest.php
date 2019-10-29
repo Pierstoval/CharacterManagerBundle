@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -16,8 +18,8 @@ use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
 /**
@@ -33,7 +35,7 @@ class StepsPassTest extends TestCase
         string $expectException,
         string $expectExceptionMessage,
         string $stepClass
-    ) {
+    ): void {
         $this->expectException($expectException);
         $this->expectExceptionMessage($expectExceptionMessage);
 
@@ -54,13 +56,13 @@ class StepsPassTest extends TestCase
     {
         $dir = __DIR__.'/../Fixtures/App/compiler_pass_test_non_working/';
 
-        $configFiles = glob($dir.'compiler_config_*.yaml');
+        $configFiles = \glob($dir.'compiler_config_*.yaml');
 
-        sort($configFiles);
+        \sort($configFiles);
 
         foreach ($configFiles as $file) {
-            $config = Yaml::parse(file_get_contents($file));
-            yield basename($file) => [
+            $config = Yaml::parse(\file_get_contents($file));
+            yield \basename($file) => [
                 $config['config'],
                 $config['expected_exception'],
                 $config['expected_exception_message'],
@@ -69,10 +71,8 @@ class StepsPassTest extends TestCase
         }
     }
 
-    public function test abstract class service definitions()
+    public function provide container builder for services injection(): \Generator
     {
-        $stepsPass = new StepsPass();
-
         $container = new ContainerBuilder();
         $container
             ->register('steps.default')
@@ -86,26 +86,56 @@ class StepsPassTest extends TestCase
         $container->register(TranslatorInterface::class);
 
         // Empty config here, we just test definition tags
-        $container->setParameter('pierstoval_character_manager.managers', [
-            'main' => [
-                'character_class' => 'test_abstract',
-                'steps' => [
-                    '01' => [
-                        'action' => 'steps.default',
-                        'label' => '',
-                        'onchange_clear' => [],
-                        'dependencies' => [],
+        $container->setParameter(
+            'pierstoval_character_manager.managers',
+            $params = [
+                'main' => [
+                    'character_class' => 'test_abstract',
+                    'steps' => [
+                        '01' => [
+                            'action' => 'steps.default',
+                            'label' => '',
+                            'onchange_clear' => [],
+                            'dependencies' => [],
+                        ],
                     ],
                 ],
-            ],
-        ]);
+            ]
+        );
+
+        yield 'with services' => [$container];
+
+        $container = new ContainerBuilder();
+        $container
+            ->register('steps.default')
+            ->setClass(ConcreteAbstractActionStub::class)
+        ;
+
+        $container->register(ActionsRegistry::class);
+
+        $container->register('test_service', \stdClass::class);
+        $container->setAlias(ObjectManager::class, 'test_service');
+        $container->setAlias(Environment::class, 'test_service');
+        $container->setAlias(RouterInterface::class, 'test_service');
+        $container->setAlias(TranslatorInterface::class, 'test_service');
+
+        // Empty config here, we just test definition tags
+        $container->setParameter('pierstoval_character_manager.managers', $params);
+
+        yield 'with aliases' => [$container];
+    }
+
+    /**
+     * @dataProvider provide container builder for services injection
+     */
+    public function test abstract class service definitions injection(ContainerBuilder $container): void
+    {
+        $stepsPass = new StepsPass();
 
         $stepsPass->process($container);
 
         // Test references calls are correct.
-        $definition = $container->getDefinition('steps.default');
-
-        $calls = $definition->getMethodCalls();
+        $calls = $container->getDefinition('steps.default')->getMethodCalls();
 
         static::assertCount(5, $calls);
         static::assertSame('configure', $calls[0][0]);
@@ -115,7 +145,7 @@ class StepsPassTest extends TestCase
         static::assertSame('setTranslator', $calls[4][0]);
     }
 
-    public function test simple classes are automatically registered as services()
+    public function test simple classes are automatically registered as services(): void
     {
         $stepsPass = new StepsPass();
 
@@ -157,7 +187,7 @@ class StepsPassTest extends TestCase
         static::assertSame(ConcreteAbstractActionStub::class, $definition->getClass());
     }
 
-    public function test steps order starts from one()
+    public function test steps order starts from one(): void
     {
         $stepsPass = new StepsPass();
         $container = new ContainerBuilder();
@@ -172,15 +202,15 @@ class StepsPassTest extends TestCase
                 'character_class' => 'test_abstract',
                 'steps' => [
                     '01' => [
-                        'action'         => ConcreteAbstractActionStub::class,
-                        'label'          => 'Step 1',
-                        'dependencies'     => [],
+                        'action' => ConcreteAbstractActionStub::class,
+                        'label' => 'Step 1',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                     '02' => [
-                        'action'         => ConcreteAbstractActionStub::class,
-                        'label'          => 'Step 1',
-                        'dependencies'     => [],
+                        'action' => ConcreteAbstractActionStub::class,
+                        'label' => 'Step 1',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                 ],
@@ -189,15 +219,15 @@ class StepsPassTest extends TestCase
                 'character_class' => 'test_abstract',
                 'steps' => [
                     '01' => [
-                        'action'         => \get_class($inlineStub1),
-                        'label'          => 'Step 1',
-                        'dependencies'     => [],
+                        'action' => \get_class($inlineStub1),
+                        'label' => 'Step 1',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                     '02' => [
-                        'action'         => \get_class($inlineStub2),
-                        'label'          => 'Step 1',
-                        'dependencies'     => [],
+                        'action' => \get_class($inlineStub2),
+                        'label' => 'Step 1',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                 ],
