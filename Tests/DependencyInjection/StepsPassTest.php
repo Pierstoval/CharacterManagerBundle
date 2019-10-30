@@ -71,7 +71,7 @@ class StepsPassTest extends TestCase
         }
     }
 
-    public function provide container builder for services injection(): \Generator
+    public function provide container builder for services injection(): Generator
     {
         $container = new ContainerBuilder();
         $container
@@ -163,12 +163,12 @@ class StepsPassTest extends TestCase
                 'character_class' => 'test_abstract',
                 'steps' => [
                     '01' => [
-                        'action'         => ConcreteAbstractActionStub::class,
-                        'name'           => 'step_1',
-                        'label'          => 'Step 1',
-                        'dependencies'     => [],
+                        'action' => ConcreteAbstractActionStub::class,
+                        'name' => 'step_1',
+                        'label' => 'Step 1',
+                        'dependencies' => [],
                         'onchange_clear' => [],
-                        'number'         => 1,
+                        'number' => 1,
                     ],
                 ],
             ],

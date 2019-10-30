@@ -16,12 +16,14 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Action;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
+use Pierstoval\Bundle\CharacterManagerBundle\Model\StepInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolver;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller\AbstractGeneratorControllerTest;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\CharacterStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Model\StepStub;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -36,8 +38,8 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         $stub = new ConcreteAbstractActionStub();
         $stub->setRequest($this->createRequest());
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Step is not defined in current step action. Did you run the "configure()" method?');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Step action is not configured. Did you forget to run the "configure()" method?');
 
         $stub->{$method}(...$arguments);
     }
@@ -94,7 +96,7 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
         $stub->configure('', '', CharacterStub::class, $this->createMock(StepResolverInterface::class));
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot reconfigure an already configured step action.');
 
         $stub->configure('', '', CharacterStub::class, $this->createMock(StepResolverInterface::class));
@@ -275,10 +277,20 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
     public function test goToStep throws exception if no router(): void
     {
-        $stub = new ConcreteAbstractActionStub();
+        $stub = $this->getDefaultConfiguredAction();
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Cannot use Pierstoval\Bundle\CharacterManagerBundle\Action\AbstractStepAction::goToStep if no router is injected in AbstractStepAction.');
+
+        $stub->goToStep(1);
+    }
+
+    public function test goToStep throws exception if not configured(): void
+    {
+        $stub = new ConcreteAbstractActionStub();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Step action is not configured. Did you forget to run the "configure()" method?');
 
         $stub->goToStep(1);
     }
@@ -288,7 +300,7 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         /** @var MockObject|RouterInterface $router */
         $router = $this->createMock(RouterInterface::class);
 
-        $stub = new ConcreteAbstractActionStub();
+        $stub = $this->getDefaultConfiguredAction();
         $stub->setRouter($router);
 
         $this->expectException(InvalidArgumentException::class);
@@ -299,7 +311,7 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
     public function test flashMessage should throw exception if no request(): void
     {
-        $stub = new ConcreteAbstractActionStub();
+        $stub = $this->getDefaultConfiguredAction();
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Request is not set in step action.');
@@ -309,7 +321,7 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
     public function test flashMessage should throw exception if no session(): void
     {
-        $stub = new ConcreteAbstractActionStub();
+        $stub = $this->getDefaultConfiguredAction();
         $stub->setRequest(new Request());
 
         $this->expectException(\RuntimeException::class);
@@ -320,7 +332,8 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
     public function test flashMessage with no parameters(): void
     {
-        $stub = new ConcreteAbstractActionStub();
+        $stub = $this->getDefaultConfiguredAction();
+
         $request = $this->createRequest();
         $stub->setRequest($request);
 
@@ -331,7 +344,8 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
     public function test flashMessage removes duplicates(): void
     {
-        $stub = new ConcreteAbstractActionStub();
+        $stub = $this->getDefaultConfiguredAction();
+
         $request = $this->createRequest();
         $stub->setRequest($request);
 
@@ -344,7 +358,7 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
     public function test flashMessage with parameters(): void
     {
-        $stub = new ConcreteAbstractActionStub();
+        $stub = $this->getDefaultConfiguredAction();
         $request = $this->createRequest();
         $stub->setRequest($request);
 
@@ -356,7 +370,7 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
     public function test flashMessage with translator(): void
     {
-        $stub = new ConcreteAbstractActionStub();
+        $stub = $this->getDefaultConfiguredAction();
         $request = $this->createRequest();
         $stub->setRequest($request);
 
@@ -375,7 +389,7 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
     public function test update current step should throw exception if no request(): void
     {
-        $stub = new ConcreteAbstractActionStub();
+        $stub = $this->getDefaultConfiguredAction();
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Request is not set in step action.');
@@ -385,7 +399,7 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
     public function test getCurrentCharacter should throw exception if no request(): void
     {
-        $stub = new ConcreteAbstractActionStub();
+        $stub = $this->getDefaultConfiguredAction();
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Request is not set in step action.');
@@ -395,7 +409,7 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
     public function test getCurrentCharacter should throw exception if no session(): void
     {
-        $stub = new ConcreteAbstractActionStub();
+        $stub = $this->getDefaultConfiguredAction();
         $stub->setRequest(new Request());
 
         $this->expectException(\RuntimeException::class);
@@ -415,7 +429,7 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
     public function test flash message when session is not available(): void
     {
-        $action = new ConcreteAbstractActionStub();
+        $action = $this->getDefaultConfiguredAction();
         $action->setRequest(new Request());
 
         $this->expectException(\RuntimeException::class);
@@ -433,6 +447,39 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         $resolver->expects(static::once())->method('getManagerSteps')->willReturn([$stepStub]);
 
         $stub->configure($stepStub->getManagerName(), $stepStub->getName(), CharacterStub::class, $resolver);
+
+        return $stub;
+    }
+
+    private function getDefaultResolver(): StepResolverInterface
+    {
+        return new class() implements StepResolverInterface {
+            public function resolve(string $stepName, string $managerName = null): StepInterface
+            {
+                return StepStub::createStub();
+            }
+
+            public function resolveNumber(int $stepNumber, string $managerName = null): StepInterface
+            {
+                return StepStub::createStub();
+            }
+
+            public function getManagerSteps(string $managerName = null): array
+            {
+                return [StepStub::createStub()];
+            }
+
+            public function resolveManagerName(string $managerName = null): string
+            {
+                return 'test_manager';
+            }
+        };
+    }
+
+    private function getDefaultConfiguredAction(): ConcreteAbstractActionStub
+    {
+        $stub = new ConcreteAbstractActionStub();
+        $stub->configure('test_manager', 'test_step', CharacterStub::class, $this->getDefaultResolver());
 
         return $stub;
     }

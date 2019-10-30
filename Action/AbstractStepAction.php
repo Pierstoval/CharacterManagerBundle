@@ -80,6 +80,7 @@ abstract class AbstractStepAction implements StepActionInterface
         $this->class = $characterClassName;
         $this->managerName = $managerName;
         $this->step = $resolver->resolve($stepName, $managerName);
+        $this->stepName = $stepName;
         $this->setSteps($resolver->getManagerSteps($managerName));
 
         $this->configured = true;
@@ -115,16 +116,16 @@ abstract class AbstractStepAction implements StepActionInterface
 
     public function getStep(): StepInterface
     {
-        if (!$this->step) {
-            throw new \RuntimeException('Step is not defined in current step action. Did you run the "configure()" method?');
-        }
+        $this->checkConfigured();
 
         return $this->step;
     }
 
     public function stepName(): string
     {
-        return $this->step->getName();
+        $this->checkConfigured();
+
+        return $this->stepName;
     }
 
     /**
@@ -159,6 +160,8 @@ abstract class AbstractStepAction implements StepActionInterface
      */
     protected function goToStep(int $stepNumber): RedirectResponse
     {
+        $this->checkConfigured();
+
         if (!$this->router) {
             throw new \InvalidArgumentException('Cannot use '.__METHOD__.' if no router is injected in AbstractStepAction.');
         }
@@ -217,6 +220,8 @@ abstract class AbstractStepAction implements StepActionInterface
 
     protected function getRequest(): Request
     {
+        $this->checkConfigured();
+
         if (!$this->request) {
             throw new \RuntimeException('Request is not set in step action.');
         }
@@ -251,5 +256,12 @@ abstract class AbstractStepAction implements StepActionInterface
         }
 
         $this->steps = $steps;
+    }
+
+    private function checkConfigured(): void
+    {
+        if (!$this->configured) {
+            throw new \RuntimeException('Step action is not configured. Did you forget to run the "configure()" method?');
+        }
     }
 }
