@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -20,9 +22,9 @@ class ActionsRegistry implements ActionsRegistryInterface
      */
     private $actions = [];
 
-    public function addStepAction(string $manager, StepActionInterface $action): void
+    public function addStepAction(string $manager, string $stepName, $action): void
     {
-        $this->actions[$manager][$action->getStep()->getName()] = $action;
+        $this->actions[$manager][$stepName] = $action;
     }
 
     public function getAction(string $stepName, string $manager = null): StepActionInterface
@@ -31,8 +33,8 @@ class ActionsRegistry implements ActionsRegistryInterface
             throw new \RuntimeException('No actions in the registry.');
         }
 
-        if ($manager === null) {
-            $manager = array_keys($this->actions)[0];
+        if (null === $manager) {
+            $manager = \array_keys($this->actions)[0];
         }
 
         if (!isset($this->actions[$manager])) {
@@ -43,12 +45,30 @@ class ActionsRegistry implements ActionsRegistryInterface
         }
 
         if (!isset($this->actions[$manager][$stepName])) {
-                throw new \InvalidArgumentException(\sprintf(
+            throw new \InvalidArgumentException(\sprintf(
                 'Step "%s" not found in manager "%s".',
-                $stepName, $manager
+                $stepName,
+                $manager
             ));
         }
 
-        return $this->actions[$manager][$stepName];
+        $action = $this->actions[$manager][$stepName];
+
+        if ($action instanceof \Closure) {
+            // Lazy loading
+            $action = $this->actions[$manager][$stepName]();
+            if (!$action instanceof StepActionInterface) {
+                throw new \RuntimeException(\sprintf(
+                    "Lazy-loaded action \"%s\" for character manager \"%s\" must be resolved to an instance of \"%s\".\n\"%s\" given.",
+                    $stepName,
+                    $manager,
+                    StepActionInterface::class,
+                    \is_object($action) ? \get_class($action) : \gettype($action)
+                ));
+            }
+            $this->actions[$manager][$stepName] = $action;
+        }
+
+        return $action;
     }
 }

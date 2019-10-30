@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -27,10 +29,10 @@ class ExtensionTest extends TestCase
      * @param $config
      * @param $expected
      */
-    public function test yaml configurations($config, $expected)
+    public function test yaml configurations($config, $expected): void
     {
         $container = new ContainerBuilder();
-        $ext       = new PierstovalCharacterManagerExtension();
+        $ext = new PierstovalCharacterManagerExtension();
         $stepsPass = new StepsPass();
 
         // Add the default step service
@@ -45,37 +47,37 @@ class ExtensionTest extends TestCase
         // Sorting the arrays by key name avoid issues with PHP7 and Yaml parsing that sometimes store the keys in the wrong order
 
         foreach ($expected['pierstoval_character_manager'] as $key => $expectedValue) {
-            if (is_array($expectedValue)) {
-                ksort($expectedValue);
-                if (is_array(current($expectedValue))) {
-                    $expectedValue = array_map('ksort', $expectedValue);
+            if (\is_array($expectedValue)) {
+                \ksort($expectedValue);
+                if (\is_array(\current($expectedValue))) {
+                    $expectedValue = \array_map('ksort', $expectedValue);
                 }
             }
-            $parameterValue = $container->getParameter($parameter = "pierstoval_character_manager.$key");
-            if (is_array($parameterValue)) {
-                ksort($parameterValue);
-                if (is_array(current($parameterValue))) {
-                    $parameterValue = array_map('ksort', $parameterValue);
+            $parameterValue = $container->getParameter($parameter = "pierstoval_character_manager.{$key}");
+            if (\is_array($parameterValue)) {
+                \ksort($parameterValue);
+                if (\is_array(\current($parameterValue))) {
+                    $parameterValue = \array_map('ksort', $parameterValue);
                 }
             }
-            static::assertSame($expectedValue, $parameterValue, "$parameter is not the same as expected");
+            static::assertSame($expectedValue, $parameterValue, "{$parameter} is not the same as expected");
         }
     }
 
     /**
      * Provide all "extension_test" directory configs and test them through the extension.
      */
-    public function provideYamlConfiguration(): \Generator
+    public function provideYamlConfiguration(): Generator
     {
         $dir = __DIR__.'/../Fixtures/App/extension_test/';
 
-        $configFiles = glob($dir.'config_*.yaml');
+        $configFiles = \glob($dir.'config_*.yaml');
 
-        sort($configFiles);
+        \sort($configFiles);
 
         foreach ($configFiles as $file) {
-            $content = Yaml::parse(file_get_contents($file));
-            yield basename($file) => [
+            $content = Yaml::parse(\file_get_contents($file));
+            yield \basename($file) => [
                 $content['input'],
                 $content['output'],
             ];

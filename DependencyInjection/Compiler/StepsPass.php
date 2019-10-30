@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -16,12 +18,11 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\AbstractStepAction;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry;
-use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepActionConfigurator;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
@@ -41,7 +42,7 @@ class StepsPass implements CompilerPassInterface
     /**
      * {@inheritdoc}
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $this->validateManagers($container);
         $this->processConfiguredServices($container);
@@ -60,7 +61,7 @@ class StepsPass implements CompilerPassInterface
     }
 
     /**
-     * Validate steps defined in configuration, and makes sure all "action" classes are instances of StepActionInterface
+     * Validate steps defined in configuration, and makes sure all "action" classes are instances of StepActionInterface.
      */
     private function validateManagerSteps(array $managerConfiguration, ContainerBuilder $container): array
     {
@@ -88,22 +89,24 @@ class StepsPass implements CompilerPassInterface
         foreach ($steps as $name => $step) {
             // Validate steps to disable on change, to be sure each step is defined.
             foreach ($step['onchange_clear'] as $stepToDisable) {
-                if (!array_key_exists($stepToDisable, $steps)) {
-                    throw new InvalidConfigurationException(sprintf(
+                if (!\array_key_exists($stepToDisable, $steps)) {
+                    throw new InvalidConfigurationException(\sprintf(
                         'Step to disable must be a valid step name, "%s" given.'."\n".
                         'Available steps: %s',
-                        $stepToDisable, implode(', ', array_keys($steps))
+                        $stepToDisable,
+                        \implode(', ', \array_keys($steps))
                     ));
                 }
             }
 
             // Validate steps dependencies, to be sure each step is defined.
             foreach ($step['dependencies'] as $stepDependency) {
-                if (!array_key_exists($stepDependency, $steps)) {
-                    throw new InvalidConfigurationException(sprintf(
+                if (!\array_key_exists($stepDependency, $steps)) {
+                    throw new InvalidConfigurationException(\sprintf(
                         'Step dependency must be a valid step name, "%s" given.'."\n".
                         'Available steps: %s',
-                        $stepDependency, implode(', ', array_keys($steps))
+                        $stepDependency,
+                        \implode(', ', \array_keys($steps))
                     ));
                 }
             }
@@ -114,10 +117,11 @@ class StepsPass implements CompilerPassInterface
             // Check if action defined as a service or as a simple class.
             $class = $container->has($action) ? $container->getDefinition($action)->getClass() : $action;
 
-            if (!class_exists($class) || !is_a($class, StepActionInterface::class, true)) {
-                throw new InvalidArgumentException(sprintf(
+            if (!\class_exists($class) || !\is_a($class, StepActionInterface::class, true)) {
+                throw new InvalidArgumentException(\sprintf(
                     'Step action must be a valid class implementing %s. "%s" given.',
-                    StepActionInterface::class, class_exists($class) ? $class : \gettype($class)
+                    StepActionInterface::class,
+                    \class_exists($class) ? $class : \gettype($class)
                 ));
             }
         }
@@ -131,10 +135,8 @@ class StepsPass implements CompilerPassInterface
     /**
      * Automatically convert the actions into services.
      * If they're defined as classes, this has the advantage to autowire them, etc.
-     *
-     * @param ContainerBuilder $container
      */
-    private function processConfiguredServices(ContainerBuilder $container)
+    private function processConfiguredServices(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition(ActionsRegistry::class)) {
             throw new InvalidConfigurationException('Step actions registry not set in your configuration. Maybe the extension was not processed properly?');
@@ -155,7 +157,7 @@ class StepsPass implements CompilerPassInterface
         foreach ($finalSteps as $step) {
             $action = $step['action'];
             if ($container->has($action)) {
-                /** @var  $definition */
+                /** @var $definition */
                 $definition = $container->getDefinition($action);
             } else {
                 // If action is not yet a service, it means it's a class name.
@@ -178,27 +180,28 @@ class StepsPass implements CompilerPassInterface
             ;
 
             // If class extends the abstract one, we inject some cool services.
-            if (is_a($definition->getClass(), AbstractStepAction::class, true)) {
-                $ignoreOnInvalid = ContainerInterface::IGNORE_ON_INVALID_REFERENCE;
-                $definition
-                    ->addMethodCall('setObjectManager', [new Reference(ObjectManager::class, $ignoreOnInvalid)])
-                    ->addMethodCall('setTwig', [new Reference(Environment::class, $ignoreOnInvalid)])
-                    ->addMethodCall('setRouter', [new Reference(RouterInterface::class, $ignoreOnInvalid)])
-                    ->addMethodCall('setTranslator', [new Reference(TranslatorInterface::class, $ignoreOnInvalid)])
-                ;
+            if (\is_a($definition->getClass(), AbstractStepAction::class, true)) {
+                if ($container->hasDefinition(ObjectManager::class) || $container->hasAlias(ObjectManager::class)) {
+                    $definition->addMethodCall('setObjectManager', [new Reference(ObjectManager::class)]);
+                }
+                if ($container->hasDefinition(Environment::class) || $container->hasAlias(Environment::class)) {
+                    $definition->addMethodCall('setTwig', [new Reference(Environment::class)]);
+                }
+                if ($container->hasDefinition(RouterInterface::class) || $container->hasAlias(RouterInterface::class)) {
+                    $definition->addMethodCall('setRouter', [new Reference(RouterInterface::class)]);
+                }
+                if ($container->hasDefinition(TranslatorInterface::class) || $container->hasAlias(TranslatorInterface::class)) {
+                    $definition->addMethodCall('setTranslator', [new Reference(TranslatorInterface::class)]);
+                }
             }
 
             // Finally add the step action to the registry
-            $registryDefinition->addMethodCall('addStepAction', [$managerName, new Reference($action)]);
+            $registryDefinition->addMethodCall('addStepAction', [$managerName, $step['name'], new ServiceClosureArgument(new Reference($action))]);
         }
     }
 
     private function generateStepLabel(string $name): string
     {
-        $name = str_replace(['.', '_', '-'], ' ', $name);
-        $name = trim($name);
-        $name = Inflector::ucwords($name);
-
-        return $name;
+        return Inflector::ucwords(\trim(\str_replace(['.', '_', '-'], ' ', $name)));
     }
 }

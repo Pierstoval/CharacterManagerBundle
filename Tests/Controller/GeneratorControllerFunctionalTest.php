@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -11,16 +13,16 @@
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller;
 
+use Pierstoval\Tests\WebTestCase as PiersTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Tests\WebTestCase as PiersTestCase;
 
 class GeneratorControllerFunctionalTest extends WebTestCase
 {
     use PiersTestCase;
 
-    public function test generate redirects to first step()
+    public function test generate redirects to first step(): void
     {
-        $client = $this->getClient();
+        $client = $this->getHttpClient();
 
         $client->getKernel()->boot();
 
@@ -30,9 +32,9 @@ class GeneratorControllerFunctionalTest extends WebTestCase
         static::assertSame('/generate/step_01', $client->getResponse()->headers->get('Location'));
     }
 
-    public function test base step route renders correctly()
+    public function test base step route renders correctly(): void
     {
-        $client = $this->getClient();
+        $client = $this->getHttpClient();
 
         $client->getKernel()->boot();
 
@@ -42,9 +44,9 @@ class GeneratorControllerFunctionalTest extends WebTestCase
         static::assertSame('Stub response based on abstract class', $client->getResponse()->getContent());
     }
 
-    public function test non existent step route throws 404()
+    public function test non existent step route throws 404(): void
     {
-        $client = $this->getClient();
+        $client = $this->getHttpClient();
 
         $client->getKernel()->boot();
 

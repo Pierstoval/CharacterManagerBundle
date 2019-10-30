@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -15,12 +17,12 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\StepInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface;
-use Twig\Environment;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 
 abstract class AbstractStepAction implements StepActionInterface
 {
@@ -59,12 +61,19 @@ abstract class AbstractStepAction implements StepActionInterface
     /** @var TranslatorInterface */
     protected $translator;
 
+    private $configured = false;
+
     public function configure(string $managerName, string $stepName, string $characterClassName, StepResolverInterface $resolver): void
     {
-        if (!class_exists($characterClassName) || !is_subclass_of($characterClassName, CharacterInterface::class, true)) {
-            throw new \InvalidArgumentException(sprintf(
+        if ($this->configured) {
+            throw new \RuntimeException('Cannot reconfigure an already configured step action.');
+        }
+
+        if (!\class_exists($characterClassName) || !\is_subclass_of($characterClassName, CharacterInterface::class, true)) {
+            throw new \InvalidArgumentException(\sprintf(
                 'Step action must be a valid class implementing %s. "%s" given.',
-                CharacterInterface::class, class_exists($characterClassName) ? $characterClassName : \gettype($characterClassName)
+                CharacterInterface::class,
+                \class_exists($characterClassName) ? $characterClassName : \gettype($characterClassName)
             ));
         }
 
@@ -72,6 +81,8 @@ abstract class AbstractStepAction implements StepActionInterface
         $this->managerName = $managerName;
         $this->step = $resolver->resolve($stepName, $managerName);
         $this->setSteps($resolver->getManagerSteps($managerName));
+
+        $this->configured = true;
     }
 
     /**
@@ -111,6 +122,11 @@ abstract class AbstractStepAction implements StepActionInterface
         return $this->step;
     }
 
+    public function stepName(): string
+    {
+        return $this->step->getName();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -133,9 +149,6 @@ abstract class AbstractStepAction implements StepActionInterface
         return $character[$key] ?? null;
     }
 
-    /**
-     * @return RedirectResponse
-     */
     protected function nextStep(): RedirectResponse
     {
         return $this->goToStep($this->getStep()->getNumber() + 1);
@@ -143,10 +156,6 @@ abstract class AbstractStepAction implements StepActionInterface
 
     /**
      * Redirects to a specific step and updates the session.
-     *
-     * @param int $stepNumber
-     *
-     * @return RedirectResponse
      */
     protected function goToStep(int $stepNumber): RedirectResponse
     {
@@ -165,9 +174,6 @@ abstract class AbstractStepAction implements StepActionInterface
         throw new \InvalidArgumentException('Invalid step: '.$stepNumber);
     }
 
-    /**
-     * @param mixed $value
-     */
     protected function updateCharacterStep($value): void
     {
         $character = $this->getCurrentCharacter();
@@ -194,7 +200,7 @@ abstract class AbstractStepAction implements StepActionInterface
 
         $msg = $this->translator
             ? $this->translator->trans($msg, $msgParams, static::$translationDomain)
-            : strtr($msg, $msgParams)
+            : \strtr($msg, $msgParams)
         ;
 
         $flashbag = $this->getSession()->getFlashBag();
@@ -204,7 +210,7 @@ abstract class AbstractStepAction implements StepActionInterface
         $existingMessages[] = $msg;
 
         // And avoid having the same message multiple times.
-        $flashbag->set($type, array_unique($existingMessages));
+        $flashbag->set($type, \array_unique($existingMessages));
 
         return $this;
     }
@@ -236,9 +242,10 @@ abstract class AbstractStepAction implements StepActionInterface
     {
         foreach ($steps as $step) {
             if (!$step instanceof StepInterface) {
-                throw new \InvalidArgumentException(sprintf(
+                throw new \InvalidArgumentException(\sprintf(
                     'Expected %s instance, "%s" given.',
-                    StepActionInterface::class, \is_object($step) ? \get_class($step) : \gettype($step)
+                    StepActionInterface::class,
+                    \is_object($step) ? \get_class($step) : \gettype($step)
                 ));
             }
         }

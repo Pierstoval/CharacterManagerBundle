@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -33,13 +35,28 @@ class TestKernel extends Kernel
     /**
      * Loads the container configuration.
      */
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(__DIR__.'/config/config_'.$this->environment.'.yaml');
     }
 
     public function getRootDir()
     {
-        return $this->getProjectDir().'/build';
+        return \dirname(__DIR__, 3);
+    }
+
+    public function getProjectDir()
+    {
+        return $this->getRootDir();
+    }
+
+    public function getLogDir()
+    {
+        return $this->getProjectDir().'/build/log/'.$this->environment;
+    }
+
+    public function getCacheDir()
+    {
+        return $this->getProjectDir().'/build/cache/'.$this->environment;
     }
 }

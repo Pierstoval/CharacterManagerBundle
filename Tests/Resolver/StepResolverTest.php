@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -12,35 +14,36 @@
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Resolver;
 
 use PHPUnit\Framework\TestCase;
+use Pierstoval\Bundle\CharacterManagerBundle\Exception\StepNotFoundException;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\Step;
+use Pierstoval\Bundle\CharacterManagerBundle\Model\StepInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolver;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub;
 
 class StepResolverTest extends TestCase
 {
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage No character managers to resolve configuration for.
-     */
-    public function test steps resolver with empty config throws exception()
+    public function test steps resolver with empty config throws exception(): void
     {
         $resolver = new StepResolver();
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('No character managers to resolve configuration for.');
 
         $resolver->getManagerSteps();
     }
 
-    public function test steps resolver with single config option()
+    public function test steps resolver with single config option(): void
     {
         $stepsArray = [
             'one' => [
-                'number'         => 1,
-                'name'           => '01',
-                'action'         => ConcreteAbstractActionStub::class,
-                'label'          => '',
+                'number' => 1,
+                'name' => '01',
+                'action' => ConcreteAbstractActionStub::class,
+                'label' => '',
                 'onchange_clear' => [],
-                'dependencies'   => [],
-                'manager_name'   => 'main_manager',
-            ]
+                'dependencies' => [],
+                'manager_name' => 'main_manager',
+            ],
         ];
         $resolver = new StepResolver(['main_manager' => ['steps' => $stepsArray]]);
 
@@ -53,66 +56,64 @@ class StepResolverTest extends TestCase
         static::assertEquals($stepsObjects, $resolver->getManagerSteps('main_manager'));
     }
 
-    /**
-     * @expectedException \Pierstoval\Bundle\CharacterManagerBundle\Exception\StepNotFoundException
-     * @expectedExceptionMessage "non_existent_step" step does not exist in manager main_manager.
-     */
-    public function test resolve non existent step name should throw exception()
+    public function test resolve non existent step name should throw exception(): void
     {
         $resolver = new StepResolver([
             'main_manager' => [
                 'steps' => [
                     'step_1' => [
                         'action' => ConcreteAbstractActionStub::class,
-                        'name' =>  'step_1',
-                        'label' =>  'Step 1',
-                        'dependencies' =>  [],
+                        'name' => 'step_1',
+                        'label' => 'Step 1',
+                        'dependencies' => [],
                         'manager_name' => 'main_manager',
-                        'onchange_clear' =>  [],
-                        'number' =>  1,
+                        'onchange_clear' => [],
+                        'number' => 1,
                     ],
                 ],
             ],
         ]);
+
+        $this->expectException(StepNotFoundException::class);
+        $this->expectExceptionMessage('"non_existent_step" step does not exist in manager main_manager.');
 
         $resolver->resolve('non_existent_step');
     }
 
-    /**
-     * @expectedException \Pierstoval\Bundle\CharacterManagerBundle\Exception\StepNotFoundException
-     * @expectedExceptionMessage "5" step does not exist in manager main_manager.
-     */
-    public function test resolve non existent step number should throw an exception()
+    public function test resolve non existent step number should throw an exception(): void
     {
         $resolver = new StepResolver([
             'main_manager' => [
                 'steps' => [
                     'step_1' => [
                         'action' => ConcreteAbstractActionStub::class,
-                        'name' =>  'step_1',
-                        'label' =>  'Step 1',
-                        'dependencies' =>  [],
+                        'name' => 'step_1',
+                        'label' => 'Step 1',
+                        'dependencies' => [],
                         'manager_name' => 'main_manager',
-                        'onchange_clear' =>  [],
-                        'number' =>  1,
+                        'onchange_clear' => [],
+                        'number' => 1,
                     ],
                 ],
             ],
         ]);
 
+        $this->expectException(StepNotFoundException::class);
+        $this->expectExceptionMessage('"5" step does not exist in manager main_manager.');
+
         $resolver->resolveNumber(5);
     }
 
-    public function test resolve step name should return correct step values()
+    public function test resolve step name should return correct step values(): void
     {
         $step1 = [
             'number' => 0,
-            'name' =>  'step_1',
+            'name' => 'step_1',
             'action' => ConcreteAbstractActionStub::class,
-            'label' =>  'Step 1',
+            'label' => 'Step 1',
             'manager_name' => 'main_manager',
-            'onchange_clear' =>  [],
-            'dependencies' =>  [],
+            'onchange_clear' => [],
+            'dependencies' => [],
         ];
 
         $resolver = new StepResolver([
@@ -125,26 +126,19 @@ class StepResolverTest extends TestCase
 
         $resolvedStep = $resolver->resolve('step_1');
 
-        static::assertNotNull($resolvedStep);
-        static::assertSame($step1['number'], $resolvedStep->getNumber());
-        static::assertSame($step1['name'], $resolvedStep->getName());
-        static::assertSame($step1['label'], $resolvedStep->getLabel());
-        static::assertSame($step1['action'], $resolvedStep->getAction());
-        static::assertSame($step1['manager_name'], $resolvedStep->getManagerName());
-        static::assertSame($step1['onchange_clear'], $resolvedStep->getOnchangeClear());
-        static::assertSame($step1['dependencies'], $resolvedStep->getDependencies());
+        $this->makeDefaultStepAssertions($resolvedStep, $step1);
     }
 
-    public function test resolve step number should return correct step()
+    public function test resolve step number should return correct step(): void
     {
         $step1 = [
             'number' => 0,
-            'name' =>  'step_1',
+            'name' => 'step_1',
             'action' => ConcreteAbstractActionStub::class,
-            'label' =>  'Step 1',
+            'label' => 'Step 1',
             'manager_name' => 'main_manager',
-            'onchange_clear' =>  [],
-            'dependencies' =>  [],
+            'onchange_clear' => [],
+            'dependencies' => [],
         ];
 
         $resolver = new StepResolver([
@@ -157,90 +151,80 @@ class StepResolverTest extends TestCase
 
         $resolvedStep = $resolver->resolveNumber(0);
 
-        static::assertNotNull($resolvedStep);
-        static::assertSame($step1['number'], $resolvedStep->getNumber());
-        static::assertSame($step1['name'], $resolvedStep->getName());
-        static::assertSame($step1['label'], $resolvedStep->getLabel());
-        static::assertSame($step1['action'], $resolvedStep->getAction());
-        static::assertSame($step1['manager_name'], $resolvedStep->getManagerName());
-        static::assertSame($step1['onchange_clear'], $resolvedStep->getOnchangeClear());
-        static::assertSame($step1['dependencies'], $resolvedStep->getDependencies());
+        $this->makeDefaultStepAssertions($resolvedStep, $step1);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage "non_existent_step" step does not exist in manager test.
-     */
-    public function test resolve with no steps should throw exception()
+    public function test resolve with no steps should throw exception(): void
     {
         $resolver = new StepResolver(['test' => ['steps' => []]]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('"non_existent_step" step does not exist in manager test.');
 
         $resolver->resolve('non_existent_step');
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage "0" step does not exist in manager test.
-     */
-    public function test resolve number with no steps should throw exception()
+    public function test resolve number with no steps should throw exception(): void
     {
         $resolver = new StepResolver(['test' => ['steps' => []]]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('"0" step does not exist in manager test.');
 
         $resolver->resolveNumber(0);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage "invalid_manager" manager does not exist, or is not initialized yet.
-     */
-    public function test resolve invalid manager should throw exception()
+    public function test resolve invalid manager should throw exception(): void
     {
         $resolver = new StepResolver([
             'main_manager' => [
                 'steps' => [
                     'step_1' => [
-                        'action'         => '',
-                        'label'          => '',
-                        'number'         => 1,
-                        'name'           => '',
-                        'manager_name'   => '',
-                        'dependencies'   => [],
+                        'action' => '',
+                        'label' => '',
+                        'number' => 1,
+                        'name' => '',
+                        'manager_name' => '',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                 ],
             ],
         ]);
 
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('"invalid_manager" manager does not exist, or is not initialized yet.');
+
         $resolver->resolve('', 'invalid_manager');
     }
 
-    public function test resolve multiple manager names with same steps names()
+    public function test resolve multiple manager names with same steps names(): void
     {
         $resolver = new StepResolver([
             'manager_one' => [
                 'character_class' => '',
-                'steps'           => [
+                'steps' => [
                     '01' => [
-                        'action'         => '',
-                        'label'          => '',
-                        'number'         => 1,
-                        'name'           => '',
-                        'manager_name'   => 'manager_one',
-                        'dependencies'   => [],
+                        'action' => '',
+                        'label' => '',
+                        'number' => 1,
+                        'name' => '',
+                        'manager_name' => 'manager_one',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                 ],
             ],
             'manager_two' => [
                 'character_class' => '',
-                'steps'           => [
+                'steps' => [
                     '01' => [
-                        'action'         => '',
-                        'label'          => '',
-                        'number'         => 1,
-                        'name'           => '',
-                        'manager_name'   => 'manager_two',
-                        'dependencies'   => [],
+                        'action' => '',
+                        'label' => '',
+                        'number' => 1,
+                        'name' => '',
+                        'manager_name' => 'manager_two',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                 ],
@@ -256,43 +240,54 @@ class StepResolverTest extends TestCase
         static::assertSame('manager_two', $stepFromManagerTwo->getManagerName());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage You did not specify which character manager you want to get the steps from, and you have more than one manager. Possible choices: manager_one, manager_two
-     */
-    public function test resolve with no manager name when multiple managers configured should throw exception()
+    public function test resolve with no manager name when multiple managers configured should throw exception(): void
     {
         $resolver = new StepResolver([
             'manager_one' => [
                 'character_class' => '',
-                'steps'           => [
+                'steps' => [
                     '01' => [
-                        'action'         => '',
-                        'label'          => '',
-                        'number'         => 1,
-                        'name'           => '',
-                        'manager_name'   => '',
-                        'dependencies'   => [],
+                        'action' => '',
+                        'label' => '',
+                        'number' => 1,
+                        'name' => '',
+                        'manager_name' => '',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                 ],
             ],
             'manager_two' => [
                 'character_class' => '',
-                'steps'           => [
+                'steps' => [
                     '01' => [
-                        'action'         => '',
-                        'label'          => '',
-                        'number'         => 1,
-                        'name'           => '',
-                        'manager_name'   => '',
-                        'dependencies'   => [],
+                        'action' => '',
+                        'label' => '',
+                        'number' => 1,
+                        'name' => '',
+                        'manager_name' => '',
+                        'dependencies' => [],
                         'onchange_clear' => [],
                     ],
                 ],
             ],
         ]);
 
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('You did not specify which character manager you want to get the steps from, and you have more than one manager. Possible choices: manager_one, manager_two');
+
         $resolver->resolve('01');
+    }
+
+    private function makeDefaultStepAssertions(StepInterface $resolvedStep, array $step1): void
+    {
+        static::assertNotNull($resolvedStep);
+        static::assertSame($step1['number'], $resolvedStep->getNumber());
+        static::assertSame($step1['name'], $resolvedStep->getName());
+        static::assertSame($step1['label'], $resolvedStep->getLabel());
+        static::assertSame($step1['action'], $resolvedStep->getAction());
+        static::assertSame($step1['manager_name'], $resolvedStep->getManagerName());
+        static::assertSame($step1['onchange_clear'], $resolvedStep->getOnchangeClear());
+        static::assertSame($step1['dependencies'], $resolvedStep->getDependencies());
     }
 }

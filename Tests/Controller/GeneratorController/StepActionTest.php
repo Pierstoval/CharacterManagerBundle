@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -13,34 +15,30 @@ namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller\GeneratorCon
 
 use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolver;
-use \Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller\AbstractGeneratorControllerTest;
+use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\CharacterStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Model\StepStub;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StepActionTest extends AbstractGeneratorControllerTest
 {
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Session is mandatory when using the character generator.
-     */
-    public function test step action needs session()
+    public function test step action needs session(): void
     {
         $controller = $this->createController();
         $request = new Request();
 
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Session is mandatory when using the character generator.');
+
         $controller->stepAction($request, '');
     }
 
-    /**
-     * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     * @expectedExceptionMessage Step not found.
-     */
-    public function test step action with non existent name()
+    public function test step action with non existent name(): void
     {
         $resolver = new StepResolver([
             'manager_one' => $this->createManagerConfiguration('manager_one'),
@@ -48,10 +46,13 @@ class StepActionTest extends AbstractGeneratorControllerTest
 
         $controller = $this->createController($resolver);
 
+        $this->expectException(NotFoundHttpException::class);
+        $this->expectExceptionMessage('Step not found.');
+
         $controller->stepAction($this->createRequest(), 'non_existent_step');
     }
 
-    public function test step action should execute action class()
+    public function test step action should execute action class(): void
     {
         $resolver = new StepResolver([
             'test_manager' => $this->createManagerConfiguration('test_manager', [
@@ -67,22 +68,20 @@ class StepActionTest extends AbstractGeneratorControllerTest
         $action->configure($step->getManagerName(), $step->getName(), CharacterStub::class, $resolver);
 
         $registry = new ActionsRegistry();
-        $registry->addStepAction('test_manager', $action);
+        $registry->addStepAction('test_manager', $action->stepName(), $action);
 
-        $controller = $this->createController($resolver, null, null, $registry);
-
-        $response = $controller->stepAction($this->createRequest(), 'test_step');
+        $response = $this->createController($resolver, null, null, $registry)->stepAction($this->createRequest(), 'test_step');
 
         static::assertSame('Stub response based on abstract class', $response->getContent());
     }
 
-    public function test step action should check for dependencies()
+    public function test step action should check for dependencies(): void
     {
         $resolver = new StepResolver([
             'test_manager' => $this->createManagerConfiguration('test_manager', [
                 'test_step' => [
                     'name' => 'test_step',
-                    'label' => 'Test step one'
+                    'label' => 'Test step one',
                 ],
                 'second_step' => [
                     'name' => 'second_step',
@@ -93,13 +92,13 @@ class StepActionTest extends AbstractGeneratorControllerTest
             ]),
         ]);
         $router = $this->createMock(RouterInterface::class);
-        $router->expects(self::once())
+        $router->expects(static::once())
             ->method('generate')
             ->with('pierstoval_character_generator_index')
             ->willReturn('/generate/manager_one/test_step')
         ;
         $translator = $this->createMock(TranslatorInterface::class);
-        $translator->expects(self::once())
+        $translator->expects(static::once())
             ->method('trans')
             ->with('steps.dependency_not_set', [
                 '%current_step%' => 'Test step two',
@@ -114,7 +113,7 @@ class StepActionTest extends AbstractGeneratorControllerTest
         $action->configure($step2->getManagerName(), $step2->getName(), CharacterStub::class, $resolver);
 
         $registry = new ActionsRegistry();
-        $registry->addStepAction('test_manager', $action);
+        $registry->addStepAction('test_manager', $action->stepName(), $action);
 
         $request = $this->createRequest();
         $controller = $this->createController($resolver, $router, $translator, $registry);

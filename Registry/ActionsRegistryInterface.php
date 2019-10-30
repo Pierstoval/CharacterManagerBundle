@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -16,9 +18,14 @@ use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 interface ActionsRegistryInterface
 {
     /**
-     * @throws \RuntimeException if there are no managers available.
-     * @throws \InvalidArgumentException for an action that do not exist.
-     * @throws \InvalidArgumentException for a manager that do not exist.
+     * @param \Closure|StepActionInterface $action if it's a callable, it's lazy-loaded
+     */
+    public function addStepAction(string $manager, string $stepName, $action): void;
+
+    /**
+     * @throws \RuntimeException         if there are no managers available
+     * @throws \InvalidArgumentException for an action that do not exist
+     * @throws \InvalidArgumentException for a manager that do not exist
      */
     public function getAction(string $stepName, string $manager = null): StepActionInterface;
 }

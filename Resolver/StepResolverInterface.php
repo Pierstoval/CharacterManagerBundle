@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -23,12 +25,14 @@ interface StepResolverInterface
 {
     /**
      * Resolves a step object based on a step identifier.
+     *
      * @throws StepNotFoundException if step does not exist
      */
     public function resolve(string $stepName, string $managerName = null): StepInterface;
 
     /**
      * Resolves a step object based on a step number.
+     *
      * @throws StepNotFoundException if step number does not exist
      */
     public function resolveNumber(int $stepNumber, string $managerName = null): StepInterface;

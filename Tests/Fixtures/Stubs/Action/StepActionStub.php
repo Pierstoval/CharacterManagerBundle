@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -38,5 +40,10 @@ class StepActionStub implements StepActionInterface
 
     public function configure(string $managerName, string $stepName, string $characterClassName, StepResolverInterface $resolver): void
     {
+    }
+
+    public function stepName(): string
+    {
+        return $this->getStep()->getName();
     }
 }

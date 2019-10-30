@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -30,16 +32,16 @@ class Step implements StepInterface
         array $onchangeClear,
         array $dependencies
     ) {
-        $this->number        = $number;
-        $this->name          = $name;
-        $this->action        = $action;
-        $this->label         = $label;
-        $this->managerName   = $managerName;
+        $this->number = $number;
+        $this->name = $name;
+        $this->action = $action;
+        $this->label = $label;
+        $this->managerName = $managerName;
         $this->onchangeClear = $onchangeClear;
-        $this->dependencies  = $dependencies;
+        $this->dependencies = $dependencies;
     }
 
-    public static function createFromData(array $data): Step
+    public static function createFromData(array $data): self
     {
         return new static(
             $data['number'],

@@ -1,6 +1,8 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * This file is part of the PierstovalCharacterManagerBundle package.
  *
  * (c) Alexandre Rock Ancelet <pierstoval@gmail.com>
@@ -20,8 +22,6 @@ use Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller\AbstractGeneratorC
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\CharacterStub;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Model\StepStub;
-use RuntimeException;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -30,61 +30,74 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 {
     /**
      * @dataProvider provideMethodsThatDependOnStepObject
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Step is not defined in current step action. Did you run the "configure()" method?
      */
-    public function test any method depending on step object throws exception(string $method, array $arguments = [])
+    public function test any method depending on step object throws exception(string $method, array $arguments = []): void
     {
         $stub = new ConcreteAbstractActionStub();
         $stub->setRequest($this->createRequest());
 
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Step is not defined in current step action. Did you run the "configure()" method?');
+
         $stub->{$method}(...$arguments);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Step action must be a valid class implementing Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface. "stdClass" given.
-     */
-    public function test configure with wrong character class throws exception()
+    public function test configure with wrong character class throws exception(): void
     {
         $stub = new ConcreteAbstractActionStub();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Step action must be a valid class implementing Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface. "stdClass" given.');
+
         $stub->configure('', '', \stdClass::class, $this->createMock(StepResolverInterface::class));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Step action must be a valid class implementing Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface. "string" given.
-     */
-    public function test configure with wrong character class type throws exception()
+    public function test configure with wrong character class type throws exception(): void
     {
         $stub = new ConcreteAbstractActionStub();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Step action must be a valid class implementing Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface. "string" given.');
+
         $stub->configure('', '', 'wrong_class_name', $this->createMock(StepResolverInterface::class));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Expected Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface instance, "stdClass" given.
-     */
-    public function test configure with wrong steps class throws exception()
+    public function test configure with wrong steps class throws exception(): void
     {
         $stub = new ConcreteAbstractActionStub();
         $resolver = $this->createMock(StepResolverInterface::class);
-        $resolver->expects($this->once())->method('resolve');
-        $resolver->expects($this->once())->method('getManagerSteps')->willReturn([new \stdClass]);
+        $resolver->expects(static::once())->method('resolve');
+        $resolver->expects(static::once())->method('getManagerSteps')->willReturn([new \stdClass()]);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface instance, "stdClass" given.');
+
         $stub->configure('', '', CharacterStub::class, $resolver);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Expected Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface instance, "string" given.
-     */
-    public function test configure with wrong steps type throws exception()
+    public function test configure with wrong steps type throws exception(): void
     {
         $stub = new ConcreteAbstractActionStub();
         $resolver = $this->createMock(StepResolverInterface::class);
-        $resolver->expects($this->once())->method('resolve');
-        $resolver->expects($this->once())->method('getManagerSteps')->willReturn(['error']);
+        $resolver->expects(static::once())->method('resolve');
+        $resolver->expects(static::once())->method('getManagerSteps')->willReturn(['error']);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface instance, "string" given.');
+
         $stub->configure('', '', CharacterStub::class, $resolver);
+    }
+
+    public function test configure an already configured action throws exception(): void
+    {
+        $stub = new ConcreteAbstractActionStub();
+
+        $stub->configure('', '', CharacterStub::class, $this->createMock(StepResolverInterface::class));
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot reconfigure an already configured step action.');
+
+        $stub->configure('', '', CharacterStub::class, $this->createMock(StepResolverInterface::class));
     }
 
     public function provideMethodsThatDependOnStepObject()
@@ -94,13 +107,13 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         yield ['nextStep', []];
     }
 
-    public function test next step should increment in session()
+    public function test next step should increment in session(): void
     {
-        /** @var RouterInterface|MockObject $router */
+        /** @var MockObject|RouterInterface $router */
         $router = $this->createMock(RouterInterface::class);
 
         $router
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('generate')
             ->with('pierstoval_character_generator_step', ['requestStep' => 'step_2'])
             ->willReturn('/steps/step_2')
@@ -113,7 +126,7 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
                 ],
                 'step_2' => [
                     'number' => 2,
-                ]
+                ],
             ]),
         ]);
 
@@ -127,20 +140,13 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
         $response = $stub1->nextStep();
 
-        static::assertInstanceOf(RedirectResponse::class, $response);
         static::assertEquals(2, $request->getSession()->get('step.test_manager'));
         static::assertTrue($response->isRedirect('/steps/step_2'));
     }
 
-    public function test getCurrentCharacter with a correct session value()
+    public function test getCurrentCharacter with a correct session value(): void
     {
-        $stub = new ConcreteAbstractActionStub();
-        $stepStub = StepStub::createStub();
-        $resolver = $this->createMock(StepResolverInterface::class);
-        $resolver->expects($this->once())->method('resolve')->willReturn($stepStub);
-        $resolver->expects($this->once())->method('getManagerSteps')->willReturn([$stepStub]);
-
-        $stub->configure($stepStub->getManagerName(), $stepStub->getName(), CharacterStub::class, $resolver);
+        $stub = $this->getDefaultStub();
 
         // Prepare request & session
         $request = $this->createRequest();
@@ -152,15 +158,9 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         static::assertSame($stub->getCurrentCharacter(), $value);
     }
 
-    public function test getCharacterProperty with no key()
+    public function test getCharacterProperty with no key(): void
     {
-        $stub = new ConcreteAbstractActionStub();
-        $stepStub = StepStub::createStub();
-        $resolver = $this->createMock(StepResolverInterface::class);
-        $resolver->expects($this->once())->method('resolve')->willReturn($stepStub);
-        $resolver->expects($this->once())->method('getManagerSteps')->willReturn([$stepStub]);
-
-        $stub->configure($stepStub->getManagerName(), $stepStub->getName(), CharacterStub::class, $resolver);
+        $stub = $this->getDefaultStub();
 
         // Prepare request & session
         $request = $this->createRequest();
@@ -172,15 +172,9 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         static::assertSame($value['test_step'], $stub->getCharacterProperty());
     }
 
-    public function test getCharacterProperty with valid key()
+    public function test getCharacterProperty with valid key(): void
     {
-        $stub = new ConcreteAbstractActionStub();
-        $stepStub = StepStub::createStub();
-        $resolver = $this->createMock(StepResolverInterface::class);
-        $resolver->expects($this->once())->method('resolve')->willReturn($stepStub);
-        $resolver->expects($this->once())->method('getManagerSteps')->willReturn([$stepStub]);
-
-        $stub->configure($stepStub->getManagerName(), $stepStub->getName(), CharacterStub::class, $resolver);
+        $stub = $this->getDefaultStub();
 
         // Prepare request & session
         $request = $this->createRequest();
@@ -192,28 +186,22 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         static::assertSame($value['test_step'], $stub->getCharacterProperty('test_step'));
     }
 
-    public function test getCharacterProperty with non existent key()
+    public function test getCharacterProperty with non existent key(): void
     {
-        $stub = new ConcreteAbstractActionStub();
-        $stepStub = StepStub::createStub();
-        $resolver = $this->createMock(StepResolverInterface::class);
-        $resolver->expects($this->once())->method('resolve')->willReturn($stepStub);
-        $resolver->expects($this->once())->method('getManagerSteps')->willReturn([$stepStub]);
-
-        $stub->configure($stepStub->getManagerName(), $stepStub->getName(), CharacterStub::class, $resolver);
+        $stub = $this->getDefaultStub();
 
         $stub->setRequest($this->createRequest());
 
         static::assertNull($stub->getCharacterProperty('non_existent_key'));
     }
 
-    public function test update current step value()
+    public function test update current step value(): void
     {
         $stub = new ConcreteAbstractActionStub();
         $stepStub = StepStub::createStub(['number' => 2, 'name' => 'step_1']);
         $resolver = $this->createMock(StepResolverInterface::class);
-        $resolver->expects($this->once())->method('resolve')->willReturn($stepStub);
-        $resolver->expects($this->once())->method('getManagerSteps')->willReturn([$stepStub]);
+        $resolver->expects(static::once())->method('resolve')->willReturn($stepStub);
+        $resolver->expects(static::once())->method('getManagerSteps')->willReturn([$stepStub]);
 
         $stub->configure($stepStub->getManagerName(), $stepStub->getName(), CharacterStub::class, $resolver);
 
@@ -228,13 +216,13 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         static::assertSame(2, $request->getSession()->get('step.test_manager'));
     }
 
-    public function test update current step unsets steps that have to be changed()
+    public function test update current step unsets steps that have to be changed(): void
     {
         $stub = new ConcreteAbstractActionStub();
         $stepStub = StepStub::createStub(['number' => 2, 'name' => 'step_1', 'onchange_clear' => ['step_2', 'step_3']]);
         $resolver = $this->createMock(StepResolverInterface::class);
-        $resolver->expects($this->once())->method('resolve')->willReturn($stepStub);
-        $resolver->expects($this->once())->method('getManagerSteps')->willReturn([$stepStub]);
+        $resolver->expects(static::once())->method('resolve')->willReturn($stepStub);
+        $resolver->expects(static::once())->method('getManagerSteps')->willReturn([$stepStub]);
         $step = new Step(2, 'step_1', \get_class($stub), 'step_1', 'main_manager', ['step_2', 'step_3'], []);
 
         // Prepare request & session
@@ -254,13 +242,13 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         static::assertArrayNotHasKey('step_3', $request->getSession()->get('character.test_manager'));
     }
 
-    public function test goToStep returns RedirectResponse object()
+    public function test goToStep returns RedirectResponse object(): void
     {
-        /** @var RouterInterface|MockObject $router */
+        /** @var MockObject|RouterInterface $router */
         $router = $this->createMock(RouterInterface::class);
 
         $router
-            ->expects($this->once())
+            ->expects(static::once())
             ->method('generate')
             ->with('pierstoval_character_generator_step', ['requestStep' => 'step_3'])
             ->willReturn('/steps/step_3')
@@ -272,8 +260,8 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         $step2 = new Step(2, 'step_2', \get_class($stub), 'step_2', 'test_manager', [], []);
         $step3 = new Step(3, 'step_3', \get_class($stub), 'step_3', 'test_manager', [], []);
         $resolver = $this->createMock(StepResolverInterface::class);
-        $resolver->expects($this->once())->method('resolve')->willReturn($step1);
-        $resolver->expects($this->once())->method('getManagerSteps')->willReturn([$step1, $step2, $step3]);
+        $resolver->expects(static::once())->method('resolve')->willReturn($step1);
+        $resolver->expects(static::once())->method('getManagerSteps')->willReturn([$step1, $step2, $step3]);
         $stub->setRouter($router);
         $request = $this->createRequest();
         $stub->configure('test_manager', 'step_1', CharacterStub::class, $resolver);
@@ -281,57 +269,56 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
 
         $response = $stub->goToStep(3);
 
-        static::assertInstanceOf(RedirectResponse::class, $response);
         static::assertTrue($response->isRedirect('/steps/step_3'));
         static::assertSame(3, $request->getSession()->get('step.test_manager'));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Cannot use Pierstoval\Bundle\CharacterManagerBundle\Action\AbstractStepAction::goToStep if no router is injected in AbstractStepAction.
-     */
-    public function test goToStep throws exception if no router()
+    public function test goToStep throws exception if no router(): void
     {
         $stub = new ConcreteAbstractActionStub();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cannot use Pierstoval\Bundle\CharacterManagerBundle\Action\AbstractStepAction::goToStep if no router is injected in AbstractStepAction.');
+
         $stub->goToStep(1);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid step: 25
-     */
-    public function test goToStep throws exception if step does not exist()
+    public function test goToStep throws exception if step does not exist(): void
     {
-        /** @var RouterInterface|MockObject $router */
+        /** @var MockObject|RouterInterface $router */
         $router = $this->createMock(RouterInterface::class);
 
         $stub = new ConcreteAbstractActionStub();
         $stub->setRouter($router);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid step: 25');
+
         $stub->goToStep(25);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Request is not set in step action.
-     */
-    public function test flashMessage should throw exception if no request()
+    public function test flashMessage should throw exception if no request(): void
     {
         $stub = new ConcreteAbstractActionStub();
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Request is not set in step action.');
+
         $stub->flashMessage('message');
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage The session must be available to manage characters. Did you forget to enable the session in the framework?
-     */
-    public function test flashMessage should throw exception if no session()
+    public function test flashMessage should throw exception if no session(): void
     {
         $stub = new ConcreteAbstractActionStub();
         $stub->setRequest(new Request());
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('The session must be available to manage characters. Did you forget to enable the session in the framework?');
+
         $stub->flashMessage('message');
     }
 
-    public function test flashMessage with no parameters()
+    public function test flashMessage with no parameters(): void
     {
         $stub = new ConcreteAbstractActionStub();
         $request = $this->createRequest();
@@ -342,7 +329,7 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         static::assertSame(['message'], $stub->getSession()->getFlashBag()->get('error'));
     }
 
-    public function test flashMessage removes duplicates()
+    public function test flashMessage removes duplicates(): void
     {
         $stub = new ConcreteAbstractActionStub();
         $request = $this->createRequest();
@@ -355,7 +342,7 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         static::assertSame(['message'], $stub->getSession()->getFlashBag()->get('error'));
     }
 
-    public function test flashMessage with parameters()
+    public function test flashMessage with parameters(): void
     {
         $stub = new ConcreteAbstractActionStub();
         $request = $this->createRequest();
@@ -367,14 +354,14 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         static::assertSame(['Message with REPLACEMENT'], $stub->getSession()->getFlashBag()->get('error'));
     }
 
-    public function test flashMessage with translator()
+    public function test flashMessage with translator(): void
     {
         $stub = new ConcreteAbstractActionStub();
         $request = $this->createRequest();
         $stub->setRequest($request);
 
         $translatorMock = $this->createMock(TranslatorInterface::class);
-        $translatorMock->expects($this->once())
+        $translatorMock->expects(static::once())
             ->method('trans')
             ->with('message')
             ->willReturn('translated')
@@ -386,38 +373,38 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         static::assertSame(['translated'], $stub->getSession()->getFlashBag()->get('error'));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Request is not set in step action.
-     */
-    public function test update current step should throw exception if no request()
+    public function test update current step should throw exception if no request(): void
     {
         $stub = new ConcreteAbstractActionStub();
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Request is not set in step action.');
+
         $stub->updateCharacterStep(null);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Request is not set in step action.
-     */
-    public function test getCurrentCharacter should throw exception if no request()
+    public function test getCurrentCharacter should throw exception if no request(): void
     {
         $stub = new ConcreteAbstractActionStub();
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Request is not set in step action.');
+
         $stub->getCurrentCharacter();
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage The session must be available to manage characters. Did you forget to enable the session in the framework?
-     */
-    public function test getCurrentCharacter should throw exception if no session()
+    public function test getCurrentCharacter should throw exception if no session(): void
     {
         $stub = new ConcreteAbstractActionStub();
         $stub->setRequest(new Request());
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('The session must be available to manage characters. Did you forget to enable the session in the framework?');
+
         $stub->getCurrentCharacter();
     }
 
-    public function test invalid character class in step action()
+    public function test invalid character class in step action(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Step action must be a valid class implementing Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface. "stdClass" given.');
@@ -426,15 +413,27 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         $stub->configure('', '', \stdClass::class, $this->createMock(StepResolverInterface::class));
     }
 
-    /**
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage The session must be available to manage characters. Did you forget to enable the session in the framework?
-     */
-    public function test flash message when session is not available()
+    public function test flash message when session is not available(): void
     {
         $action = new ConcreteAbstractActionStub();
         $action->setRequest(new Request());
 
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('The session must be available to manage characters. Did you forget to enable the session in the framework?');
+
         $action->flashMessage('Whatever, it should throw an exception anyway.');
+    }
+
+    private function getDefaultStub(): ConcreteAbstractActionStub
+    {
+        $stub = new ConcreteAbstractActionStub();
+        $stepStub = StepStub::createStub();
+        $resolver = $this->createMock(StepResolverInterface::class);
+        $resolver->expects(static::once())->method('resolve')->willReturn($stepStub);
+        $resolver->expects(static::once())->method('getManagerSteps')->willReturn([$stepStub]);
+
+        $stub->configure($stepStub->getManagerName(), $stepStub->getName(), CharacterStub::class, $resolver);
+
+        return $stub;
     }
 }
