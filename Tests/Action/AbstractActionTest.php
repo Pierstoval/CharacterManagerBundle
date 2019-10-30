@@ -456,22 +456,22 @@ class AbstractActionTest extends AbstractGeneratorControllerTest
         return new class() implements StepResolverInterface {
             public function resolve(string $stepName, string $managerName = null): StepInterface
             {
-                return StepStub::createStub();
+                return StepStub::createStub(['name' => $stepName, 'manager_name' => $managerName]);
             }
 
             public function resolveNumber(int $stepNumber, string $managerName = null): StepInterface
             {
-                return StepStub::createStub();
+                return StepStub::createStub(['number' => $stepNumber, 'manager_name' => $managerName]);
             }
 
             public function getManagerSteps(string $managerName = null): array
             {
-                return [StepStub::createStub()];
+                return [StepStub::createStub(['manager_name' => $managerName])];
             }
 
             public function resolveManagerName(string $managerName = null): string
             {
-                return 'test_manager';
+                return $managerName ?: 'test_manager';
             }
         };
     }
