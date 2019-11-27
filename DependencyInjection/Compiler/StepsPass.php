@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler;
 
 use Doctrine\Common\Inflector\Inflector;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\AbstractStepAction;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry;
@@ -181,8 +181,8 @@ class StepsPass implements CompilerPassInterface
 
             // If class extends the abstract one, we inject some cool services.
             if (\is_a($definition->getClass(), AbstractStepAction::class, true)) {
-                if ($container->hasDefinition(ObjectManager::class) || $container->hasAlias(ObjectManager::class)) {
-                    $definition->addMethodCall('setObjectManager', [new Reference(ObjectManager::class)]);
+                if ($container->hasDefinition(EntityManagerInterface::class) || $container->hasAlias(EntityManagerInterface::class)) {
+                    $definition->addMethodCall('setObjectManager', [new Reference(EntityManagerInterface::class)]);
                 }
                 if ($container->hasDefinition(Environment::class) || $container->hasAlias(Environment::class)) {
                     $definition->addMethodCall('setTwig', [new Reference(Environment::class)]);

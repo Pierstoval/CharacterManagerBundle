@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Action;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\CharacterInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Model\StepInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Resolver\StepResolverInterface;
@@ -52,7 +52,7 @@ abstract class AbstractStepAction implements StepActionInterface
     /** @var RouterInterface */
     protected $router;
 
-    /** @var ObjectManager */
+    /** @var EntityManagerInterface */
     protected $em;
 
     /** @var Environment */
@@ -99,7 +99,7 @@ abstract class AbstractStepAction implements StepActionInterface
         $this->router = $router;
     }
 
-    public function setObjectManager(ObjectManager $em): void
+    public function setObjectManager(EntityManagerInterface $em): void
     {
         $this->em = $em;
     }

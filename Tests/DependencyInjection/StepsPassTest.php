@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler\StepsPass;
 use Pierstoval\Bundle\CharacterManagerBundle\Registry\ActionsRegistry;
@@ -80,7 +80,7 @@ class StepsPassTest extends TestCase
         ;
 
         $container->register(ActionsRegistry::class);
-        $container->register(ObjectManager::class);
+        $container->register(EntityManagerInterface::class);
         $container->register(Environment::class);
         $container->register(RouterInterface::class);
         $container->register(TranslatorInterface::class);
@@ -114,7 +114,7 @@ class StepsPassTest extends TestCase
         $container->register(ActionsRegistry::class);
 
         $container->register('test_service', \stdClass::class);
-        $container->setAlias(ObjectManager::class, 'test_service');
+        $container->setAlias(EntityManagerInterface::class, 'test_service');
         $container->setAlias(Environment::class, 'test_service');
         $container->setAlias(RouterInterface::class, 'test_service');
         $container->setAlias(TranslatorInterface::class, 'test_service');
@@ -152,7 +152,7 @@ class StepsPassTest extends TestCase
         $container = new ContainerBuilder();
 
         $container->register(ActionsRegistry::class);
-        $container->register(ObjectManager::class);
+        $container->register(EntityManagerInterface::class);
         $container->register(Environment::class);
         $container->register(RouterInterface::class);
         $container->register(TranslatorInterface::class);
