@@ -172,12 +172,10 @@ class GeneratorController
 
     private function getSession(Request $request): Session
     {
-        $session = $request->getSession();
-
-        if (!($session instanceof Session)) {
+        if (!($request->hasSession())) {
             throw new \RuntimeException('Session is mandatory when using the character generator.');
         }
 
-        return $session;
+        return $request->getSession();
     }
 }

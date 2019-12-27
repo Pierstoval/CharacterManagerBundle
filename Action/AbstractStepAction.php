@@ -231,13 +231,11 @@ abstract class AbstractStepAction implements StepActionInterface
 
     protected function getSession(): Session
     {
-        $session = $this->getRequest()->getSession();
-
-        if (!($session instanceof Session)) {
+        if (!($this->getRequest()->hasSession())) {
             throw new \RuntimeException('The session must be available to manage characters. Did you forget to enable the session in the framework?');
         }
 
-        return $session;
+        return $this->getRequest()->getSession();
     }
 
     /**
