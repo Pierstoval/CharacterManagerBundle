@@ -27,7 +27,7 @@ install:
     - composer update --prefer-dist --no-interaction --optimize-autoloader
 
 script:
-    - if [[ "$ENABLE_CODE_COVERAGE" == "true" ]]; then vendor/bin/phpunit --coverage-text --coverage-clover build/logs/clover.xml; else vendor/bin/phpunit; fi;
+    - if [[ "$ENABLE_CODE_COVERAGE" == "true" ]]; then vendor/bin/simple-phpunit --coverage-text --coverage-clover build/logs/clover.xml; else vendor/bin/simple-phpunit; fi;
 
 after_success: |
     if [[ "$ENABLE_CODE_COVERAGE" == "true" ]]; then php php-coveralls.phar -v --config .coveralls.yml; fi;
