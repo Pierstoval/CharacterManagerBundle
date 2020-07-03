@@ -9,6 +9,7 @@ framework:
     router:
         resource: '@PierstovalCharacterManagerBundle/Resources/config/routing.xml'
         strict_requirements: true
+        utf8: true
     php_errors:
         log: true
 

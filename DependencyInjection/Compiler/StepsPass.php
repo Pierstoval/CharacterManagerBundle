@@ -202,6 +202,6 @@ class StepsPass implements CompilerPassInterface
 
     private function generateStepLabel(string $name): string
     {
-        return Inflector::ucwords(\trim(\str_replace(['.', '_', '-'], ' ', $name)));
+        return \ucwords(\trim(\str_replace(['.', '_', '-'], ' ', $name)));
     }
 }

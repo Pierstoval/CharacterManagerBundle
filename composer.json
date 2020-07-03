@@ -23,14 +23,14 @@
     "require-dev": {
         "doctrine/doctrine-bundle": "^1.12|^2.0",
         "doctrine/orm": "^2.5",
-        "phpunit/phpunit": "^8.2",
-        "pierstoval/web-test-case": "^0.3",
         "symfony/css-selector": "^4.3.6|^5.0",
         "symfony/console": "^4.3.6|^5.0",
+        "symfony/browser-kit": "^4.3.6|^5.0",
         "symfony/dom-crawler": "^4.3.6|^5.0",
         "symfony/translation": "^4.3.6|^5.0",
         "symfony/twig-bundle": "^4.3.6|^5.0",
-        "symfony/yaml": "^4.3.6|^5.0"
+        "symfony/yaml": "^4.3.6|^5.0",
+        "symfony/phpunit-bridge": "^4.3.6|^5.0"
     },
     "suggest": {
         "doctrine/doctrine-bundle": "To inject the object manager in steps and map your Character entities with the ORM",

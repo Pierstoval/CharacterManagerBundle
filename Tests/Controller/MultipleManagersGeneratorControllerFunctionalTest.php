@@ -13,16 +13,13 @@ declare(strict_types=1);
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller;
 
-use Pierstoval\Tests\WebTestCase as PiersTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class MultipleManagersGeneratorControllerFunctionalTest extends WebTestCase
 {
-    use PiersTestCase;
-
     public function test main generate redirects to first step(): void
     {
-        $client = $this->getHttpClient();
+        $client = static::createClient();
 
         $client->getKernel()->boot();
 
@@ -34,7 +31,7 @@ class MultipleManagersGeneratorControllerFunctionalTest extends WebTestCase
 
     public function test other generate redirects to first step(): void
     {
-        $client = $this->getHttpClient();
+        $client = static::createClient();
 
         $client->getKernel()->boot();
 
