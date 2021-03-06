@@ -164,7 +164,7 @@ class StepsPass implements CompilerPassInterface
                 // In this case, we create a new service.
                 $definition = new Definition($action);
                 $definition
-                    ->setPrivate(true)
+                    ->setPublic(false)
                     ->setAutowired(true)
                 ;
                 $container->setDefinition($action, $definition);

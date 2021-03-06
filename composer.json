@@ -7,7 +7,12 @@
     "homepage": "https://github.com/Pierstoval/CharacterManagerBundle",
     "autoload": {
         "psr-4": {
-            "Pierstoval\\Bundle\\CharacterManagerBundle\\": ""
+            "Pierstoval\\Bundle\\CharacterManagerBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pierstoval\\Bundle\\CharacterManagerBundle\\Tests\\": "Tests/"
         }
     },
     "require": {
