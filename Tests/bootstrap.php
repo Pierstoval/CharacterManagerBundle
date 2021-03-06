@@ -15,29 +15,22 @@ use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\App\TestKernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 
-if (\function_exists('xdebug_set_filter')) {
-    $rootDir = \dirname(__DIR__).DIRECTORY_SEPARATOR;
-    \xdebug_set_filter(
-        \constant('XDEBUG_FILTER_CODE_COVERAGE'),
-        \constant('XDEBUG_PATH_WHITELIST'),
+require dirname(__DIR__).'/vendor/autoload.php';
+
+echo "\n[Test bootstrap] Bootstraping test suite...";
+
+if (function_exists('xdebug_set_filter')) {
+    echo "\n[Test bootstrap] Xdebug enabled, activate coverage whitelist filter...";
+    xdebug_set_filter(
+        constant('XDEBUG_FILTER_CODE_COVERAGE'),
+        constant('XDEBUG_PATH_INCLUDE'),
         [
-            $rootDir.'Action'.DIRECTORY_SEPARATOR,
-            $rootDir.'Controller'.DIRECTORY_SEPARATOR,
-            $rootDir.'DependencyInjection'.DIRECTORY_SEPARATOR,
-            $rootDir.'Entity'.DIRECTORY_SEPARATOR,
-            $rootDir.'Exception'.DIRECTORY_SEPARATOR,
-            $rootDir.'Model'.DIRECTORY_SEPARATOR,
-            $rootDir.'Registry'.DIRECTORY_SEPARATOR,
-            $rootDir.'Resolver'.DIRECTORY_SEPARATOR,
+            dirname(__DIR__).'/src/',
         ]
     );
 }
 
-$file = __DIR__.'/../vendor/autoload.php';
-if (!\file_exists($file)) {
-    throw new RuntimeException('Install dependencies to run test suite.');
-}
-$autoload = require $file;
+echo "\n[Test bootstrap] Done!\n";
 
 (static function (): void {
     if (\file_exists($dbFile = __DIR__.'/build/database_test.db')) {
