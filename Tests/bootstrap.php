@@ -15,17 +15,17 @@ use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\App\TestKernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 
-require dirname(__DIR__).'/vendor/autoload.php';
+require \dirname(__DIR__).'/vendor/autoload.php';
 
 echo "\n[Test bootstrap] Bootstraping test suite...";
 
-if (function_exists('xdebug_set_filter')) {
+if (\function_exists('xdebug_set_filter')) {
     echo "\n[Test bootstrap] Xdebug enabled, activate coverage whitelist filter...";
     xdebug_set_filter(
-        constant('XDEBUG_FILTER_CODE_COVERAGE'),
-        constant('XDEBUG_PATH_INCLUDE'),
+        \constant('XDEBUG_FILTER_CODE_COVERAGE'),
+        \constant('XDEBUG_PATH_INCLUDE'),
         [
-            dirname(__DIR__).'/src/',
+            \dirname(__DIR__).'/src/',
         ]
     );
 }

@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler;
 
-use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ORM\EntityManagerInterface;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\AbstractStepAction;
 use Pierstoval\Bundle\CharacterManagerBundle\Action\StepActionInterface;
@@ -46,6 +45,16 @@ class StepsPass implements CompilerPassInterface
     {
         $this->validateManagers($container);
         $this->processConfiguredServices($container);
+    }
+
+    public static function recursiveKeySort(&$array): void
+    {
+        \ksort($array);
+        foreach ($array as $key => $value) {
+            if (\is_array($value)) {
+                self::recursiveKeySort($array[$key]);
+            }
+        }
     }
 
     private function validateManagers(ContainerBuilder $container): void
@@ -207,15 +216,5 @@ class StepsPass implements CompilerPassInterface
     private function generateStepLabel(string $name): string
     {
         return \ucwords(\trim(\str_replace(['.', '_', '-'], ' ', $name)));
-    }
-
-    public static function recursiveKeySort(&$array): void
-    {
-        \ksort($array);
-        foreach ($array as $key => $value) {
-            if (\is_array($value)) {
-                self::recursiveKeySort($array[$key]);
-            }
-        }
     }
 }

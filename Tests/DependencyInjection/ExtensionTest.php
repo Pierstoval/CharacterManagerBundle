@@ -40,7 +40,8 @@ class ExtensionTest extends TestCase
         // Add the default step service
         $container
             ->register('steps.default')
-            ->setClass(ConcreteAbstractActionStub::class);
+            ->setClass(ConcreteAbstractActionStub::class)
+        ;
 
         $ext->load($config, $container);
         $stepsPass->process($container);

@@ -11,21 +11,17 @@ HEADER;
 
 $finder = PhpCsFixer\Finder::create()
     ->exclude([
-        'vendor',
+        '.idea',
+        '.github',
         'build',
         'coverage',
+        'vendor',
     ])
     ->in([
-        __DIR__.'/Action/',
-        __DIR__.'/Controller/',
-        __DIR__.'/DependencyInjection/',
-        __DIR__.'/Entity/',
-        __DIR__.'/Exception/',
-        __DIR__.'/Model/',
-        __DIR__.'/Registry/',
-        __DIR__.'/Resolver/',
+        __DIR__.'/src/',
         __DIR__.'/Tests/',
     ])
+    ->notName('Configuration.php')
 ;
 
 return PhpCsFixer\Config::create()
