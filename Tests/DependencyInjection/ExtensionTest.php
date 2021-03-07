@@ -16,7 +16,6 @@ use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler\StepsP
 use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\PierstovalCharacterManagerExtension;
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Action\ConcreteAbstractActionStub;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Test the extension and the compiler pass.
@@ -44,22 +43,8 @@ class ExtensionTest extends TestCase
         $ext->load($config, $container);
         $stepsPass->process($container);
 
-        // Sorting the arrays by key name avoid issues with PHP7 and Yaml parsing that sometimes store the keys in the wrong order
-
         foreach ($expected['pierstoval_character_manager'] as $key => $expectedValue) {
-            if (\is_array($expectedValue)) {
-                \ksort($expectedValue);
-                if (\is_array(\current($expectedValue))) {
-                    $expectedValue = \array_map('ksort', $expectedValue);
-                }
-            }
             $parameterValue = $container->getParameter($parameter = "pierstoval_character_manager.{$key}");
-            if (\is_array($parameterValue)) {
-                \ksort($parameterValue);
-                if (\is_array(\current($parameterValue))) {
-                    $parameterValue = \array_map('ksort', $parameterValue);
-                }
-            }
             static::assertSame($expectedValue, $parameterValue, "{$parameter} is not the same as expected");
         }
     }
@@ -69,14 +54,14 @@ class ExtensionTest extends TestCase
      */
     public function provideYamlConfiguration(): Generator
     {
-        $dir = __DIR__.'/../Fixtures/App/extension_test/';
+        $dir = \dirname(__DIR__).'/Fixtures/App/extension_test/';
 
-        $configFiles = \glob($dir.'config_*.yaml');
+        $configFiles = \glob($dir.'config_*.php');
 
-        \sort($configFiles);
+        \sort($configFiles, \SORT_NATURAL);
 
         foreach ($configFiles as $file) {
-            $content = Yaml::parse(\file_get_contents($file));
+            $content = require $file;
             yield \basename($file) => [
                 $content['input'],
                 $content['output'],
