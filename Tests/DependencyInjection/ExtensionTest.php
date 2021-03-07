@@ -11,6 +11,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
+namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\DependencyInjection;
+
+use Generator;
 use PHPUnit\Framework\TestCase;
 use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler\StepsPass;
 use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\PierstovalCharacterManagerExtension;
@@ -37,8 +40,7 @@ class ExtensionTest extends TestCase
         // Add the default step service
         $container
             ->register('steps.default')
-            ->setClass(ConcreteAbstractActionStub::class)
-        ;
+            ->setClass(ConcreteAbstractActionStub::class);
 
         $ext->load($config, $container);
         $stepsPass->process($container);

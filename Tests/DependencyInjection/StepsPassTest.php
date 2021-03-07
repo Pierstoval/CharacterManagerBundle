@@ -11,6 +11,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
+namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\DependencyInjection;
+
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Pierstoval\Bundle\CharacterManagerBundle\DependencyInjection\Compiler\StepsPass;
@@ -71,7 +73,7 @@ class StepsPassTest extends TestCase
         }
     }
 
-    public function provide container builder for services injection(): Generator
+    public function provide container builder for services injection(): \Generator
     {
         $container = new ContainerBuilder();
         $container
