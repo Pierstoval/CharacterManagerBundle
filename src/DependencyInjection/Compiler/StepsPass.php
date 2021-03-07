@@ -126,8 +126,12 @@ class StepsPass implements CompilerPassInterface
             }
         }
 
+        self::recursiveKeySort($steps);
+
         // And update all steps.
         $managerConfiguration['steps'] = $steps;
+
+        \ksort($managerConfiguration);
 
         return $managerConfiguration;
     }
@@ -203,5 +207,15 @@ class StepsPass implements CompilerPassInterface
     private function generateStepLabel(string $name): string
     {
         return \ucwords(\trim(\str_replace(['.', '_', '-'], ' ', $name)));
+    }
+
+    public static function recursiveKeySort(&$array): void
+    {
+        \ksort($array);
+        foreach ($array as $key => $value) {
+            if (\is_array($value)) {
+                self::recursiveKeySort($array[$key]);
+            }
+        }
     }
 }
