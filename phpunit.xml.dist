@@ -27,6 +27,15 @@
         <server name="KERNEL_DIR" value="./Tests/Fixtures/App" />
     </php>
 
+    <coverage>
+        <include>
+            <directory>src</directory>
+        </include>
+        <exclude>
+            <directory>tests</directory>
+        </exclude>
+    </coverage>
+
     <listeners>
         <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
     </listeners>

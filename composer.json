@@ -27,6 +27,7 @@
     "require-dev": {
         "doctrine/doctrine-bundle": "^1.12|^2.2",
         "doctrine/orm": "^2.8|^3.0",
+        "doctrine/annotations": "^1.13",
         "symfony/css-selector": "^5.2",
         "symfony/console": "^5.2",
         "symfony/browser-kit": "^5.2",

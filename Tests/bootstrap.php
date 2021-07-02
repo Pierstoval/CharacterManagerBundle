@@ -22,8 +22,8 @@ echo "\n[Test bootstrap] Bootstraping test suite...";
 if (\function_exists('xdebug_set_filter')) {
     echo "\n[Test bootstrap] Xdebug enabled, activate coverage whitelist filter...";
     xdebug_set_filter(
-        \constant('XDEBUG_FILTER_CODE_COVERAGE'),
-        \constant('XDEBUG_PATH_INCLUDE'),
+        \defined('XDEBUG_FILTER_CODE_COVERAGE') ? \constant('XDEBUG_FILTER_CODE_COVERAGE') : 512,
+        \defined('XDEBUG_PATH_INCLUDE') ? \constant('XDEBUG_PATH_INCLUDE') : 1,
         [
             \dirname(__DIR__).'/src/',
         ]
