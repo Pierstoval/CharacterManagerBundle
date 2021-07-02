@@ -30,7 +30,9 @@ jobs:
               uses: "ramsey/composer-install@v1"
 
             - name: Install PHPUnit
-              run: vendor/bin/simple-phpunit --version
+              run: |
+                export "SYMFONY_DEPRECATIONS_HELPER=max[self]=0"
+                vendor/bin/simple-phpunit --version
 
             - name: 🚀 Run PHPUnit tests
               run: vendor/bin/simple-phpunit
