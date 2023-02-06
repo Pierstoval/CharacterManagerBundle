@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Pierstoval\Bundle\CharacterManagerBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class MultipleManagersGeneratorControllerFunctionalTest extends WebTestCase
 {
@@ -41,7 +42,7 @@ class MultipleManagersGeneratorControllerFunctionalTest extends WebTestCase
         static::assertSame('/other/generate/step_01', $client->getResponse()->headers->get('Location'));
     }
 
-    protected static function createKernel(array $options = [])
+    protected static function createKernel(array $options = []): KernelInterface
     {
         $options['environment'] = 'test_more_managers';
 

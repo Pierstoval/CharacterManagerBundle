@@ -2,7 +2,6 @@ imports:
     - { resource: config.yaml }
 
 framework:
-    secret: 'whatever_this_is_testing_after_all'
     router:
         resource: '%kernel.project_dir%/Tests/Fixtures/App/config/routing_multiple_managers.yaml'
 

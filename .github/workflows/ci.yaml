@@ -13,8 +13,8 @@ jobs:
                     - macOS-latest
                     - windows-latest
                 php-version:
-                    - '7.4'
                     - '8.0'
+                    - '8.1'
 
         name: PHP ${{ matrix.php-version }} on ${{ matrix.operating-system }}
         steps:

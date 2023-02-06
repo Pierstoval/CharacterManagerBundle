@@ -1,11 +1,11 @@
 framework:
+    http_method_override: false
     test: ~
     secret: 'whatever_this_is_testing_after_all'
     translator:
         fallback: ['fr']
     session:
-        storage_id: session.storage.mock_file
-        handler_id: null
+        storage_factory_id: session.storage.factory.mock_file
     router:
         resource: '@PierstovalCharacterManagerBundle/Resources/config/routing.xml'
         strict_requirements: true
@@ -15,22 +15,23 @@ framework:
 
 doctrine:
     dbal:
+        default_connection: default
         connections:
             default:
                 driver: pdo_sqlite
                 path: '%kernel.project_dir%/build/database_test.db'
     orm:
-        entity_managers:
-            default:
-                naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-                auto_mapping: true
-                connection: default
-                mappings:
-                    character_manager:
-                        type: annotation
-                        dir: '%kernel.project_dir%/Tests/Fixtures/Stubs/Entity'
-                        is_bundle: false
-                        prefix: CharacterManager
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        auto_mapping: true
+        connection: default
+        mappings:
+            CharacterManager:
+                type: annotation
+                dir: '%kernel.project_dir%/Tests/Fixtures/Stubs/Entity/'
+                is_bundle: false
+                prefix: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity
+                alias: CharacterManager
 
 services:
     logger:
@@ -38,3 +39,7 @@ services:
 
     annotation_reader:
         class: Doctrine\Common\Annotations\AnnotationReader
+
+    Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity\CharacterStubRepository:
+        autoconfigure: true
+        autowire: true

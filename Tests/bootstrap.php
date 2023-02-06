@@ -14,6 +14,7 @@ declare(strict_types=1);
 use Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\App\TestKernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Filesystem\Filesystem;
 
 require \dirname(__DIR__).'/vendor/autoload.php';
 
@@ -30,12 +31,12 @@ if (\function_exists('xdebug_set_filter')) {
     );
 }
 
-echo "\n[Test bootstrap] Done!\n";
+echo "\n[Test bootstrap] Clearing test cache...";
+
+(new Filesystem())->remove(dirname(__DIR__).'/build');
 
 (static function (): void {
-    if (\file_exists($dbFile = __DIR__.'/build/database_test.db')) {
-        \unlink($dbFile);
-    }
+    echo "\n[Test bootstrap] Creating test database...\n";
 
     $kernel = new TestKernel('test', true);
     $kernel->boot();
@@ -47,3 +48,5 @@ echo "\n[Test bootstrap] Done!\n";
 
     $kernel->shutdown();
 })();
+
+echo "\n[Test bootstrap] Done!\n";

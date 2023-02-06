@@ -16,26 +16,26 @@
         }
     },
     "require": {
-        "php": ">=7.4",
-        "symfony/config": "^5.2",
-        "symfony/dependency-injection": "^5.2",
-        "symfony/framework-bundle": "^5.2",
-        "symfony/http-kernel": "^5.2",
-        "symfony/http-foundation": "^5.2",
-        "symfony/routing": "^5.2"
+        "php": ">=8.0",
+        "symfony/config": "^6.2",
+        "symfony/dependency-injection": "^6.2",
+        "symfony/framework-bundle": "^6.2",
+        "symfony/http-kernel": "^6.2",
+        "symfony/http-foundation": "^6.2",
+        "symfony/routing": "^6.2"
     },
     "require-dev": {
         "doctrine/doctrine-bundle": "^1.12|^2.2",
         "doctrine/orm": "^2.8|^3.0",
-        "doctrine/annotations": "^1.13",
-        "symfony/css-selector": "^5.2",
-        "symfony/console": "^5.2",
-        "symfony/browser-kit": "^5.2",
-        "symfony/dom-crawler": "^5.2",
-        "symfony/translation": "^5.2",
-        "symfony/twig-bundle": "^5.2",
-        "symfony/yaml": "^5.2",
-        "symfony/phpunit-bridge": "^5.2"
+        "doctrine/annotations": "^1.13|^2.0",
+        "symfony/css-selector": "^6.2",
+        "symfony/console": "^6.2",
+        "symfony/browser-kit": "^6.2",
+        "symfony/dom-crawler": "^6.2",
+        "symfony/translation": "^6.2",
+        "symfony/twig-bundle": "^6.2",
+        "symfony/yaml": "^6.2",
+        "symfony/phpunit-bridge": "^6.2"
     },
     "suggest": {
         "doctrine/doctrine-bundle": "To inject the object manager in steps and map your Character entities with the ORM",

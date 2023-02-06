@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/bin/.phpunit/phpunit.xsd"
-         colors="true"
+         cacheResultFile=".phpunit.cache/test-results"
+         executionOrder="depends,defects"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutTodoAnnotatedTests="true"
+         convertDeprecationsToExceptions="true"
+         failOnWarning="true"
          verbose="true"
          bootstrap="Tests/bootstrap.php"
 >
@@ -28,12 +32,12 @@
         <server name="KERNEL_DIR" value="./Tests/Fixtures/App" />
     </php>
 
-    <coverage>
+    <coverage cacheDirectory=".phpunit.cache/code-coverage" processUncoveredFiles="true">
         <include>
-            <directory>src</directory>
+            <directory suffix=".php">src</directory>
         </include>
         <exclude>
-            <directory>tests</directory>
+            <file>src/PierstovalCharacterManagerBundle.php</file>
         </exclude>
     </coverage>
 

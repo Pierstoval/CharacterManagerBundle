@@ -22,7 +22,7 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class TestKernel extends Kernel
 {
-    public function registerBundles()
+    public function registerBundles(): array
     {
         return [
             new FrameworkBundle(),
@@ -40,22 +40,22 @@ class TestKernel extends Kernel
         $loader->load(__DIR__.'/config/config_'.$this->environment.'.yaml');
     }
 
-    public function getRootDir()
+    public function getRootDir(): string
     {
         return \dirname(__DIR__, 3);
     }
 
-    public function getProjectDir()
+    public function getProjectDir(): string
     {
         return $this->getRootDir();
     }
 
-    public function getLogDir()
+    public function getLogDir(): string
     {
         return $this->getProjectDir().'/build/log/'.$this->environment;
     }
 
-    public function getCacheDir()
+    public function getCacheDir(): string
     {
         return $this->getProjectDir().'/build/cache/'.$this->environment;
     }
