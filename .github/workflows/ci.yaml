@@ -13,8 +13,8 @@ jobs:
                     - macOS-latest
                     - windows-latest
                 php-version:
-                    - '8.0'
                     - '8.1'
+                    - '8.2'
 
         name: PHP ${{ matrix.php-version }} on ${{ matrix.operating-system }}
         steps:
@@ -31,7 +31,6 @@ jobs:
 
             - name: Install PHPUnit
               run: |
-                export "SYMFONY_DEPRECATIONS_HELPER=max[self]=0"
                 vendor/bin/simple-phpunit --version
 
             - name: 🚀 Run PHPUnit tests
