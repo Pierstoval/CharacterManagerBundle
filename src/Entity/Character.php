@@ -23,6 +23,7 @@ abstract class Character implements CharacterInterface
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
+    #[ORM\Column(name: "name", type: "string", length: 255, nullable: false)]
     protected $name;
 
     /**
@@ -30,6 +31,7 @@ abstract class Character implements CharacterInterface
      *
      * @ORM\Column(name="name_slug", type="string", length=255, nullable=false)
      */
+    #[ORM\Column(name: "name_slug", type: "string", length: 255, nullable: false)]
     protected $nameSlug;
 
     public function __construct(string $name, string $nameSlug)

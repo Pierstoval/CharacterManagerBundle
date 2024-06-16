@@ -27,7 +27,7 @@ doctrine:
         connection: default
         mappings:
             CharacterManager:
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/Tests/Fixtures/Stubs/Entity/'
                 is_bundle: false
                 prefix: Pierstoval\Bundle\CharacterManagerBundle\Tests\Fixtures\Stubs\Entity
